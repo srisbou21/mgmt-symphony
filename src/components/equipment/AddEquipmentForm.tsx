@@ -5,10 +5,24 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const equipmentTypes = [
+  "Informatique",
+  "Mobilier",
+  "Électroménager",
+  "Outillage",
+  "Véhicule",
+  "Matériel médical",
+  "Équipement sportif",
+  "Matériel audiovisuel"
+] as const;
 
 const formSchema = z.object({
   name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-  type: z.string().min(2, "Le type doit contenir au moins 2 caractères"),
+  type: z.enum(equipmentTypes, {
+    required_error: "Veuillez sélectionner un type d'équipement",
+  }),
   status: z.enum(["En service", "En maintenance"]),
   location: z.string().min(2, "L'emplacement doit contenir au moins 2 caractères"),
 });
@@ -18,7 +32,7 @@ export function AddEquipmentForm({ onSubmit, onCancel }: { onSubmit: (values: z.
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      type: "",
+      type: "Informatique",
       status: "En service",
       location: "",
     },
@@ -47,9 +61,20 @@ export function AddEquipmentForm({ onSubmit, onCancel }: { onSubmit: (values: z.
           render={({ field }) => (
             <FormItem>
               <FormLabel>Type</FormLabel>
-              <FormControl>
-                <Input placeholder="Ex: Informatique" {...field} />
-              </FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez un type d'équipement" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {equipmentTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
