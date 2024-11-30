@@ -1,20 +1,10 @@
 import { motion } from "framer-motion";
-import { 
-  Building2, 
-  Package, 
-  Wrench, 
-  Users, 
-  FileText, 
-  Calendar,
-  Bell,
-  BarChart3
-} from "lucide-react";
-import { Link } from "react-router-dom";
-import { StatCard } from "@/components/dashboard/StatCard";
+import { MainStats } from "@/components/dashboard/MainStats";
+import { SupplierStats } from "@/components/dashboard/SupplierStats";
 import { ActivityCard } from "@/components/dashboard/ActivityCard";
 
 // Mock user role for demonstration
-const userRole = "admin"; // This would come from auth context in the future
+const userRole = "admin";
 
 const getUserTitle = (role: string) => {
   switch (role) {
@@ -41,74 +31,6 @@ const getUserWelcomeMessage = (role: string) => {
       return "Bienvenue sur votre espace de gestion";
   }
 };
-
-const stats = [
-  {
-    title: "Équipements",
-    value: "1,234",
-    icon: Package,
-    color: "bg-dmg-accent/10 text-dmg-accent",
-    details: "Gestion des équipements et des stocks",
-    description: "Suivi des équipements, gestion des stocks, alertes de réapprovisionnement",
-    link: "/equipment"
-  },
-  {
-    title: "Maintenance",
-    value: "56",
-    icon: Wrench,
-    color: "bg-green-100 text-green-600",
-    details: "Suivi des maintenances",
-    description: "Maintenance préventive et curative, suivi des interventions"
-  },
-  {
-    title: "Espaces",
-    value: "89",
-    icon: Building2,
-    color: "bg-orange-100 text-orange-600",
-    details: "Gestion des espaces",
-    description: "Suivi et réservation des espaces, gestion de l'occupation"
-  },
-  {
-    title: "Personnel",
-    value: "45",
-    icon: Users,
-    color: "bg-blue-100 text-blue-600",
-    details: "Gestion du personnel",
-    description: "Plannings, congés, formations et certifications"
-  },
-  {
-    title: "Contrats",
-    value: "23",
-    icon: FileText,
-    color: "bg-purple-100 text-purple-600",
-    details: "Gestion des contrats",
-    description: "Suivi des contrats et des fournisseurs, alertes de renouvellement"
-  },
-  {
-    title: "Planning",
-    value: "12",
-    icon: Calendar,
-    color: "bg-pink-100 text-pink-600",
-    details: "Planning et réservations",
-    description: "Réservation des salles, planning des interventions"
-  },
-  {
-    title: "Tickets",
-    value: "34",
-    icon: Bell,
-    color: "bg-yellow-100 text-yellow-600",
-    details: "Gestion des tickets",
-    description: "Suivi des demandes internes et des interventions"
-  },
-  {
-    title: "Rapports",
-    value: "8",
-    icon: BarChart3,
-    color: "bg-cyan-100 text-cyan-600",
-    details: "Rapports et analyses",
-    description: "Tableaux de bord, KPIs et génération de rapports"
-  }
-];
 
 const tickets = [
   {
@@ -167,19 +89,11 @@ const Index = () => {
           </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={stat.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <Link to={stat.link || "#"}>
-                <StatCard {...stat} />
-              </Link>
-            </motion.div>
-          ))}
+        <MainStats />
+        
+        <div className="mb-12">
+          <h2 className="text-2xl font-semibold mb-6">Gestion des fournisseurs</h2>
+          <SupplierStats />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
