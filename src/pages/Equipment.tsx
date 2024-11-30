@@ -29,6 +29,7 @@ type Equipment = {
   status: EquipmentStatus;
   location: string;
   lastMaintenance: string;
+  supplier?: string;
 };
 
 type FormData = Omit<Equipment, "id" | "lastMaintenance">;
@@ -47,6 +48,7 @@ const Equipment = () => {
       status: "En service",
       location: "Bureau 201",
       lastMaintenance: "2024-01-15",
+      supplier: "Dell",
     },
     {
       id: 2,
@@ -55,6 +57,7 @@ const Equipment = () => {
       status: "En maintenance",
       location: "Salle de reprographie",
       lastMaintenance: "2024-02-01",
+      supplier: "HP",
     },
     {
       id: 3,
@@ -63,6 +66,7 @@ const Equipment = () => {
       status: "En service",
       location: "Bureau 305",
       lastMaintenance: "2023-12-10",
+      supplier: "Steelcase",
     },
   ]);
 

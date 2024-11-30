@@ -27,6 +27,7 @@ type FormData = {
   type: EquipmentType;
   status: EquipmentStatus;
   location: string;
+  supplier?: string;
 };
 
 const formSchema = z.object({
@@ -37,6 +38,7 @@ const formSchema = z.object({
   }),
   status: z.enum(["En service", "En maintenance"] as const),
   location: z.string().min(2, "L'emplacement doit contenir au moins 2 caractères"),
+  supplier: z.string().optional(),
 });
 
 interface AddEquipmentFormProps {
@@ -53,6 +55,7 @@ export function AddEquipmentForm({ onSubmit, onCancel, initialData }: AddEquipme
       type: "Informatique",
       status: "En service",
       location: "",
+      supplier: "",
     },
   });
 
@@ -137,6 +140,20 @@ export function AddEquipmentForm({ onSubmit, onCancel, initialData }: AddEquipme
               <FormLabel>Emplacement</FormLabel>
               <FormControl>
                 <Input placeholder="Ex: Bureau 201" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="supplier"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Fournisseur</FormLabel>
+              <FormControl>
+                <Input placeholder="Ex: Dell" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -9,6 +9,7 @@ type Equipment = {
   status: string;
   location: string;
   lastMaintenance: string;
+  supplier?: string;
 };
 
 interface EquipmentTableProps {
@@ -26,6 +27,7 @@ export const EquipmentTable = ({ equipments, onEdit, onDelete }: EquipmentTableP
           <TableHead>Type</TableHead>
           <TableHead>Statut</TableHead>
           <TableHead>Emplacement</TableHead>
+          <TableHead>Fournisseur</TableHead>
           <TableHead>Dernière maintenance</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
@@ -47,6 +49,7 @@ export const EquipmentTable = ({ equipments, onEdit, onDelete }: EquipmentTableP
               </span>
             </TableCell>
             <TableCell>{equipment.location}</TableCell>
+            <TableCell>{equipment.supplier || "-"}</TableCell>
             <TableCell>{equipment.lastMaintenance}</TableCell>
             <TableCell className="text-right space-x-2">
               <Button
