@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
-import { Package, Search } from "lucide-react";
+import { Package, Search, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { EquipmentTable } from "@/components/equipment/EquipmentTable";
+import { useToast } from "@/components/ui/use-toast";
 
 // Mock data - à remplacer par des données réelles plus tard
 const equipments = [
@@ -33,6 +35,15 @@ const equipments = [
 ];
 
 const Equipment = () => {
+  const { toast } = useToast();
+
+  const handleAddEquipment = () => {
+    toast({
+      title: "Fonctionnalité à venir",
+      description: "L'ajout d'équipement sera bientôt disponible.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-dmg-light p-8">
       <motion.div
@@ -46,9 +57,15 @@ const Equipment = () => {
             <Package className="w-4 h-4 mr-2" />
             Gestion des équipements
           </div>
-          <h1 className="text-4xl font-bold text-dmg-dark mb-4">
-            Équipements
-          </h1>
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-4xl font-bold text-dmg-dark">
+              Équipements
+            </h1>
+            <Button onClick={handleAddEquipment} className="gap-2">
+              <Plus className="w-4 h-4" />
+              Ajouter un équipement
+            </Button>
+          </div>
           <p className="text-dmg-muted text-lg mb-6">
             Gérez et suivez tous vos équipements
           </p>
@@ -63,38 +80,7 @@ const Equipment = () => {
         </header>
 
         <Card className="overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Emplacement</TableHead>
-                <TableHead>Dernière maintenance</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {equipments.map((equipment) => (
-                <TableRow key={equipment.id}>
-                  <TableCell className="font-medium">{equipment.name}</TableCell>
-                  <TableCell>{equipment.type}</TableCell>
-                  <TableCell>
-                    <span
-                      className={`px-2 py-1 rounded-full text-sm ${
-                        equipment.status === "En service"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {equipment.status}
-                    </span>
-                  </TableCell>
-                  <TableCell>{equipment.location}</TableCell>
-                  <TableCell>{equipment.lastMaintenance}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <EquipmentTable equipments={equipments} />
         </Card>
       </motion.div>
     </div>
