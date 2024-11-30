@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, FileText } from "lucide-react";
 
 export type Supplier = {
   id: number;
@@ -9,6 +9,7 @@ export type Supplier = {
   email: string;
   phone: string;
   address: string;
+  commercialRegister?: string; // URL du fichier
 };
 
 interface SupplierTableProps {
@@ -27,6 +28,7 @@ export const SupplierTable = ({ suppliers, onEdit, onDelete }: SupplierTableProp
           <TableHead>Email</TableHead>
           <TableHead>Téléphone</TableHead>
           <TableHead>Adresse</TableHead>
+          <TableHead>Registre de commerce</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
@@ -38,6 +40,21 @@ export const SupplierTable = ({ suppliers, onEdit, onDelete }: SupplierTableProp
             <TableCell>{supplier.email}</TableCell>
             <TableCell>{supplier.phone}</TableCell>
             <TableCell>{supplier.address}</TableCell>
+            <TableCell>
+              {supplier.commercialRegister ? (
+                <a
+                  href={supplier.commercialRegister}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-blue-600 hover:text-blue-800"
+                >
+                  <FileText className="h-4 w-4 mr-1" />
+                  Voir le document
+                </a>
+              ) : (
+                <span className="text-gray-400">Non fourni</span>
+              )}
+            </TableCell>
             <TableCell className="text-right space-x-2">
               <Button
                 variant="ghost"

@@ -12,6 +12,7 @@ const formSchema = z.object({
   email: z.string().email("Email invalide"),
   phone: z.string().min(10, "Numéro de téléphone invalide"),
   address: z.string().min(5, "L'adresse doit contenir au moins 5 caractères"),
+  commercialRegister: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -31,6 +32,7 @@ export function AddSupplierForm({ onSubmit, onCancel, initialData }: AddSupplier
       email: "",
       phone: "",
       address: "",
+      commercialRegister: "",
     },
   });
 
@@ -101,6 +103,31 @@ export function AddSupplierForm({ onSubmit, onCancel, initialData }: AddSupplier
               <FormLabel>Adresse</FormLabel>
               <FormControl>
                 <Input placeholder="123 rue Example, 75000 Paris" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="commercialRegister"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Registre de commerce</FormLabel>
+              <FormControl>
+                <Input 
+                  type="file" 
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      // Dans un cas réel, vous devriez uploader le fichier vers un serveur
+                      // et stocker l'URL retournée
+                      field.onChange(URL.createObjectURL(file));
+                    }
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

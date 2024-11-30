@@ -33,6 +33,7 @@ const Suppliers = () => {
       email: "jean.dupont@dell.com",
       phone: "01 23 45 67 89",
       address: "1 rue de la Paix, 75000 Paris",
+      commercialRegister: "",
     },
     {
       id: 2,
@@ -41,6 +42,7 @@ const Suppliers = () => {
       email: "marie.martin@hp.com",
       phone: "01 98 76 54 32",
       address: "2 avenue des Champs-Élysées, 75008 Paris",
+      commercialRegister: "",
     },
   ]);
 
