@@ -19,6 +19,7 @@ const equipmentTypes = [
 ] as const;
 
 const formSchema = z.object({
+  id: z.number().optional(),
   name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
   type: z.enum(equipmentTypes, {
     required_error: "Veuillez sélectionner un type d'équipement",
@@ -27,10 +28,18 @@ const formSchema = z.object({
   location: z.string().min(2, "L'emplacement doit contenir au moins 2 caractères"),
 });
 
-export function AddEquipmentForm({ onSubmit, onCancel }: { onSubmit: (values: z.infer<typeof formSchema>) => void, onCancel: () => void }) {
-  const form = useForm<z.infer<typeof formSchema>>({
+type FormData = z.infer<typeof formSchema>;
+
+interface AddEquipmentFormProps {
+  onSubmit: (values: FormData) => void;
+  onCancel: () => void;
+  initialData?: FormData;
+}
+
+export function AddEquipmentForm({ onSubmit, onCancel, initialData }: AddEquipmentFormProps) {
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       name: "",
       type: "Informatique",
       status: "En service",
@@ -129,7 +138,9 @@ export function AddEquipmentForm({ onSubmit, onCancel }: { onSubmit: (values: z.
           <Button type="button" variant="outline" onClick={onCancel}>
             Annuler
           </Button>
-          <Button type="submit">Ajouter l'équipement</Button>
+          <Button type="submit">
+            {initialData ? "Modifier l'équipement" : "Ajouter l'équipement"}
+          </Button>
         </div>
       </form>
     </Form>

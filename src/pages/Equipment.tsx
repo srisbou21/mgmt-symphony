@@ -8,47 +8,103 @@ import { EquipmentTable } from "@/components/equipment/EquipmentTable";
 import { AddEquipmentForm } from "@/components/equipment/AddEquipmentForm";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
-// Mock data - à remplacer par des données réelles plus tard
-const equipments = [
-  {
-    id: 1,
-    name: "Ordinateur portable Dell XPS",
-    type: "Informatique",
-    status: "En service",
-    location: "Bureau 201",
-    lastMaintenance: "2024-01-15",
-  },
-  {
-    id: 2,
-    name: "Imprimante HP LaserJet",
-    type: "Informatique",
-    status: "En maintenance",
-    location: "Salle de reprographie",
-    lastMaintenance: "2024-02-01",
-  },
-  {
-    id: 3,
-    name: "Bureau ergonomique",
-    type: "Mobilier",
-    status: "En service",
-    location: "Bureau 305",
-    lastMaintenance: "2023-12-10",
-  },
-];
+type Equipment = {
+  id: number;
+  name: string;
+  type: string;
+  status: string;
+  location: string;
+  lastMaintenance: string;
+};
 
 const Equipment = () => {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [equipmentToDelete, setEquipmentToDelete] = useState<number | null>(null);
+  const [equipmentToEdit, setEquipmentToEdit] = useState<Equipment | null>(null);
+  const [equipments, setEquipments] = useState<Equipment[]>([
+    {
+      id: 1,
+      name: "Ordinateur portable Dell XPS",
+      type: "Informatique",
+      status: "En service",
+      location: "Bureau 201",
+      lastMaintenance: "2024-01-15",
+    },
+    {
+      id: 2,
+      name: "Imprimante HP LaserJet",
+      type: "Informatique",
+      status: "En maintenance",
+      location: "Salle de reprographie",
+      lastMaintenance: "2024-02-01",
+    },
+    {
+      id: 3,
+      name: "Bureau ergonomique",
+      type: "Mobilier",
+      status: "En service",
+      location: "Bureau 305",
+      lastMaintenance: "2023-12-10",
+    },
+  ]);
 
-  const handleAddEquipment = (values: any) => {
-    // Simuler l'ajout d'un équipement
-    console.log("Nouvel équipement:", values);
+  const handleAddEquipment = (values: Omit<Equipment, "id" | "lastMaintenance">) => {
+    const newEquipment = {
+      ...values,
+      id: Math.max(0, ...equipments.map((e) => e.id)) + 1,
+      lastMaintenance: new Date().toISOString().split('T')[0],
+    };
+    setEquipments([...equipments, newEquipment]);
     toast({
       title: "Équipement ajouté",
       description: "L'équipement a été ajouté avec succès.",
     });
     setIsDialogOpen(false);
+  };
+
+  const handleEditEquipment = (values: Equipment) => {
+    setEquipments(equipments.map(eq => eq.id === values.id ? { ...values, lastMaintenance: eq.lastMaintenance } : eq));
+    toast({
+      title: "Équipement modifié",
+      description: "L'équipement a été modifié avec succès.",
+    });
+    setIsDialogOpen(false);
+    setEquipmentToEdit(null);
+  };
+
+  const handleDeleteEquipment = (id: number) => {
+    setEquipmentToDelete(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (equipmentToDelete) {
+      setEquipments(equipments.filter(eq => eq.id !== equipmentToDelete));
+      toast({
+        title: "Équipement supprimé",
+        description: "L'équipement a été supprimé avec succès.",
+      });
+    }
+    setIsDeleteDialogOpen(false);
+    setEquipmentToDelete(null);
+  };
+
+  const openEditDialog = (equipment: Equipment) => {
+    setEquipmentToEdit(equipment);
+    setIsDialogOpen(true);
   };
 
   return (
@@ -87,20 +143,49 @@ const Equipment = () => {
         </header>
 
         <Card className="overflow-hidden">
-          <EquipmentTable equipments={equipments} />
+          <EquipmentTable 
+            equipments={equipments} 
+            onEdit={openEditDialog}
+            onDelete={handleDeleteEquipment}
+          />
         </Card>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle>Ajouter un équipement</DialogTitle>
+              <DialogTitle>
+                {equipmentToEdit ? "Modifier l'équipement" : "Ajouter un équipement"}
+              </DialogTitle>
             </DialogHeader>
             <AddEquipmentForm 
-              onSubmit={handleAddEquipment}
-              onCancel={() => setIsDialogOpen(false)}
+              onSubmit={equipmentToEdit ? handleEditEquipment : handleAddEquipment}
+              onCancel={() => {
+                setIsDialogOpen(false);
+                setEquipmentToEdit(null);
+              }}
+              initialData={equipmentToEdit || undefined}
             />
           </DialogContent>
         </Dialog>
+
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Cette action ne peut pas être annulée. Cet équipement sera définitivement supprimé.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setIsDeleteDialogOpen(false)}>
+                Annuler
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDelete}>
+                Supprimer
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </motion.div>
     </div>
   );
