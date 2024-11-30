@@ -19,14 +19,19 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+type EquipmentType = "Informatique" | "Mobilier" | "Électroménager" | "Outillage" | "Véhicule" | "Matériel médical" | "Équipement sportif" | "Matériel audiovisuel";
+type EquipmentStatus = "En service" | "En maintenance";
+
 type Equipment = {
   id: number;
   name: string;
-  type: string;
-  status: string;
+  type: EquipmentType;
+  status: EquipmentStatus;
   location: string;
   lastMaintenance: string;
 };
+
+type FormData = Omit<Equipment, "id" | "lastMaintenance">;
 
 const Equipment = () => {
   const { toast } = useToast();
@@ -61,8 +66,8 @@ const Equipment = () => {
     },
   ]);
 
-  const handleAddEquipment = (values: Omit<Equipment, "id" | "lastMaintenance">) => {
-    const newEquipment = {
+  const handleAddEquipment = (values: FormData) => {
+    const newEquipment: Equipment = {
       ...values,
       id: Math.max(0, ...equipments.map((e) => e.id)) + 1,
       lastMaintenance: new Date().toISOString().split('T')[0],

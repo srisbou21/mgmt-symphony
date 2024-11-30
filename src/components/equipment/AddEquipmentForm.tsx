@@ -18,17 +18,26 @@ const equipmentTypes = [
   "Matériel audiovisuel"
 ] as const;
 
+type EquipmentType = typeof equipmentTypes[number];
+type EquipmentStatus = "En service" | "En maintenance";
+
+type FormData = {
+  id?: number;
+  name: string;
+  type: EquipmentType;
+  status: EquipmentStatus;
+  location: string;
+};
+
 const formSchema = z.object({
   id: z.number().optional(),
   name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
   type: z.enum(equipmentTypes, {
     required_error: "Veuillez sélectionner un type d'équipement",
   }),
-  status: z.enum(["En service", "En maintenance"]),
+  status: z.enum(["En service", "En maintenance"] as const),
   location: z.string().min(2, "L'emplacement doit contenir au moins 2 caractères"),
 });
-
-type FormData = z.infer<typeof formSchema>;
 
 interface AddEquipmentFormProps {
   onSubmit: (values: FormData) => void;
