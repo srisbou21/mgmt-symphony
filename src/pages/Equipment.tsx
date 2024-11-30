@@ -3,8 +3,11 @@ import { Package, Search, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { EquipmentTable } from "@/components/equipment/EquipmentTable";
+import { AddEquipmentForm } from "@/components/equipment/AddEquipmentForm";
 import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
 
 // Mock data - à remplacer par des données réelles plus tard
 const equipments = [
@@ -36,12 +39,16 @@ const equipments = [
 
 const Equipment = () => {
   const { toast } = useToast();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleAddEquipment = () => {
+  const handleAddEquipment = (values: any) => {
+    // Simuler l'ajout d'un équipement
+    console.log("Nouvel équipement:", values);
     toast({
-      title: "Fonctionnalité à venir",
-      description: "L'ajout d'équipement sera bientôt disponible.",
+      title: "Équipement ajouté",
+      description: "L'équipement a été ajouté avec succès.",
     });
+    setIsDialogOpen(false);
   };
 
   return (
@@ -61,7 +68,7 @@ const Equipment = () => {
             <h1 className="text-4xl font-bold text-dmg-dark">
               Équipements
             </h1>
-            <Button onClick={handleAddEquipment} className="gap-2">
+            <Button onClick={() => setIsDialogOpen(true)} className="gap-2">
               <Plus className="w-4 h-4" />
               Ajouter un équipement
             </Button>
@@ -82,6 +89,18 @@ const Equipment = () => {
         <Card className="overflow-hidden">
           <EquipmentTable equipments={equipments} />
         </Card>
+
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Ajouter un équipement</DialogTitle>
+            </DialogHeader>
+            <AddEquipmentForm 
+              onSubmit={handleAddEquipment}
+              onCancel={() => setIsDialogOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
       </motion.div>
     </div>
   );
