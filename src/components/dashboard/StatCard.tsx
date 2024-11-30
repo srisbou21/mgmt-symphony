@@ -16,6 +16,7 @@ interface StatCardProps {
   color: string;
   details: string;
   description: string;
+  link?: string;
 }
 
 export const StatCard = ({
@@ -27,7 +28,7 @@ export const StatCard = ({
   description,
 }: StatCardProps) => {
   return (
-    <Card className="p-6 card-hover">
+    <Card className="p-6 card-hover transition-all duration-200 hover:shadow-lg">
       <div className="flex items-center justify-between mb-4">
         <div className={`p-3 rounded-lg ${color}`}>
           <Icon className="w-6 h-6" />

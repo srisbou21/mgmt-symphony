@@ -9,6 +9,7 @@ import {
   Bell,
   BarChart3
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { ActivityCard } from "@/components/dashboard/ActivityCard";
 
@@ -48,7 +49,8 @@ const stats = [
     icon: Package,
     color: "bg-dmg-accent/10 text-dmg-accent",
     details: "Gestion des équipements et des stocks",
-    description: "Suivi des équipements, gestion des stocks, alertes de réapprovisionnement"
+    description: "Suivi des équipements, gestion des stocks, alertes de réapprovisionnement",
+    link: "/equipment"
   },
   {
     title: "Maintenance",
@@ -173,7 +175,9 @@ const Index = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <StatCard {...stat} />
+              <Link to={stat.link || "#"}>
+                <StatCard {...stat} />
+              </Link>
             </motion.div>
           ))}
         </div>
