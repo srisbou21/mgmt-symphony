@@ -2,32 +2,46 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Building2, Package, Wrench, Users } from "lucide-react";
 import { motion } from "framer-motion";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useState } from "react";
 
 const Index = () => {
+  const [selectedStat, setSelectedStat] = useState<string | null>(null);
+
   const stats = [
     {
       title: "Équipements",
       value: "1,234",
       icon: Package,
       color: "bg-dmg-accent/10 text-dmg-accent",
+      details: "Liste détaillée des équipements et leur statut actuel",
     },
     {
       title: "Maintenance",
       value: "56",
       icon: Wrench,
       color: "bg-green-100 text-green-600",
+      details: "Aperçu des maintenances en cours et planifiées",
     },
     {
       title: "Espaces",
       value: "89",
       icon: Building2,
       color: "bg-orange-100 text-orange-600",
+      details: "Vue d'ensemble des espaces et leur occupation",
     },
     {
       title: "Personnel",
       value: "45",
       icon: Users,
       color: "bg-blue-100 text-blue-600",
+      details: "Information sur le personnel et leurs affectations",
     },
   ];
 
@@ -61,18 +75,37 @@ const Index = () => {
             >
               <Card className="p-6 card-hover">
                 <div className="flex items-center justify-between mb-4">
-                  <div
-                    className={`p-3 rounded-lg ${stat.color}`}
-                  >
+                  <div className={`p-3 rounded-lg ${stat.color}`}>
                     <stat.icon className="w-6 h-6" />
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-dmg-muted hover:text-dmg-dark"
-                  >
-                    Voir plus
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-dmg-muted hover:text-dmg-dark button-hover"
+                      >
+                        Voir plus
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                          <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                          {stat.title}
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="py-4">
+                        <p className="text-dmg-muted">{stat.details}</p>
+                        <div className="mt-4">
+                          <h3 className="font-semibold mb-2">Statistiques</h3>
+                          <p className="text-2xl font-bold text-dmg-dark">
+                            {stat.value}
+                          </p>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
                 <h3 className="font-semibold text-dmg-muted mb-1">{stat.title}</h3>
                 <p className="text-2xl font-bold text-dmg-dark">{stat.value}</p>
