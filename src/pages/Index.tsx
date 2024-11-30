@@ -1,6 +1,15 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, Package, Wrench, Users } from "lucide-react";
+import { 
+  Building2, 
+  Package, 
+  Wrench, 
+  Users, 
+  FileText, 
+  Calendar,
+  Bell,
+  BarChart3
+} from "lucide-react";
 import { motion } from "framer-motion";
 import {
   Dialog,
@@ -20,29 +29,65 @@ const Index = () => {
       value: "1,234",
       icon: Package,
       color: "bg-dmg-accent/10 text-dmg-accent",
-      details: "Liste détaillée des équipements et leur statut actuel",
+      details: "Gestion des équipements et des stocks",
+      description: "Suivi des équipements, gestion des stocks, alertes de réapprovisionnement"
     },
     {
       title: "Maintenance",
       value: "56",
       icon: Wrench,
       color: "bg-green-100 text-green-600",
-      details: "Aperçu des maintenances en cours et planifiées",
+      details: "Suivi des maintenances",
+      description: "Maintenance préventive et curative, suivi des interventions"
     },
     {
       title: "Espaces",
       value: "89",
       icon: Building2,
       color: "bg-orange-100 text-orange-600",
-      details: "Vue d'ensemble des espaces et leur occupation",
+      details: "Gestion des espaces",
+      description: "Suivi et réservation des espaces, gestion de l'occupation"
     },
     {
       title: "Personnel",
       value: "45",
       icon: Users,
       color: "bg-blue-100 text-blue-600",
-      details: "Information sur le personnel et leurs affectations",
+      details: "Gestion du personnel",
+      description: "Plannings, congés, formations et certifications"
     },
+    {
+      title: "Contrats",
+      value: "23",
+      icon: FileText,
+      color: "bg-purple-100 text-purple-600",
+      details: "Gestion des contrats",
+      description: "Suivi des contrats et des fournisseurs, alertes de renouvellement"
+    },
+    {
+      title: "Planning",
+      value: "12",
+      icon: Calendar,
+      color: "bg-pink-100 text-pink-600",
+      details: "Planning et réservations",
+      description: "Réservation des salles, planning des interventions"
+    },
+    {
+      title: "Tickets",
+      value: "34",
+      icon: Bell,
+      color: "bg-yellow-100 text-yellow-600",
+      details: "Gestion des tickets",
+      description: "Suivi des demandes internes et des interventions"
+    },
+    {
+      title: "Rapports",
+      value: "8",
+      icon: BarChart3,
+      color: "bg-cyan-100 text-cyan-600",
+      details: "Rapports et analyses",
+      description: "Tableaux de bord, KPIs et génération de rapports"
+    }
   ];
 
   return (
@@ -61,7 +106,7 @@ const Index = () => {
             Bienvenue sur votre espace de gestion
           </h1>
           <p className="text-dmg-muted text-lg">
-            Gérez vos ressources et suivez vos indicateurs clés
+            Gérez efficacement vos ressources matérielles, logistiques et humaines
           </p>
         </header>
 
@@ -96,7 +141,7 @@ const Index = () => {
                         </DialogTitle>
                       </DialogHeader>
                       <div className="py-4">
-                        <p className="text-dmg-muted">{stat.details}</p>
+                        <p className="text-dmg-muted">{stat.description}</p>
                         <div className="mt-4">
                           <h3 className="font-semibold mb-2">Statistiques</h3>
                           <p className="text-2xl font-bold text-dmg-dark">
@@ -116,18 +161,34 @@ const Index = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card className="p-6 card-hover">
-            <h2 className="text-xl font-semibold mb-4">Demandes récentes</h2>
+            <h2 className="text-xl font-semibold mb-4">Tickets récents</h2>
             <div className="space-y-4">
-              {[1, 2, 3].map((_, i) => (
+              {[
+                {
+                  title: "Maintenance imprimante 3ème étage",
+                  time: "Il y a 2 heures",
+                  priority: "Urgent"
+                },
+                {
+                  title: "Réservation salle de réunion A",
+                  time: "Il y a 3 heures",
+                  priority: "Normal"
+                },
+                {
+                  title: "Demande de fournitures bureau",
+                  time: "Il y a 4 heures",
+                  priority: "Bas"
+                }
+              ].map((ticket, i) => (
                 <div
                   key={i}
                   className="flex items-center justify-between p-4 rounded-lg bg-white border"
                 >
                   <div>
                     <p className="font-medium text-dmg-dark">
-                      Maintenance imprimante
+                      {ticket.title}
                     </p>
-                    <p className="text-sm text-dmg-muted">Il y a 2 heures</p>
+                    <p className="text-sm text-dmg-muted">{ticket.time}</p>
                   </div>
                   <Button size="sm" variant="outline">
                     Traiter
@@ -138,18 +199,34 @@ const Index = () => {
           </Card>
 
           <Card className="p-6 card-hover">
-            <h2 className="text-xl font-semibold mb-4">Stocks faibles</h2>
+            <h2 className="text-xl font-semibold mb-4">Alertes stocks</h2>
             <div className="space-y-4">
-              {[1, 2, 3].map((_, i) => (
+              {[
+                {
+                  item: "Papier A4",
+                  stock: "5 ramettes restantes",
+                  status: "Critique"
+                },
+                {
+                  item: "Cartouches d'encre",
+                  stock: "3 unités restantes",
+                  status: "Faible"
+                },
+                {
+                  item: "Fournitures bureau",
+                  stock: "Stock à 15%",
+                  status: "À surveiller"
+                }
+              ].map((alert, i) => (
                 <div
                   key={i}
                   className="flex items-center justify-between p-4 rounded-lg bg-white border"
                 >
                   <div>
                     <p className="font-medium text-dmg-dark">
-                      Papier A4
+                      {alert.item}
                     </p>
-                    <p className="text-sm text-dmg-muted">5 ramettes restantes</p>
+                    <p className="text-sm text-dmg-muted">{alert.stock}</p>
                   </div>
                   <Button size="sm" variant="outline">
                     Commander
