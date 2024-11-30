@@ -12,6 +12,35 @@ import {
 import { StatCard } from "@/components/dashboard/StatCard";
 import { ActivityCard } from "@/components/dashboard/ActivityCard";
 
+// Mock user role for demonstration
+const userRole = "admin"; // This would come from auth context in the future
+
+const getUserTitle = (role: string) => {
+  switch (role) {
+    case "admin":
+      return "Directeur des Moyens Généraux";
+    case "maintenance":
+      return "Équipe de Maintenance";
+    case "admin_staff":
+      return "Personnel Administratif";
+    default:
+      return "Utilisateur";
+  }
+};
+
+const getUserWelcomeMessage = (role: string) => {
+  switch (role) {
+    case "admin":
+      return "Gérez efficacement l'ensemble des ressources matérielles, logistiques et humaines";
+    case "maintenance":
+      return "Suivez les interventions de maintenance et gérez les équipements";
+    case "admin_staff":
+      return "Gérez les stocks et traitez les demandes internes";
+    default:
+      return "Bienvenue sur votre espace de gestion";
+  }
+};
+
 const stats = [
   {
     title: "Équipements",
@@ -126,13 +155,13 @@ const Index = () => {
       >
         <header className="mb-12">
           <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-dmg-accent/10 text-dmg-accent text-sm font-medium mb-4">
-            Dashboard DMG
+            {getUserTitle(userRole)}
           </div>
           <h1 className="text-4xl font-bold text-dmg-dark mb-2">
             Bienvenue sur votre espace de gestion
           </h1>
           <p className="text-dmg-muted text-lg">
-            Gérez efficacement vos ressources matérielles, logistiques et humaines
+            {getUserWelcomeMessage(userRole)}
           </p>
         </header>
 
