@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, Package, Tool, Users } from "lucide-react";
+import { Building2, Package, Wrench, Users } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Index = () => {
@@ -14,7 +14,7 @@ const Index = () => {
     {
       title: "Maintenance",
       value: "56",
-      icon: Tool,
+      icon: Wrench,
       color: "bg-green-100 text-green-600",
     },
     {
