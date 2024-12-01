@@ -1,24 +1,12 @@
 import { motion } from "framer-motion";
-import { Package, Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { EquipmentTable } from "@/components/equipment/EquipmentTable";
-import { AddEquipmentForm } from "@/components/equipment/AddEquipmentForm";
-import { EquipmentFilters } from "@/components/equipment/EquipmentFilters";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import type { Equipment } from "@/types/equipment";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { EquipmentTable } from "@/components/equipment/EquipmentTable";
+import { EquipmentFilters } from "@/components/equipment/EquipmentFilters";
+import { EquipmentHeader } from "@/components/equipment/EquipmentHeader";
+import { EquipmentDialogs } from "@/components/equipment/EquipmentDialogs";
 
 const Equipment = () => {
   const { toast } = useToast();
@@ -81,7 +69,7 @@ const Equipment = () => {
 
   const filteredEquipments = equipments.filter(equipment => {
     return Object.entries(filters).every(([key, value]) => {
-      if (!value) return true;
+      if (!value || value === "_all") return true;
       const equipmentValue = equipment[key as keyof Equipment];
       return String(equipmentValue).toLowerCase().includes(String(value).toLowerCase());
     });
@@ -159,27 +147,9 @@ const Equipment = () => {
         transition={{ duration: 0.5 }}
         className="max-w-7xl mx-auto"
       >
-        <header className="mb-8">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-dmg-accent/10 text-dmg-accent text-sm font-medium mb-4">
-            <Package className="w-4 h-4 mr-2" />
-            Gestion des équipements
-          </div>
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-4xl font-bold text-dmg-dark">
-              Équipements
-            </h1>
-            <Button onClick={() => setIsDialogOpen(true)} className="gap-2">
-              <Plus className="w-4 h-4" />
-              Ajouter un équipement
-            </Button>
-          </div>
-          <p className="text-dmg-muted text-lg mb-6">
-            Gérez et suivez tous vos équipements
-          </p>
-
-          <EquipmentFilters filters={filters} onFilterChange={handleFilterChange} />
-        </header>
-
+        <EquipmentHeader onAddClick={() => setIsDialogOpen(true)} />
+        <EquipmentFilters filters={filters} onFilterChange={handleFilterChange} />
+        
         <Card className="overflow-hidden">
           <EquipmentTable 
             equipments={filteredEquipments} 
@@ -188,42 +158,19 @@ const Equipment = () => {
           />
         </Card>
 
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>
-                {equipmentToEdit ? "Modifier l'équipement" : "Ajouter un équipement"}
-              </DialogTitle>
-            </DialogHeader>
-            <AddEquipmentForm 
-              onSubmit={equipmentToEdit ? handleEditEquipment : handleAddEquipment}
-              onCancel={() => {
-                setIsDialogOpen(false);
-                setEquipmentToEdit(null);
-              }}
-              initialData={equipmentToEdit || undefined}
-            />
-          </DialogContent>
-        </Dialog>
-
-        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Cette action ne peut pas être annulée. Cet équipement sera définitivement supprimé.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setIsDeleteDialogOpen(false)}>
-                Annuler
-              </AlertDialogCancel>
-              <AlertDialogAction onClick={confirmDelete}>
-                Supprimer
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <EquipmentDialogs 
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+          isDeleteDialogOpen={isDeleteDialogOpen}
+          setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+          equipmentToEdit={equipmentToEdit}
+          onSubmit={equipmentToEdit ? handleEditEquipment : handleAddEquipment}
+          onCancel={() => {
+            setIsDialogOpen(false);
+            setEquipmentToEdit(null);
+          }}
+          onConfirmDelete={confirmDelete}
+        />
       </motion.div>
     </div>
   );
