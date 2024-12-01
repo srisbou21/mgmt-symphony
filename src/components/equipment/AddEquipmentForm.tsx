@@ -6,6 +6,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Equipment, EquipmentType } from "@/types/equipment";
 
 const equipmentTypes = [
   "Informatique",
@@ -18,18 +20,6 @@ const equipmentTypes = [
   "Matériel audiovisuel"
 ] as const;
 
-type EquipmentType = typeof equipmentTypes[number];
-type EquipmentStatus = "En service" | "En maintenance";
-
-type FormData = {
-  id?: number;
-  name: string;
-  type: EquipmentType;
-  status: EquipmentStatus;
-  location: string;
-  supplier?: string;
-};
-
 const formSchema = z.object({
   id: z.number().optional(),
   name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
@@ -39,12 +29,19 @@ const formSchema = z.object({
   status: z.enum(["En service", "En maintenance"] as const),
   location: z.string().min(2, "L'emplacement doit contenir au moins 2 caractères"),
   supplier: z.string().optional(),
+  serialNumber: z.string().min(1, "Le numéro de série est requis"),
+  inventoryNumber: z.string().min(1, "Le numéro d'inventaire est requis"),
+  observation: z.string().optional(),
+  availableQuantity: z.number().min(0, "La quantité ne peut pas être négative"),
+  minQuantity: z.number().min(0, "La quantité minimale ne peut pas être négative"),
 });
+
+type FormData = z.infer<typeof formSchema>;
 
 interface AddEquipmentFormProps {
   onSubmit: (values: FormData) => void;
   onCancel: () => void;
-  initialData?: FormData;
+  initialData?: Equipment;
 }
 
 export function AddEquipmentForm({ onSubmit, onCancel, initialData }: AddEquipmentFormProps) {
@@ -56,6 +53,11 @@ export function AddEquipmentForm({ onSubmit, onCancel, initialData }: AddEquipme
       status: "En service",
       location: "",
       supplier: "",
+      serialNumber: "",
+      inventoryNumber: "",
+      observation: "",
+      availableQuantity: 0,
+      minQuantity: 0,
     },
   });
 
@@ -100,6 +102,36 @@ export function AddEquipmentForm({ onSubmit, onCancel, initialData }: AddEquipme
             </FormItem>
           )}
         />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="serialNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>N° Série</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: XPS-2024-001" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="inventoryNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>N° Inventaire</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: INV-2024-001" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}
@@ -146,6 +178,46 @@ export function AddEquipmentForm({ onSubmit, onCancel, initialData }: AddEquipme
           )}
         />
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="availableQuantity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Quantité disponible</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    min="0"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="minQuantity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Quantité minimale (Alerte)</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number"
+                    min="0"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         <FormField
           control={form.control}
           name="supplier"
@@ -154,6 +226,24 @@ export function AddEquipmentForm({ onSubmit, onCancel, initialData }: AddEquipme
               <FormLabel>Fournisseur</FormLabel>
               <FormControl>
                 <Input placeholder="Ex: Dell" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="observation"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Observation</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Ajoutez vos observations ici..."
+                  className="resize-none"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

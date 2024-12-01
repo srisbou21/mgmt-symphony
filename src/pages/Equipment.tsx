@@ -1,13 +1,14 @@
 import { motion } from "framer-motion";
 import { Package, Search, Plus } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { EquipmentTable } from "@/components/equipment/EquipmentTable";
 import { AddEquipmentForm } from "@/components/equipment/AddEquipmentForm";
+import { EquipmentFilters } from "@/components/equipment/EquipmentFilters";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
+import { Equipment } from "@/types/equipment";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,27 +20,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-type EquipmentType = "Informatique" | "Mobilier" | "Électroménager" | "Outillage" | "Véhicule" | "Matériel médical" | "Équipement sportif" | "Matériel audiovisuel";
-type EquipmentStatus = "En service" | "En maintenance";
-
-type Equipment = {
-  id: number;
-  name: string;
-  type: EquipmentType;
-  status: EquipmentStatus;
-  location: string;
-  lastMaintenance: string;
-  supplier?: string;
-};
-
-type FormData = Omit<Equipment, "id" | "lastMaintenance">;
-
 const Equipment = () => {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [equipmentToDelete, setEquipmentToDelete] = useState<number | null>(null);
   const [equipmentToEdit, setEquipmentToEdit] = useState<Equipment | null>(null);
+  const [filters, setFilters] = useState<Partial<Equipment>>({});
   const [equipments, setEquipments] = useState<Equipment[]>([
     {
       id: 1,
@@ -49,6 +36,11 @@ const Equipment = () => {
       location: "Bureau 201",
       lastMaintenance: "2024-01-15",
       supplier: "Dell",
+      serialNumber: "XPS-2024-001",
+      inventoryNumber: "INV-2024-001",
+      observation: "RAS",
+      availableQuantity: 5,
+      minQuantity: 2,
     },
     {
       id: 2,
@@ -70,13 +62,37 @@ const Equipment = () => {
     },
   ]);
 
-  const handleAddEquipment = (values: FormData) => {
+  const handleFilterChange = (key: keyof Equipment, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  const filteredEquipments = equipments.filter(equipment => {
+    return Object.entries(filters).every(([key, value]) => {
+      if (!value) return true;
+      const equipmentValue = equipment[key as keyof Equipment];
+      return String(equipmentValue).toLowerCase().includes(String(value).toLowerCase());
+    });
+  });
+
+  const handleAddEquipment = (values: Omit<Equipment, "id" | "lastMaintenance">) => {
     const newEquipment: Equipment = {
       ...values,
       id: Math.max(0, ...equipments.map((e) => e.id)) + 1,
       lastMaintenance: new Date().toISOString().split('T')[0],
     };
     setEquipments([...equipments, newEquipment]);
+    
+    if (newEquipment.availableQuantity <= newEquipment.minQuantity) {
+      toast({
+        title: "Alerte stock",
+        description: `Le stock de ${newEquipment.name} est bas (${newEquipment.availableQuantity}/${newEquipment.minQuantity})`,
+        variant: "destructive",
+      });
+    }
+    
     toast({
       title: "Équipement ajouté",
       description: "L'équipement a été ajouté avec succès.",
@@ -86,6 +102,15 @@ const Equipment = () => {
 
   const handleEditEquipment = (values: Equipment) => {
     setEquipments(equipments.map(eq => eq.id === values.id ? { ...values, lastMaintenance: eq.lastMaintenance } : eq));
+    
+    if (values.availableQuantity <= values.minQuantity) {
+      toast({
+        title: "Alerte stock",
+        description: `Le stock de ${values.name} est bas (${values.availableQuantity}/${values.minQuantity})`,
+        variant: "destructive",
+      });
+    }
+    
     toast({
       title: "Équipement modifié",
       description: "L'équipement a été modifié avec succès.",
@@ -142,18 +167,12 @@ const Equipment = () => {
             Gérez et suivez tous vos équipements
           </p>
 
-          <div className="relative mb-6">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dmg-muted" />
-            <Input
-              placeholder="Rechercher un équipement..."
-              className="pl-10"
-            />
-          </div>
+          <EquipmentFilters filters={filters} onFilterChange={handleFilterChange} />
         </header>
 
         <Card className="overflow-hidden">
           <EquipmentTable 
-            equipments={equipments} 
+            equipments={filteredEquipments} 
             onEdit={openEditDialog}
             onDelete={handleDeleteEquipment}
           />
