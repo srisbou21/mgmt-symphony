@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Package, Search, Plus } from "lucide-react";
+import { Package, Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -8,7 +8,7 @@ import { AddEquipmentForm } from "@/components/equipment/AddEquipmentForm";
 import { EquipmentFilters } from "@/components/equipment/EquipmentFilters";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
-import { Equipment } from "@/types/equipment";
+import type { Equipment } from "@/types/equipment";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -50,6 +50,11 @@ const Equipment = () => {
       location: "Salle de reprographie",
       lastMaintenance: "2024-02-01",
       supplier: "HP",
+      serialNumber: "HP-2024-001",
+      inventoryNumber: "INV-2024-002",
+      observation: "",
+      availableQuantity: 1,
+      minQuantity: 1,
     },
     {
       id: 3,
@@ -59,6 +64,11 @@ const Equipment = () => {
       location: "Bureau 305",
       lastMaintenance: "2023-12-10",
       supplier: "Steelcase",
+      serialNumber: "ST-2023-001",
+      inventoryNumber: "INV-2023-001",
+      observation: "",
+      availableQuantity: 3,
+      minQuantity: 2,
     },
   ]);
 

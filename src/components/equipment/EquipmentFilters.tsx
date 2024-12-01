@@ -27,14 +27,14 @@ export const EquipmentFilters = ({ filters, onFilterChange }: EquipmentFiltersPr
         onChange={(e) => onFilterChange("name", e.target.value)}
       />
       <Select
-        value={filters.type || ""}
+        value={filters.type || undefined}
         onValueChange={(value) => onFilterChange("type", value)}
       >
         <SelectTrigger>
           <SelectValue placeholder="Type d'équipement" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">Tous les types</SelectItem>
+          <SelectItem value="_all">Tous les types</SelectItem>
           {equipmentTypes.map((type) => (
             <SelectItem key={type} value={type}>
               {type}
