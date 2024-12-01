@@ -14,6 +14,14 @@ export type Equipment = {
   observation?: string;
   availableQuantity: number;
   minQuantity: number;
+  maintenanceReason?: string;
+  maintenanceStartDate?: string;
+  maintenanceEndDate?: string;
 };
 
-export type FormData = Omit<Equipment, "id" | "lastMaintenance">;
+export type MaintenanceFormData = {
+  equipmentId: number;
+  maintenanceReason: string;
+  maintenanceStartDate: string;
+  maintenanceEndDate?: string;
+};

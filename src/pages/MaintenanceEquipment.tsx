@@ -1,15 +1,57 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Package, Plus, Printer } from "lucide-react";
+import { Package, Plus, Printer, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { Equipment } from "@/types/equipment";
+import { Equipment, MaintenanceFormData } from "@/types/equipment";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { AddMaintenanceForm } from "@/components/maintenance/AddMaintenanceForm";
 
 const MaintenanceEquipment = () => {
   const { toast } = useToast();
   const [maintenanceEquipments, setMaintenanceEquipments] = useState<Equipment[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
+
+  const handleAddMaintenance = (values: MaintenanceFormData) => {
+    const updatedEquipment: Equipment = {
+      ...selectedEquipment!,
+      status: "En maintenance",
+      maintenanceReason: values.maintenanceReason,
+      maintenanceStartDate: values.maintenanceStartDate,
+      maintenanceEndDate: values.maintenanceEndDate,
+    };
+
+    setMaintenanceEquipments([...maintenanceEquipments, updatedEquipment]);
+    setIsDialogOpen(false);
+    setSelectedEquipment(null);
+
+    toast({
+      title: "Maintenance ajoutée",
+      description: "L'équipement a été mis en maintenance avec succès.",
+    });
+  };
+
+  const handleDeleteMaintenance = (equipment: Equipment) => {
+    setSelectedEquipment(equipment);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (selectedEquipment) {
+      setMaintenanceEquipments(maintenanceEquipments.filter(eq => eq.id !== selectedEquipment.id));
+      toast({
+        title: "Maintenance terminée",
+        description: "L'équipement a été retiré de la maintenance avec succès.",
+      });
+    }
+    setIsDeleteDialogOpen(false);
+    setSelectedEquipment(null);
+  };
 
   const handlePrint = () => {
     const printWindow = window.open('', '_blank');
@@ -31,8 +73,9 @@ const MaintenanceEquipment = () => {
                     <th class="border p-2">N° Série</th>
                     <th class="border p-2">N° Inventaire</th>
                     <th class="border p-2">Emplacement</th>
-                    <th class="border p-2">Date début maintenance</th>
-                    <th class="border p-2">Observation</th>
+                    <th class="border p-2">Date début</th>
+                    <th class="border p-2">Date fin prévue</th>
+                    <th class="border p-2">Raison</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -43,12 +86,17 @@ const MaintenanceEquipment = () => {
                       <td class="border p-2">${equipment.serialNumber}</td>
                       <td class="border p-2">${equipment.inventoryNumber}</td>
                       <td class="border p-2">${equipment.location}</td>
-                      <td class="border p-2">${equipment.lastMaintenance}</td>
-                      <td class="border p-2">${equipment.observation || '-'}</td>
+                      <td class="border p-2">${equipment.maintenanceStartDate || '-'}</td>
+                      <td class="border p-2">${equipment.maintenanceEndDate || '-'}</td>
+                      <td class="border p-2">${equipment.maintenanceReason || '-'}</td>
                     </tr>
                   `).join('')}
                 </tbody>
               </table>
+              <div class="mt-8 text-right">
+                <p>Signature :</p>
+                <div class="mt-4 border-t border-gray-300 w-48 ml-auto"></div>
+              </div>
             </div>
             <script>
               window.onload = () => window.print();
@@ -78,6 +126,10 @@ const MaintenanceEquipment = () => {
               Maintenance
             </h1>
             <div className="space-x-4">
+              <Button onClick={() => setIsDialogOpen(true)} className="gap-2">
+                <Plus className="w-4 h-4" />
+                Ajouter
+              </Button>
               <Button onClick={handlePrint} variant="outline" className="gap-2">
                 <Printer className="w-4 h-4" />
                 Imprimer
@@ -98,8 +150,10 @@ const MaintenanceEquipment = () => {
                 <TableHead>N° Série</TableHead>
                 <TableHead>N° Inventaire</TableHead>
                 <TableHead>Emplacement</TableHead>
-                <TableHead>Date début maintenance</TableHead>
-                <TableHead>Observation</TableHead>
+                <TableHead>Date début</TableHead>
+                <TableHead>Date fin prévue</TableHead>
+                <TableHead>Raison</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -110,13 +164,61 @@ const MaintenanceEquipment = () => {
                   <TableCell>{equipment.serialNumber}</TableCell>
                   <TableCell>{equipment.inventoryNumber}</TableCell>
                   <TableCell>{equipment.location}</TableCell>
-                  <TableCell>{equipment.lastMaintenance}</TableCell>
-                  <TableCell>{equipment.observation || "-"}</TableCell>
+                  <TableCell>{equipment.maintenanceStartDate || '-'}</TableCell>
+                  <TableCell>{equipment.maintenanceEndDate || '-'}</TableCell>
+                  <TableCell>{equipment.maintenanceReason || '-'}</TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteMaintenance(equipment)}
+                      className="hover:bg-red-100"
+                    >
+                      <Trash2 className="h-4 w-4 text-red-600" />
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </Card>
+
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Ajouter une maintenance</DialogTitle>
+            </DialogHeader>
+            {selectedEquipment && (
+              <AddMaintenanceForm 
+                onSubmit={handleAddMaintenance}
+                onCancel={() => {
+                  setIsDialogOpen(false);
+                  setSelectedEquipment(null);
+                }}
+                equipmentId={selectedEquipment.id}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Terminer la maintenance ?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Cet équipement sera retiré de la liste des maintenances. Cette action ne peut pas être annulée.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setIsDeleteDialogOpen(false)}>
+                Annuler
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDelete}>
+                Confirmer
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </motion.div>
     </div>
   );
