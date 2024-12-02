@@ -47,6 +47,7 @@ const MaintenanceEquipment = () => {
       maintenanceReason: values.maintenanceReason,
       maintenanceStartDate: values.maintenanceStartDate,
       maintenanceEndDate: values.maintenanceEndDate,
+      location: values.location,
     };
 
     setMaintenanceEquipments([...maintenanceEquipments, updatedEquipment]);
@@ -225,6 +226,7 @@ const MaintenanceEquipment = () => {
                   setSelectedEquipment(null);
                 }}
                 equipmentId={selectedEquipment.id}
+                locations={locations}
               />
             )}
           </DialogContent>
@@ -254,4 +256,3 @@ const MaintenanceEquipment = () => {
 };
 
 export default MaintenanceEquipment;
-

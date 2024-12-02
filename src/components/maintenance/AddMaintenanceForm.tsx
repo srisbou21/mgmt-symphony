@@ -6,7 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Equipment, Location } from "@/types/equipment";
+import { Location } from "@/types/equipment";
 import { MaintenanceFormData } from "@/types/maintenance";
 
 const formSchema = z.object({
@@ -30,7 +30,7 @@ export function AddMaintenanceForm({ onSubmit, onCancel, equipmentId, locations,
   const form = useForm<MaintenanceFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
-      equipmentId: equipmentId,
+      equipmentId,
       maintenanceReason: "",
       maintenanceStartDate: new Date().toISOString().split('T')[0],
       maintenanceEndDate: "",

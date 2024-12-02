@@ -4,4 +4,5 @@ export type MaintenanceFormData = {
   maintenanceStartDate: string;
   maintenanceEndDate?: string;
   notes?: string;
+  location: string;
 };
