@@ -12,5 +12,6 @@ export interface Discharge {
   staffName?: string;
   equipmentName?: string;
   category?: "Matériel" | "Consommable";
-  attachedFile?: string; // New field for file attachment
+  attachedFile?: string;
+  destination?: string;
 }
