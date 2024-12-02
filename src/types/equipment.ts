@@ -9,6 +9,7 @@ export interface Equipment {
   category: EquipmentCategory;
   status: EquipmentStatus;
   location: string;
+  service?: string;
   lastMaintenance: string;
   supplier?: string;
   serialNumber: string;
@@ -19,4 +20,19 @@ export interface Equipment {
   maintenanceReason?: string;
   maintenanceStartDate?: string;
   maintenanceEndDate?: string;
+}
+
+export interface Location {
+  id: number;
+  name: string;
+  description?: string;
+}
+
+export interface MaintenanceFormData {
+  id?: number;
+  equipmentId: number;
+  startDate: string;
+  endDate?: string;
+  reason: string;
+  notes?: string;
 }
