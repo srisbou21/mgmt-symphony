@@ -16,9 +16,10 @@ const equipmentTypes = [
 interface EquipmentFiltersProps {
   filters: Partial<Equipment>;
   onFilterChange: (key: keyof Equipment, value: string) => void;
+  locations: { id: number; name: string }[];
 }
 
-export const EquipmentFilters = ({ filters, onFilterChange }: EquipmentFiltersProps) => {
+export const EquipmentFilters = ({ filters, onFilterChange, locations }: EquipmentFiltersProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
       <Input
@@ -52,16 +53,22 @@ export const EquipmentFilters = ({ filters, onFilterChange }: EquipmentFiltersPr
         value={filters.inventoryNumber || ""}
         onChange={(e) => onFilterChange("inventoryNumber", e.target.value)}
       />
-      <Input
-        placeholder="Emplacement..."
-        value={filters.location || ""}
-        onChange={(e) => onFilterChange("location", e.target.value)}
-      />
-      <Input
-        placeholder="Fournisseur..."
-        value={filters.supplier || ""}
-        onChange={(e) => onFilterChange("supplier", e.target.value)}
-      />
+      <Select
+        value={filters.location || "all"}
+        onValueChange={(value) => onFilterChange("location", value)}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Emplacement" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Tous les emplacements</SelectItem>
+          {locations.map((location) => (
+            <SelectItem key={location.id} value={location.name}>
+              {location.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 };

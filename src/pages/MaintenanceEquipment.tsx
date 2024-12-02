@@ -4,11 +4,12 @@ import { Package, Plus, Printer, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { Equipment, MaintenanceFormData } from "@/types/equipment";
+import { Equipment } from "@/types/equipment";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { AddMaintenanceForm } from "@/components/maintenance/AddMaintenanceForm";
+import { MaintenanceFilters } from "@/components/maintenance/MaintenanceFilters";
 
 const MaintenanceEquipment = () => {
   const { toast } = useToast();
@@ -16,6 +17,27 @@ const MaintenanceEquipment = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
+  const [filters, setFilters] = useState({
+    inventoryNumber: "",
+    location: "all",
+  });
+  const [locations] = useState([
+    { id: 1, name: "Bureau 201" },
+    { id: 2, name: "Salle de réunion" },
+    { id: 3, name: "Atelier" },
+  ]);
+
+  const handleFilterChange = (key: string, value: string) => {
+    setFilters({ ...filters, [key]: value });
+  };
+
+  const filteredEquipments = maintenanceEquipments.filter((equipment) => {
+    const matchInventoryNumber = !filters.inventoryNumber || 
+      equipment.inventoryNumber.toLowerCase().includes(filters.inventoryNumber.toLowerCase());
+    const matchLocation = filters.location === "all" || 
+      equipment.location === filters.location;
+    return matchInventoryNumber && matchLocation;
+  });
 
   const handleAddMaintenance = (values: MaintenanceFormData) => {
     const updatedEquipment: Equipment = {
@@ -141,6 +163,12 @@ const MaintenanceEquipment = () => {
           </p>
         </header>
 
+        <MaintenanceFilters 
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          locations={locations}
+        />
+
         <Card className="overflow-hidden">
           <Table>
             <TableHeader>
@@ -157,7 +185,7 @@ const MaintenanceEquipment = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {maintenanceEquipments.map((equipment) => (
+              {filteredEquipments.map((equipment) => (
                 <TableRow key={equipment.id}>
                   <TableCell className="font-medium">{equipment.name}</TableCell>
                   <TableCell>{equipment.type}</TableCell>

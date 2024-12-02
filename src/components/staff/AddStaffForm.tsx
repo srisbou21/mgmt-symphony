@@ -4,7 +4,9 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Staff } from "@/types/staff";
+import { Service } from "@/types/service";
 
 const formSchema = z.object({
   id: z.number().optional(),
@@ -22,9 +24,10 @@ interface AddStaffFormProps {
   onSubmit: (values: FormData) => void;
   onCancel: () => void;
   initialData?: Staff;
+  services: Service[];
 }
 
-export function AddStaffForm({ onSubmit, onCancel, initialData }: AddStaffFormProps) {
+export function AddStaffForm({ onSubmit, onCancel, initialData, services }: AddStaffFormProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
@@ -77,9 +80,20 @@ export function AddStaffForm({ onSubmit, onCancel, initialData }: AddStaffFormPr
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Service</FormLabel>
-                <FormControl>
-                  <Input placeholder="Informatique" {...field} />
-                </FormControl>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner un service" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {services.map((service) => (
+                      <SelectItem key={service.id} value={service.name}>
+                        {service.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
