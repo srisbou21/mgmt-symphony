@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Equipment } from "@/types/equipment";
+import type { Equipment } from "@/types/equipment";
 import { EquipmentHeader } from "@/components/equipment/EquipmentHeader";
 import { EquipmentTable } from "@/components/equipment/EquipmentTable";
 import { EquipmentDialogs } from "@/components/equipment/EquipmentDialogs";
@@ -13,6 +13,11 @@ const Equipment = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [equipmentToDelete, setEquipmentToDelete] = useState<number | null>(null);
   const [equipmentToEdit, setEquipmentToEdit] = useState<Equipment | null>(null);
+  const [suppliers] = useState([
+    { id: 1, name: "Dell" },
+    { id: 2, name: "HP" },
+    { id: 3, name: "Office Pro" }
+  ]);
   const [equipments, setEquipments] = useState<Equipment[]>([
     {
       id: 1,
@@ -130,7 +135,7 @@ const Equipment = () => {
             setEquipmentToEdit(null);
           }}
           onConfirmDelete={handleDelete}
-          suppliers={[]}
+          suppliers={suppliers}
         />
       </motion.div>
     </div>

@@ -12,6 +12,7 @@ interface EquipmentDialogsProps {
   onSubmit: (values: any) => void;
   onCancel: () => void;
   onConfirmDelete: () => void;
+  suppliers: Array<{ id: number; name: string }>;
 }
 
 export const EquipmentDialogs = ({
@@ -22,7 +23,8 @@ export const EquipmentDialogs = ({
   equipmentToEdit,
   onSubmit,
   onCancel,
-  onConfirmDelete
+  onConfirmDelete,
+  suppliers
 }: EquipmentDialogsProps) => {
   return (
     <>
@@ -37,6 +39,7 @@ export const EquipmentDialogs = ({
             onSubmit={onSubmit}
             onCancel={onCancel}
             initialData={equipmentToEdit || undefined}
+            suppliers={suppliers}
           />
         </DialogContent>
       </Dialog>

@@ -12,6 +12,7 @@ const formSchema = z.object({
   maintenanceReason: z.string().min(2, "La raison doit contenir au moins 2 caractères"),
   maintenanceStartDate: z.string(),
   maintenanceEndDate: z.string().optional(),
+  notes: z.string().optional(),
 });
 
 interface AddMaintenanceFormProps {
@@ -27,6 +28,8 @@ export function AddMaintenanceForm({ onSubmit, onCancel, equipmentId }: AddMaint
       equipmentId: equipmentId,
       maintenanceReason: "",
       maintenanceStartDate: new Date().toISOString().split('T')[0],
+      maintenanceEndDate: "",
+      notes: "",
     },
   });
 
