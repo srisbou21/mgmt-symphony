@@ -2,7 +2,7 @@ export type EquipmentType = "Informatique" | "Mobilier" | "Électroménager" | "
 export type EquipmentStatus = "En service" | "En maintenance" | "Déchargé";
 export type EquipmentCategory = "Consommable" | "Matériel";
 
-export type Equipment = {
+export interface Equipment {
   id: number;
   name: string;
   type: EquipmentType;
@@ -19,19 +19,4 @@ export type Equipment = {
   maintenanceReason?: string;
   maintenanceStartDate?: string;
   maintenanceEndDate?: string;
-};
-
-export type MaintenanceFormData = {
-  equipmentId: number;
-  maintenanceReason: string;
-  maintenanceStartDate: string;
-  maintenanceEndDate?: string;
-};
-
-export type Location = {
-  id: number;
-  name: string;
-  description?: string;
-  building?: string;
-  floor?: string;
-};
+}

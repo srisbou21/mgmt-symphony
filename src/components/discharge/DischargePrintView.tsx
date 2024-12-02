@@ -7,9 +7,13 @@ interface DischargePrintViewProps {
 }
 
 export const DischargePrintView = ({ discharge, staffName, equipmentName }: DischargePrintViewProps) => {
+  const isEquipment = discharge.category === "Matériel";
+
   return (
     <div className="p-8 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6 text-center">Bon de Décharge</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center">
+        Bon de Décharge - {discharge.category}
+      </h1>
       
       <div className="mb-8">
         <p className="mb-2">Date: {new Date(discharge.date).toLocaleDateString()}</p>
@@ -24,14 +28,14 @@ export const DischargePrintView = ({ discharge, staffName, equipmentName }: Disc
             <p>{staffName}</p>
           </div>
           <div>
-            <p className="font-medium">Équipement/Consommable:</p>
+            <p className="font-medium">{isEquipment ? "Équipement" : "Consommable"}:</p>
             <p>{equipmentName}</p>
           </div>
           <div>
             <p className="font-medium">Quantité:</p>
             <p>{discharge.quantity}</p>
           </div>
-          {discharge.type === "Équipement" && (
+          {isEquipment && (
             <>
               <div>
                 <p className="font-medium">N° Série:</p>

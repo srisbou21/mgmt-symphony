@@ -1,15 +1,33 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Package, Plus, Printer } from "lucide-react";
+import { Package, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Equipment } from "@/types/equipment";
+import { InventoryFilters } from "@/components/inventory/InventoryFilters";
 
 const Inventory = () => {
-  const { toast } = useToast();
   const [inventoryItems, setInventoryItems] = useState<Equipment[]>([]);
+  const [filters, setFilters] = useState({
+    name: "",
+    location: "",
+    category: "",
+    type: "",
+  });
+
+  const handleFilterChange = (key: string, value: string) => {
+    setFilters({ ...filters, [key]: value });
+  };
+
+  const filteredItems = inventoryItems.filter((item) => {
+    return (
+      (!filters.name || item.name.toLowerCase().includes(filters.name.toLowerCase())) &&
+      (!filters.location || item.location.toLowerCase().includes(filters.location.toLowerCase())) &&
+      (!filters.category || item.category === filters.category) &&
+      (!filters.type || item.type === filters.type)
+    );
+  });
 
   const handlePrint = () => {
     const printWindow = window.open('', '_blank');
@@ -35,7 +53,7 @@ const Inventory = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  ${inventoryItems.map(item => `
+                  ${filteredItems.map(item => `
                     <tr>
                       <td class="border p-2">${item.name}</td>
                       <td class="border p-2">${item.type}</td>
@@ -79,17 +97,17 @@ const Inventory = () => {
             <h1 className="text-4xl font-bold text-dmg-dark">
               Inventaire
             </h1>
-            <div className="space-x-4">
-              <Button onClick={handlePrint} variant="outline" className="gap-2">
-                <Printer className="w-4 h-4" />
-                Imprimer
-              </Button>
-            </div>
+            <Button onClick={handlePrint} variant="outline" className="gap-2">
+              <Printer className="w-4 h-4" />
+              Imprimer
+            </Button>
           </div>
           <p className="text-dmg-muted text-lg mb-6">
             Gérez l'inventaire des emplacements
           </p>
         </header>
+
+        <InventoryFilters filters={filters} onFilterChange={handleFilterChange} />
 
         <Card className="overflow-hidden">
           <Table>
@@ -104,7 +122,7 @@ const Inventory = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {inventoryItems.map((item) => (
+              {filteredItems.map((item) => (
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{item.name}</TableCell>
                   <TableCell>{item.type}</TableCell>

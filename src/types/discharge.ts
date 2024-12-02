@@ -11,4 +11,5 @@ export interface Discharge {
   inventoryNumber?: string;
   staffName?: string;
   equipmentName?: string;
+  category?: "Matériel" | "Consommable";
 }
