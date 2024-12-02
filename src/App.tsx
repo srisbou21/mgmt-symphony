@@ -8,6 +8,7 @@ import Equipment from "./pages/Equipment";
 import MaintenanceEquipment from "./pages/MaintenanceEquipment";
 import Suppliers from "./pages/Suppliers";
 import Staff from "./pages/Staff";
+import Discharge from "./pages/Discharge";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/maintenance" element={<MaintenanceEquipment />} />
           <Route path="/suppliers" element={<Suppliers />} />
           <Route path="/staff" element={<Staff />} />
+          <Route path="/discharge" element={<Discharge />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
