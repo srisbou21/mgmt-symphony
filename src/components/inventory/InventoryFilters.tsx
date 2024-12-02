@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Equipment, EquipmentType, Location } from "@/types/equipment";
 
 interface InventoryFiltersProps {
   filters: {
@@ -9,34 +10,17 @@ interface InventoryFiltersProps {
     type: string;
   };
   onFilterChange: (key: string, value: string) => void;
+  locations: Location[];
 }
 
-export const InventoryFilters = ({ filters, onFilterChange }: InventoryFiltersProps) => {
+export const InventoryFilters = ({ filters, onFilterChange, locations }: InventoryFiltersProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
       <Input
-        placeholder="Nom de l'équipement..."
+        placeholder="Nom..."
         value={filters.name}
         onChange={(e) => onFilterChange("name", e.target.value)}
       />
-      <Input
-        placeholder="Emplacement..."
-        value={filters.location}
-        onChange={(e) => onFilterChange("location", e.target.value)}
-      />
-      <Select
-        value={filters.category}
-        onValueChange={(value) => onFilterChange("category", value)}
-      >
-        <SelectTrigger>
-          <SelectValue placeholder="Catégorie" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Toutes les catégories</SelectItem>
-          <SelectItem value="Matériel">Matériel</SelectItem>
-          <SelectItem value="Consommable">Consommable</SelectItem>
-        </SelectContent>
-      </Select>
       <Select
         value={filters.type}
         onValueChange={(value) => onFilterChange("type", value)}
@@ -54,6 +38,22 @@ export const InventoryFilters = ({ filters, onFilterChange }: InventoryFiltersPr
           <SelectItem value="Matériel médical">Matériel médical</SelectItem>
           <SelectItem value="Équipement sportif">Équipement sportif</SelectItem>
           <SelectItem value="Matériel audiovisuel">Matériel audiovisuel</SelectItem>
+        </SelectContent>
+      </Select>
+      <Select
+        value={filters.location}
+        onValueChange={(value) => onFilterChange("location", value)}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Emplacement" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Tous les emplacements</SelectItem>
+          {locations.map((location) => (
+            <SelectItem key={location.id} value={location.name}>
+              {location.name}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>
