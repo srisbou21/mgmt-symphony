@@ -32,7 +32,7 @@ export const InventoryFilters = ({ filters, onFilterChange }: InventoryFiltersPr
           <SelectValue placeholder="Catégorie" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">Toutes les catégories</SelectItem>
+          <SelectItem value="all">Toutes les catégories</SelectItem>
           <SelectItem value="Matériel">Matériel</SelectItem>
           <SelectItem value="Consommable">Consommable</SelectItem>
         </SelectContent>
@@ -45,7 +45,7 @@ export const InventoryFilters = ({ filters, onFilterChange }: InventoryFiltersPr
           <SelectValue placeholder="Type d'équipement" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">Tous les types</SelectItem>
+          <SelectItem value="all">Tous les types</SelectItem>
           <SelectItem value="Informatique">Informatique</SelectItem>
           <SelectItem value="Mobilier">Mobilier</SelectItem>
           <SelectItem value="Électroménager">Électroménager</SelectItem>
