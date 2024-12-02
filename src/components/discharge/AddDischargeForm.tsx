@@ -16,6 +16,7 @@ const formSchema = z.object({
   quantity: z.number().min(1, "La quantité doit être supérieure à 0"),
   serialNumber: z.string().optional(),
   inventoryNumber: z.string().optional(),
+  attachedFile: z.string().optional(),
 });
 
 interface AddDischargeFormProps {
@@ -23,12 +24,13 @@ interface AddDischargeFormProps {
   onCancel: () => void;
   equipments: Equipment[];
   staff: Staff[];
+  initialData?: Partial<Discharge>;
 }
 
-export function AddDischargeForm({ onSubmit, onCancel, equipments, staff }: AddDischargeFormProps) {
+export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initialData }: AddDischargeFormProps) {
   const form = useForm<Partial<Discharge>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       type: "Équipement",
       quantity: 1,
     },
@@ -157,12 +159,31 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff }: AddD
           </>
         )}
 
+        <FormField
+          control={form.control}
+          name="attachedFile"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Fichier attaché</FormLabel>
+              <FormControl>
+                <Input type="file" {...field} onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    field.onChange(URL.createObjectURL(file));
+                  }
+                }} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="flex justify-end space-x-4">
           <Button type="button" variant="outline" onClick={onCancel}>
             Annuler
           </Button>
           <Button type="submit">
-            Créer la décharge
+            {initialData ? "Modifier" : "Créer"} la décharge
           </Button>
         </div>
       </form>

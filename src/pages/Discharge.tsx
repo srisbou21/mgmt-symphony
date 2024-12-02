@@ -6,16 +6,22 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { Equipment } from "@/types/equipment";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AddDischargeForm } from "@/components/discharge/AddDischargeForm";
+import { Discharge as DischargeType } from "@/types/discharge";
+import { Staff } from "@/types/staff";
 
 const Discharge = () => {
   const { toast } = useToast();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedDischarge, setSelectedDischarge] = useState<DischargeType | null>(null);
   const [dischargedEquipments, setDischargedEquipments] = useState<Equipment[]>([
     {
       id: 1,
       name: "Ordinateur portable Dell XPS",
       type: "Informatique",
       category: "Matériel",
-      status: "En maintenance", // Changed from "Déchargé" to a valid status
+      status: "En maintenance",
       location: "Bureau 201",
       supplier: "Dell",
       serialNumber: "XPS-2024-001",
@@ -30,7 +36,7 @@ const Discharge = () => {
       name: "Imprimante HP LaserJet",
       type: "Informatique",
       category: "Matériel",
-      status: "En maintenance", // Changed from "Déchargé" to a valid status
+      status: "En maintenance",
       location: "Salle de reprographie",
       supplier: "HP",
       serialNumber: "HP-2024-001",
@@ -41,6 +47,63 @@ const Discharge = () => {
       lastMaintenance: "2024-01-15",
     },
   ]);
+
+  const mockStaff: Staff[] = [
+    { id: 1, firstName: "John", lastName: "Doe", email: "john@example.com", phone: "123456789", service: "IT" },
+    { id: 2, firstName: "Jane", lastName: "Smith", email: "jane@example.com", phone: "987654321", service: "HR" },
+  ];
+
+  const mockEquipments: Equipment[] = [
+    {
+      id: 1,
+      name: "Ordinateur portable Dell XPS",
+      type: "Informatique",
+      category: "Matériel",
+      status: "En maintenance",
+      location: "Bureau 201",
+      supplier: "Dell",
+      serialNumber: "XPS-2024-001",
+      inventoryNumber: "INV-2024-001",
+      observation: "RAS",
+      availableQuantity: 0,
+      minQuantity: 0,
+      lastMaintenance: "2024-01-15",
+    },
+    {
+      id: 2,
+      name: "Imprimante HP LaserJet",
+      type: "Informatique",
+      category: "Matériel",
+      status: "En maintenance",
+      location: "Salle de reprographie",
+      supplier: "HP",
+      serialNumber: "HP-2024-001",
+      inventoryNumber: "INV-2024-002",
+      observation: "",
+      availableQuantity: 0,
+      minQuantity: 0,
+      lastMaintenance: "2024-01-15",
+    },
+  ];
+
+  const handleAddDischarge = (values: Partial<DischargeType>) => {
+    console.log("New discharge:", values);
+    toast({
+      title: "Décharge créée",
+      description: "La décharge a été créée avec succès.",
+    });
+    setIsDialogOpen(false);
+  };
+
+  const handleEditDischarge = (values: Partial<DischargeType>) => {
+    console.log("Updated discharge:", values);
+    toast({
+      title: "Décharge modifiée",
+      description: "La décharge a été modifiée avec succès.",
+    });
+    setIsDialogOpen(false);
+    setSelectedDischarge(null);
+  };
 
   const handlePrint = () => {
     const printWindow = window.open('', '_blank');
@@ -108,14 +171,16 @@ const Discharge = () => {
             <h1 className="text-4xl font-bold text-dmg-dark">
               Décharges
             </h1>
-            <Button onClick={() => {}} className="gap-2">
-              <Plus className="w-4 h-4" />
-              Ajouter une décharge
-            </Button>
-            <Button onClick={handlePrint} variant="outline" className="gap-2">
-              <Printer className="w-4 h-4" />
-              Imprimer
-            </Button>
+            <div className="space-x-4">
+              <Button onClick={() => setIsDialogOpen(true)} className="gap-2">
+                <Plus className="w-4 h-4" />
+                Ajouter une décharge
+              </Button>
+              <Button onClick={handlePrint} variant="outline" className="gap-2">
+                <Printer className="w-4 h-4" />
+                Imprimer
+              </Button>
+            </div>
           </div>
           <p className="text-dmg-muted text-lg mb-6">
             Gérez les décharges de vos équipements
@@ -135,7 +200,20 @@ const Discharge = () => {
             </TableHeader>
             <TableBody>
               {dischargedEquipments.map((equipment) => (
-                <TableRow key={equipment.id}>
+                <TableRow key={equipment.id} className="cursor-pointer hover:bg-gray-50" 
+                  onClick={() => {
+                    setSelectedDischarge({
+                      id: equipment.id,
+                      equipmentId: equipment.id,
+                      staffId: 1,
+                      type: "Équipement",
+                      quantity: 1,
+                      date: new Date().toISOString(),
+                      serialNumber: equipment.serialNumber,
+                      inventoryNumber: equipment.inventoryNumber,
+                    });
+                    setIsDialogOpen(true);
+                  }}>
                   <TableCell className="font-medium">{equipment.name}</TableCell>
                   <TableCell>{equipment.type}</TableCell>
                   <TableCell>{equipment.serialNumber}</TableCell>
@@ -146,6 +224,26 @@ const Discharge = () => {
             </TableBody>
           </Table>
         </Card>
+
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>
+                {selectedDischarge ? "Modifier la décharge" : "Ajouter une décharge"}
+              </DialogTitle>
+            </DialogHeader>
+            <AddDischargeForm
+              onSubmit={selectedDischarge ? handleEditDischarge : handleAddDischarge}
+              onCancel={() => {
+                setIsDialogOpen(false);
+                setSelectedDischarge(null);
+              }}
+              equipments={mockEquipments}
+              staff={mockStaff}
+              initialData={selectedDischarge || undefined}
+            />
+          </DialogContent>
+        </Dialog>
       </motion.div>
     </div>
   );
