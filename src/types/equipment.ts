@@ -1,5 +1,5 @@
 export type EquipmentType = "Informatique" | "Mobilier" | "Électroménager" | "Outillage" | "Véhicule" | "Matériel médical" | "Équipement sportif" | "Matériel audiovisuel";
-export type EquipmentStatus = "En service" | "En maintenance";
+export type EquipmentStatus = "En service" | "En maintenance" | "Déchargé";
 export type EquipmentCategory = "Consommable" | "Matériel";
 
 export type Equipment = {
