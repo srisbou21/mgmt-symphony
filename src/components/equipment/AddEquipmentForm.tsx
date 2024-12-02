@@ -26,9 +26,12 @@ const formSchema = z.object({
   type: z.enum(equipmentTypes, {
     required_error: "Veuillez sélectionner un type d'équipement",
   }),
+  category: z.enum(["Consommable", "Matériel"] as const, {
+    required_error: "Veuillez sélectionner une catégorie",
+  }),
   status: z.enum(["En service", "En maintenance"] as const),
   location: z.string().min(2, "L'emplacement doit contenir au moins 2 caractères"),
-  supplier: z.string().optional(),
+  supplier: z.string().min(1, "Veuillez sélectionner un fournisseur"),
   serialNumber: z.string().min(1, "Le numéro de série est requis"),
   inventoryNumber: z.string().min(1, "Le numéro d'inventaire est requis"),
   observation: z.string().optional(),
@@ -42,14 +45,16 @@ interface AddEquipmentFormProps {
   onSubmit: (values: FormData) => void;
   onCancel: () => void;
   initialData?: Equipment;
+  suppliers: Array<{ id: number; name: string }>;
 }
 
-export function AddEquipmentForm({ onSubmit, onCancel, initialData }: AddEquipmentFormProps) {
+export function AddEquipmentForm({ onSubmit, onCancel, initialData, suppliers }: AddEquipmentFormProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       name: "",
       type: "Informatique",
+      category: "Matériel",
       status: "En service",
       location: "",
       supplier: "",
@@ -78,30 +83,54 @@ export function AddEquipmentForm({ onSubmit, onCancel, initialData }: AddEquipme
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez un type d'équipement" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {equipmentTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="type"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Type</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez un type d'équipement" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {equipmentTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Catégorie</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez une catégorie" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Consommable">Consommable</SelectItem>
+                    <SelectItem value="Matériel">Matériel</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
@@ -224,9 +253,20 @@ export function AddEquipmentForm({ onSubmit, onCancel, initialData }: AddEquipme
           render={({ field }) => (
             <FormItem>
               <FormLabel>Fournisseur</FormLabel>
-              <FormControl>
-                <Input placeholder="Ex: Dell" {...field} />
-              </FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez un fournisseur" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {suppliers.map((supplier) => (
+                    <SelectItem key={supplier.id} value={supplier.name}>
+                      {supplier.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

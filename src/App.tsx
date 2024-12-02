@@ -9,6 +9,7 @@ import MaintenanceEquipment from "./pages/MaintenanceEquipment";
 import Suppliers from "./pages/Suppliers";
 import Staff from "./pages/Staff";
 import Discharge from "./pages/Discharge";
+import Locations from "./pages/Locations";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/suppliers" element={<Suppliers />} />
           <Route path="/staff" element={<Staff />} />
           <Route path="/discharge" element={<Discharge />} />
+          <Route path="/locations" element={<Locations />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
