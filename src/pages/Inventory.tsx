@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Package, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,15 +6,58 @@ import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Equipment } from "@/types/equipment";
 import { InventoryFilters } from "@/components/inventory/InventoryFilters";
+import { Location } from "@/types/equipment";
+import { Discharge } from "@/types/discharge";
 
 const Inventory = () => {
   const [inventoryItems, setInventoryItems] = useState<Equipment[]>([]);
+  const [locations, setLocations] = useState<Location[]>([
+    { id: 1, name: "Bureau 101", building: "Bâtiment A" },
+    { id: 2, name: "Salle de réunion", building: "Bâtiment B" },
+  ]);
   const [filters, setFilters] = useState({
     name: "",
     location: "",
     category: "",
     type: "",
   });
+
+  // Simulate loading discharge data
+  useEffect(() => {
+    const dischargeData: Discharge[] = [
+      {
+        id: 1,
+        equipmentId: 1,
+        staffId: 1,
+        type: "Équipement",
+        quantity: 1,
+        date: "2024-03-12",
+        serialNumber: "SN001",
+        inventoryNumber: "INV001",
+        category: "Matériel",
+        staffName: "John Doe",
+        equipmentName: "Ordinateur portable"
+      },
+      // Add more sample data as needed
+    ];
+
+    // Convert discharge data to inventory items
+    const items: Equipment[] = dischargeData.map(discharge => ({
+      id: discharge.equipmentId,
+      name: discharge.equipmentName || "",
+      type: "Informatique",
+      category: discharge.category || "Matériel",
+      status: "En service",
+      location: "Bureau 101",
+      serialNumber: discharge.serialNumber || "",
+      inventoryNumber: discharge.inventoryNumber || "",
+      availableQuantity: discharge.quantity,
+      minQuantity: 1,
+      lastMaintenance: "2024-03-12"
+    }));
+
+    setInventoryItems(items);
+  }, []);
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters({ ...filters, [key]: value });
@@ -81,7 +124,7 @@ const Inventory = () => {
   };
 
   return (
-    <div className="min-h-screen bg-dmg-light p-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -89,30 +132,34 @@ const Inventory = () => {
         className="max-w-7xl mx-auto"
       >
         <header className="mb-8">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-4">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-800 text-sm font-medium mb-4">
             <Package className="w-4 h-4 mr-2" />
             Inventaire des Emplacements
           </div>
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-4xl font-bold text-dmg-dark">
+            <h1 className="text-4xl font-bold text-gray-900">
               Inventaire
             </h1>
-            <Button onClick={handlePrint} variant="outline" className="gap-2">
+            <Button onClick={handlePrint} variant="outline" className="gap-2 bg-white hover:bg-gray-50">
               <Printer className="w-4 h-4" />
               Imprimer
             </Button>
           </div>
-          <p className="text-dmg-muted text-lg mb-6">
+          <p className="text-gray-600 text-lg mb-6">
             Gérez l'inventaire des emplacements
           </p>
         </header>
 
-        <InventoryFilters filters={filters} onFilterChange={handleFilterChange} />
+        <InventoryFilters 
+          filters={filters} 
+          onFilterChange={handleFilterChange}
+          locations={locations}
+        />
 
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden bg-white/80 backdrop-blur-sm shadow-xl">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="bg-gray-50/50">
                 <TableHead>Nom</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Catégorie</TableHead>
@@ -123,7 +170,7 @@ const Inventory = () => {
             </TableHeader>
             <TableBody>
               {filteredItems.map((item) => (
-                <TableRow key={item.id}>
+                <TableRow key={item.id} className="hover:bg-gray-50/50">
                   <TableCell className="font-medium">{item.name}</TableCell>
                   <TableCell>{item.type}</TableCell>
                   <TableCell>{item.category}</TableCell>
