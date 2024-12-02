@@ -6,11 +6,17 @@ import { StaffTable } from "@/components/staff/StaffTable";
 import { AddStaffForm } from "@/components/staff/AddStaffForm";
 import { Staff } from "@/types/staff";
 import { useToast } from "@/components/ui/use-toast";
+import { Service } from "@/types/service";
 
 export default function StaffPage() {
   const [staff, setStaff] = useState<Staff[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<Staff | undefined>();
+  const [services] = useState<Service[]>([
+    { id: 1, name: "Service Informatique" },
+    { id: 2, name: "Service RH" },
+    { id: 3, name: "Service Commercial" },
+  ]);
   const { toast } = useToast();
 
   const handleAdd = (values: Omit<Staff, "id">) => {
@@ -67,6 +73,7 @@ export default function StaffPage() {
           <AddStaffForm
             onSubmit={handleAdd}
             onCancel={() => setIsAddDialogOpen(false)}
+            services={services}
           />
         </DialogContent>
       </Dialog>
@@ -76,11 +83,14 @@ export default function StaffPage() {
           <DialogHeader>
             <DialogTitle>Modifier un membre du personnel</DialogTitle>
           </DialogHeader>
-          <AddStaffForm
-            initialData={editingStaff}
-            onSubmit={handleEdit}
-            onCancel={() => setEditingStaff(undefined)}
-          />
+          {editingStaff && (
+            <AddStaffForm
+              initialData={editingStaff}
+              onSubmit={handleEdit}
+              onCancel={() => setEditingStaff(undefined)}
+              services={services}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>

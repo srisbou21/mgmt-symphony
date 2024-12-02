@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { AddMaintenanceForm } from "@/components/maintenance/AddMaintenanceForm";
 import { MaintenanceFilters } from "@/components/maintenance/MaintenanceFilters";
+import { MaintenanceFormData } from "@/types/maintenance";
 
 const MaintenanceEquipment = () => {
   const { toast } = useToast();
@@ -253,3 +254,4 @@ const MaintenanceEquipment = () => {
 };
 
 export default MaintenanceEquipment;
+
