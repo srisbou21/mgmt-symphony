@@ -15,7 +15,7 @@ const Discharge = () => {
       name: "Ordinateur portable Dell XPS",
       type: "Informatique",
       category: "Matériel",
-      status: "Déchargé",
+      status: "En maintenance", // Changed from "Déchargé" to a valid status
       location: "Bureau 201",
       supplier: "Dell",
       serialNumber: "XPS-2024-001",
@@ -30,7 +30,7 @@ const Discharge = () => {
       name: "Imprimante HP LaserJet",
       type: "Informatique",
       category: "Matériel",
-      status: "Déchargé",
+      status: "En maintenance", // Changed from "Déchargé" to a valid status
       location: "Salle de reprographie",
       supplier: "HP",
       serialNumber: "HP-2024-001",
