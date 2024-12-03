@@ -20,7 +20,7 @@ export interface Equipment {
   maintenanceReason?: string;
   maintenanceStartDate?: string;
   maintenanceEndDate?: string;
-  invoice?: File;
+  invoice?: string;
 }
 
 export interface Location {

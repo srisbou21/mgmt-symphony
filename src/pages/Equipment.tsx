@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import type { Equipment } from "@/types/equipment";
+import type { Equipment, EquipmentType } from "@/types/equipment";
 import { EquipmentHeader } from "@/components/equipment/EquipmentHeader";
 import { EquipmentTable } from "@/components/equipment/EquipmentTable";
 import { EquipmentDialogs } from "@/components/equipment/EquipmentDialogs";
@@ -14,19 +14,20 @@ const Equipment = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [equipmentToDelete, setEquipmentToDelete] = useState<number | null>(null);
   const [equipmentToEdit, setEquipmentToEdit] = useState<Equipment | null>(null);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Partial<Equipment>>({
     name: "",
-    type: "all",
-    category: "all",
+    type: undefined,
+    category: undefined,
     serialNumber: "",
     inventoryNumber: "",
-    location: "all"
+    location: ""
   });
   const [suppliers] = useState([
     { id: 1, name: "Dell" },
     { id: 2, name: "HP" },
     { id: 3, name: "Office Pro" }
   ]);
+
   const [equipments, setEquipments] = useState<Equipment[]>([
     {
       id: 1,
@@ -109,21 +110,25 @@ const Equipment = () => {
   };
 
   const handleFilterChange = (key: keyof Equipment, value: string) => {
-    setFilters({ ...filters, [key]: value });
+    if (key === 'type') {
+      setFilters({ ...filters, [key]: value === 'all' ? undefined : value as EquipmentType });
+    } else {
+      setFilters({ ...filters, [key]: value === 'all' ? undefined : value });
+    }
   };
 
   const filteredEquipments = equipments.filter(equipment => {
     const matchName = !filters.name || 
       equipment.name.toLowerCase().includes(filters.name.toLowerCase());
-    const matchType = filters.type === "all" || 
+    const matchType = !filters.type || 
       equipment.type === filters.type;
-    const matchCategory = filters.category === "all" || 
+    const matchCategory = !filters.category || 
       equipment.category === filters.category;
     const matchSerialNumber = !filters.serialNumber || 
       equipment.serialNumber.toLowerCase().includes(filters.serialNumber.toLowerCase());
     const matchInventoryNumber = !filters.inventoryNumber || 
       equipment.inventoryNumber.toLowerCase().includes(filters.inventoryNumber.toLowerCase());
-    const matchLocation = filters.location === "all" || 
+    const matchLocation = !filters.location || 
       equipment.location === filters.location;
     
     return matchName && matchType && matchCategory && 

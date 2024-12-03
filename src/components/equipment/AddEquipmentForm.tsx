@@ -52,19 +52,19 @@ interface AddEquipmentFormProps {
 export function AddEquipmentForm({ onSubmit, onCancel, initialData, suppliers }: AddEquipmentFormProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
-      name: "",
-      type: "Informatique",
-      category: "Matériel",
-      status: "En service",
-      location: "",
-      supplier: "",
-      serialNumber: "",
-      inventoryNumber: "",
-      observation: "",
-      availableQuantity: 0,
-      minQuantity: 0,
-      invoice: ""
+    defaultValues: {
+      name: initialData?.name || "",
+      type: initialData?.type || "Informatique",
+      category: initialData?.category || "Matériel",
+      status: initialData?.status || "En service",
+      location: initialData?.location || "",
+      supplier: initialData?.supplier || "",
+      serialNumber: initialData?.serialNumber || "",
+      inventoryNumber: initialData?.inventoryNumber || "",
+      observation: initialData?.observation || "",
+      availableQuantity: initialData?.availableQuantity || 0,
+      minQuantity: initialData?.minQuantity || 0,
+      invoice: initialData?.invoice || ""
     },
   });
 
