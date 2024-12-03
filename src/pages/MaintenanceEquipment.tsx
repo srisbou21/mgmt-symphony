@@ -21,6 +21,7 @@ const MaintenanceEquipment = () => {
   const [filters, setFilters] = useState({
     inventoryNumber: "",
     location: "all",
+    type: "all", // Added the missing type property
   });
   const [locations] = useState([
     { id: 1, name: "Bureau 201" },
@@ -37,7 +38,9 @@ const MaintenanceEquipment = () => {
       equipment.inventoryNumber.toLowerCase().includes(filters.inventoryNumber.toLowerCase());
     const matchLocation = filters.location === "all" || 
       equipment.location === filters.location;
-    return matchInventoryNumber && matchLocation;
+    const matchType = filters.type === "all" || 
+      equipment.type === filters.type;
+    return matchInventoryNumber && matchLocation && matchType;
   });
 
   const handleAddMaintenance = (values: MaintenanceFormData) => {
