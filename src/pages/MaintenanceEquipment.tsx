@@ -15,6 +15,7 @@ const MaintenanceEquipment = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
+  const [maintenanceToEdit, setMaintenanceToEdit] = useState<MaintenanceFormData | null>(null);
   const [filters, setFilters] = useState({
     inventoryNumber: "",
     location: "all",
@@ -53,6 +54,7 @@ const MaintenanceEquipment = () => {
     setMaintenanceEquipments([...maintenanceEquipments, updatedEquipment]);
     setIsDialogOpen(false);
     setSelectedEquipment(null);
+    setMaintenanceToEdit(null);
 
     toast({
       title: "Maintenance ajoutée",
@@ -164,10 +166,12 @@ const MaintenanceEquipment = () => {
           isDeleteDialogOpen={isDeleteDialogOpen}
           setIsDeleteDialogOpen={setIsDeleteDialogOpen}
           selectedEquipment={selectedEquipment}
+          maintenanceToEdit={maintenanceToEdit}
           onSubmit={handleAddMaintenance}
           onCancel={() => {
             setIsDialogOpen(false);
             setSelectedEquipment(null);
+            setMaintenanceToEdit(null);
           }}
           onConfirmDelete={confirmDelete}
           locations={locations}
