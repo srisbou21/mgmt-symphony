@@ -11,6 +11,7 @@ import { QuantityFields } from "./form/QuantityFields";
 import { AdditionalFields } from "./form/AdditionalFields";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const equipmentTypes = [
   "Informatique",
@@ -40,20 +41,18 @@ const formSchema = z.object({
   observation: z.string().optional(),
   availableQuantity: z.number().min(0, "La quantité ne peut pas être négative"),
   minQuantity: z.number().min(0, "La quantité minimale ne peut pas être négative"),
-  invoice: z.instanceof(File).optional(),
+  invoice: z.any().optional(),
 });
 
-type FormData = z.infer<typeof formSchema>;
-
 interface AddEquipmentFormProps {
-  onSubmit: (values: FormData) => void;
+  onSubmit: (values: any) => void;
   onCancel: () => void;
   initialData?: Equipment;
   suppliers: Array<{ id: number; name: string }>;
 }
 
 export function AddEquipmentForm({ onSubmit, onCancel, initialData, suppliers }: AddEquipmentFormProps) {
-  const form = useForm<FormData>({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: initialData?.name || "",
@@ -73,30 +72,34 @@ export function AddEquipmentForm({ onSubmit, onCancel, initialData, suppliers }:
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Informations de base</h3>
-          <BasicInfoFields form={form} />
-        </Card>
+        <ScrollArea className="h-[500px] pr-4">
+          <div className="space-y-6">
+            <Card className="p-4">
+              <h3 className="text-lg font-semibold mb-4">Informations de base</h3>
+              <BasicInfoFields form={form} />
+            </Card>
 
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Identification</h3>
-          <IdentificationFields form={form} />
-        </Card>
+            <Card className="p-4">
+              <h3 className="text-lg font-semibold mb-4">Identification</h3>
+              <IdentificationFields form={form} />
+            </Card>
 
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Statut et emplacement</h3>
-          <StatusFields form={form} />
-        </Card>
+            <Card className="p-4">
+              <h3 className="text-lg font-semibold mb-4">Statut et emplacement</h3>
+              <StatusFields form={form} />
+            </Card>
 
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Gestion des quantités</h3>
-          <QuantityFields form={form} />
-        </Card>
+            <Card className="p-4">
+              <h3 className="text-lg font-semibold mb-4">Gestion des quantités</h3>
+              <QuantityFields form={form} />
+            </Card>
 
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Informations complémentaires</h3>
-          <AdditionalFields form={form} suppliers={suppliers} />
-        </Card>
+            <Card className="p-4">
+              <h3 className="text-lg font-semibold mb-4">Informations complémentaires</h3>
+              <AdditionalFields form={form} suppliers={suppliers} />
+            </Card>
+          </div>
+        </ScrollArea>
 
         <Separator className="my-6" />
 

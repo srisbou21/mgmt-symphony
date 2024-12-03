@@ -1,15 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Package, Plus, Printer, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { Equipment } from "@/types/equipment";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { AddMaintenanceForm } from "@/components/maintenance/AddMaintenanceForm";
+import { MaintenanceHeader } from "@/components/maintenance/MaintenanceHeader";
 import { MaintenanceFilters } from "@/components/maintenance/MaintenanceFilters";
+import { MaintenanceTable } from "@/components/maintenance/MaintenanceTable";
+import { MaintenanceDialogs } from "@/components/maintenance/MaintenanceDialogs";
 import { MaintenanceFormData } from "@/types/maintenance";
 
 const MaintenanceEquipment = () => {
@@ -21,7 +18,7 @@ const MaintenanceEquipment = () => {
   const [filters, setFilters] = useState({
     inventoryNumber: "",
     location: "all",
-    type: "all", // Added the missing type property
+    type: "all",
   });
   const [locations] = useState([
     { id: 1, name: "Bureau 201" },
@@ -143,31 +140,11 @@ const MaintenanceEquipment = () => {
         transition={{ duration: 0.5 }}
         className="max-w-7xl mx-auto"
       >
-        <header className="mb-8">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-yellow-100 text-yellow-800 text-sm font-medium mb-4">
-            <Package className="w-4 h-4 mr-2" />
-            Équipements en maintenance
-          </div>
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-4xl font-bold text-dmg-dark">
-              Maintenance
-            </h1>
-            <div className="space-x-4">
-              <Button onClick={() => setIsDialogOpen(true)} className="gap-2">
-                <Plus className="w-4 h-4" />
-                Ajouter
-              </Button>
-              <Button onClick={handlePrint} variant="outline" className="gap-2">
-                <Printer className="w-4 h-4" />
-                Imprimer
-              </Button>
-            </div>
-          </div>
-          <p className="text-dmg-muted text-lg mb-6">
-            Gérez les équipements actuellement en maintenance
-          </p>
-        </header>
-
+        <MaintenanceHeader 
+          onAddClick={() => setIsDialogOpen(true)}
+          onPrintClick={handlePrint}
+        />
+        
         <MaintenanceFilters 
           filters={filters}
           onFilterChange={handleFilterChange}
@@ -175,84 +152,26 @@ const MaintenanceEquipment = () => {
         />
 
         <Card className="overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>N° Série</TableHead>
-                <TableHead>N° Inventaire</TableHead>
-                <TableHead>Emplacement</TableHead>
-                <TableHead>Date début</TableHead>
-                <TableHead>Date fin prévue</TableHead>
-                <TableHead>Raison</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredEquipments.map((equipment) => (
-                <TableRow key={equipment.id}>
-                  <TableCell className="font-medium">{equipment.name}</TableCell>
-                  <TableCell>{equipment.type}</TableCell>
-                  <TableCell>{equipment.serialNumber}</TableCell>
-                  <TableCell>{equipment.inventoryNumber}</TableCell>
-                  <TableCell>{equipment.location}</TableCell>
-                  <TableCell>{equipment.maintenanceStartDate || '-'}</TableCell>
-                  <TableCell>{equipment.maintenanceEndDate || '-'}</TableCell>
-                  <TableCell>{equipment.maintenanceReason || '-'}</TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteMaintenance(equipment)}
-                      className="hover:bg-red-100"
-                    >
-                      <Trash2 className="h-4 w-4 text-red-600" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <MaintenanceTable
+            equipments={filteredEquipments}
+            onDelete={handleDeleteMaintenance}
+          />
         </Card>
 
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Ajouter une maintenance</DialogTitle>
-            </DialogHeader>
-            {selectedEquipment && (
-              <AddMaintenanceForm 
-                onSubmit={handleAddMaintenance}
-                onCancel={() => {
-                  setIsDialogOpen(false);
-                  setSelectedEquipment(null);
-                }}
-                equipmentId={selectedEquipment.id}
-                locations={locations}
-              />
-            )}
-          </DialogContent>
-        </Dialog>
-
-        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Terminer la maintenance ?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Cet équipement sera retiré de la liste des maintenances. Cette action ne peut pas être annulée.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setIsDeleteDialogOpen(false)}>
-                Annuler
-              </AlertDialogCancel>
-              <AlertDialogAction onClick={confirmDelete}>
-                Confirmer
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <MaintenanceDialogs
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+          isDeleteDialogOpen={isDeleteDialogOpen}
+          setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+          selectedEquipment={selectedEquipment}
+          onSubmit={handleAddMaintenance}
+          onCancel={() => {
+            setIsDialogOpen(false);
+            setSelectedEquipment(null);
+          }}
+          onConfirmDelete={confirmDelete}
+          locations={locations}
+        />
       </motion.div>
     </div>
   );
