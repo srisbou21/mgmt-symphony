@@ -2,6 +2,17 @@ export type EquipmentType = "Informatique" | "Mobilier" | "Électroménager" | "
 export type EquipmentStatus = "En service" | "En maintenance";
 export type EquipmentCategory = "Consommable" | "Matériel";
 
+export const equipmentTypes = [
+  "Informatique",
+  "Mobilier",
+  "Électroménager",
+  "Outillage",
+  "Véhicule",
+  "Matériel médical",
+  "Équipement sportif",
+  "Matériel audiovisuel"
+] as const;
+
 export interface Equipment {
   id: number;
   name: string;
@@ -20,7 +31,7 @@ export interface Equipment {
   maintenanceReason?: string;
   maintenanceStartDate?: string;
   maintenanceEndDate?: string;
-  invoice?: string;
+  invoice?: File;
 }
 
 export interface Location {

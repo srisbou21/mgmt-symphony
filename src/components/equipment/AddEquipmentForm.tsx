@@ -2,12 +2,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Equipment, EquipmentType } from "@/types/equipment";
+import { Form } from "@/components/ui/form";
+import { Equipment } from "@/types/equipment";
+import { BasicInfoFields } from "./form/BasicInfoFields";
+import { IdentificationFields } from "./form/IdentificationFields";
+import { StatusFields } from "./form/StatusFields";
+import { QuantityFields } from "./form/QuantityFields";
+import { AdditionalFields } from "./form/AdditionalFields";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 const equipmentTypes = [
   "Informatique",
@@ -37,7 +40,7 @@ const formSchema = z.object({
   observation: z.string().optional(),
   availableQuantity: z.number().min(0, "La quantité ne peut pas être négative"),
   minQuantity: z.number().min(0, "La quantité minimale ne peut pas être négative"),
-  invoice: z.string().optional(),
+  invoice: z.instanceof(File).optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -64,256 +67,38 @@ export function AddEquipmentForm({ onSubmit, onCancel, initialData, suppliers }:
       observation: initialData?.observation || "",
       availableQuantity: initialData?.availableQuantity || 0,
       minQuantity: initialData?.minQuantity || 0,
-      invoice: initialData?.invoice || ""
     },
   });
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nom de l'équipement</FormLabel>
-              <FormControl>
-                <Input placeholder="Ex: Ordinateur portable Dell XPS" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Informations de base</h3>
+          <BasicInfoFields form={form} />
+        </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="type"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Type</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez un type d'équipement" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {equipmentTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Identification</h3>
+          <IdentificationFields form={form} />
+        </Card>
 
-          <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Catégorie</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez une catégorie" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="Consommable">Consommable</SelectItem>
-                    <SelectItem value="Matériel">Matériel</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Statut et emplacement</h3>
+          <StatusFields form={form} />
+        </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="serialNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>N° Série</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ex: XPS-2024-001" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Gestion des quantités</h3>
+          <QuantityFields form={form} />
+        </Card>
 
-          <FormField
-            control={form.control}
-            name="inventoryNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>N° Inventaire</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ex: INV-2024-001" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Informations complémentaires</h3>
+          <AdditionalFields form={form} suppliers={suppliers} />
+        </Card>
 
-        <FormField
-          control={form.control}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Statut</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col space-y-1"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="En service" />
-                    </FormControl>
-                    <FormLabel className="font-normal">En service</FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="En maintenance" />
-                    </FormControl>
-                    <FormLabel className="font-normal">En maintenance</FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Emplacement</FormLabel>
-              <FormControl>
-                <Input placeholder="Ex: Bureau 201" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="availableQuantity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Quantité disponible</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    min="0"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="minQuantity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Quantité minimale (Alerte)</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number"
-                    min="0"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <FormField
-          control={form.control}
-          name="supplier"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Fournisseur</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez un fournisseur" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {suppliers.map((supplier) => (
-                    <SelectItem key={supplier.id} value={supplier.name}>
-                      {supplier.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="observation"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Observation</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Ajoutez vos observations ici..."
-                  className="resize-none"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="invoice"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Facture</FormLabel>
-              <FormControl>
-                <Input 
-                  type="file" 
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      field.onChange(URL.createObjectURL(file));
-                    }
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <Separator className="my-6" />
 
         <div className="flex justify-end space-x-4">
           <Button type="button" variant="outline" onClick={onCancel}>
