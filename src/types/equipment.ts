@@ -20,7 +20,7 @@ export interface Equipment {
   maintenanceReason?: string;
   maintenanceStartDate?: string;
   maintenanceEndDate?: string;
-  invoice?: string; // Ajout du champ invoice
+  invoice?: File;
 }
 
 export interface Location {

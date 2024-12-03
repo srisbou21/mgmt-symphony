@@ -4,6 +4,7 @@ import type { Equipment } from "@/types/equipment";
 import { EquipmentHeader } from "@/components/equipment/EquipmentHeader";
 import { EquipmentTable } from "@/components/equipment/EquipmentTable";
 import { EquipmentDialogs } from "@/components/equipment/EquipmentDialogs";
+import { EquipmentFilters } from "@/components/equipment/EquipmentFilters";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -13,6 +14,14 @@ const Equipment = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [equipmentToDelete, setEquipmentToDelete] = useState<number | null>(null);
   const [equipmentToEdit, setEquipmentToEdit] = useState<Equipment | null>(null);
+  const [filters, setFilters] = useState({
+    name: "",
+    type: "all",
+    category: "all",
+    serialNumber: "",
+    inventoryNumber: "",
+    location: "all"
+  });
   const [suppliers] = useState([
     { id: 1, name: "Dell" },
     { id: 2, name: "HP" },
@@ -69,8 +78,8 @@ const Equipment = () => {
   ]);
 
   const handleSubmit = (values: Equipment) => {
-    if (values.id) {
-      setEquipments(equipments.map(e => (e.id === values.id ? values : e)));
+    if (equipmentToEdit) {
+      setEquipments(equipments.map(e => e.id === equipmentToEdit.id ? { ...values, id: equipmentToEdit.id } : e));
       toast({
         title: "Équipement modifié",
         description: "L'équipement a été mis à jour avec succès.",
@@ -99,6 +108,28 @@ const Equipment = () => {
     setIsDeleteDialogOpen(false);
   };
 
+  const handleFilterChange = (key: keyof Equipment, value: string) => {
+    setFilters({ ...filters, [key]: value });
+  };
+
+  const filteredEquipments = equipments.filter(equipment => {
+    const matchName = !filters.name || 
+      equipment.name.toLowerCase().includes(filters.name.toLowerCase());
+    const matchType = filters.type === "all" || 
+      equipment.type === filters.type;
+    const matchCategory = filters.category === "all" || 
+      equipment.category === filters.category;
+    const matchSerialNumber = !filters.serialNumber || 
+      equipment.serialNumber.toLowerCase().includes(filters.serialNumber.toLowerCase());
+    const matchInventoryNumber = !filters.inventoryNumber || 
+      equipment.inventoryNumber.toLowerCase().includes(filters.inventoryNumber.toLowerCase());
+    const matchLocation = filters.location === "all" || 
+      equipment.location === filters.location;
+    
+    return matchName && matchType && matchCategory && 
+           matchSerialNumber && matchInventoryNumber && matchLocation;
+  });
+
   return (
     <div className="min-h-screen bg-dmg-light p-8">
       <motion.div
@@ -109,9 +140,19 @@ const Equipment = () => {
       >
         <EquipmentHeader onAddClick={() => setIsDialogOpen(true)} />
         
+        <EquipmentFilters 
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          locations={[
+            { id: 1, name: "Bureau 201" },
+            { id: 2, name: "Salle de réunion" },
+            { id: 3, name: "Atelier" }
+          ]}
+        />
+
         <Card className="overflow-hidden">
           <EquipmentTable
-            equipments={equipments}
+            equipments={filteredEquipments}
             onEdit={(equipment) => {
               setEquipmentToEdit(equipment);
               setIsDialogOpen(true);
