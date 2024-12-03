@@ -37,6 +37,7 @@ const formSchema = z.object({
   observation: z.string().optional(),
   availableQuantity: z.number().min(0, "La quantité ne peut pas être négative"),
   minQuantity: z.number().min(0, "La quantité minimale ne peut pas être négative"),
+  invoice: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -63,6 +64,7 @@ export function AddEquipmentForm({ onSubmit, onCancel, initialData, suppliers }:
       observation: "",
       availableQuantity: 0,
       minQuantity: 0,
+      invoice: ""
     },
   });
 
@@ -283,6 +285,29 @@ export function AddEquipmentForm({ onSubmit, onCancel, initialData, suppliers }:
                   placeholder="Ajoutez vos observations ici..."
                   className="resize-none"
                   {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="invoice"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Facture</FormLabel>
+              <FormControl>
+                <Input 
+                  type="file" 
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      field.onChange(URL.createObjectURL(file));
+                    }
+                  }}
                 />
               </FormControl>
               <FormMessage />

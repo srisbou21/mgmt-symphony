@@ -43,6 +43,19 @@ export const EquipmentFilters = ({ filters, onFilterChange, locations }: Equipme
           ))}
         </SelectContent>
       </Select>
+      <Select
+        value={filters.category || "all"}
+        onValueChange={(value) => onFilterChange("category", value)}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Catégorie" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Toutes les catégories</SelectItem>
+          <SelectItem value="Consommable">Consommable</SelectItem>
+          <SelectItem value="Matériel">Matériel</SelectItem>
+        </SelectContent>
+      </Select>
       <Input
         placeholder="N° Série..."
         value={filters.serialNumber || ""}
