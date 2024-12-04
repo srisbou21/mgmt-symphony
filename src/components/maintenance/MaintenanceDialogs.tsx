@@ -3,6 +3,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { AddMaintenanceForm } from "./AddMaintenanceForm";
 import { Equipment, Location } from "@/types/equipment";
 import { MaintenanceFormData } from "@/types/maintenance";
+import { useToast } from "@/components/ui/use-toast";
 
 interface MaintenanceDialogsProps {
   isDialogOpen: boolean;
@@ -29,6 +30,42 @@ export const MaintenanceDialogs = ({
   onConfirmDelete,
   locations
 }: MaintenanceDialogsProps) => {
+  const { toast } = useToast();
+
+  const handleSubmit = async (values: MaintenanceFormData) => {
+    try {
+      await onSubmit(values);
+      toast({
+        title: maintenanceToEdit ? "Maintenance modifiée" : "Maintenance ajoutée",
+        description: maintenanceToEdit 
+          ? "La maintenance a été modifiée avec succès."
+          : "La maintenance a été ajoutée avec succès.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'opération.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await onConfirmDelete();
+      toast({
+        title: "Maintenance terminée",
+        description: "La maintenance a été terminée avec succès.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la suppression.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -40,7 +77,7 @@ export const MaintenanceDialogs = ({
           </DialogHeader>
           {selectedEquipment && (
             <AddMaintenanceForm 
-              onSubmit={onSubmit}
+              onSubmit={handleSubmit}
               onCancel={onCancel}
               equipmentId={selectedEquipment.id}
               locations={locations}
@@ -62,7 +99,7 @@ export const MaintenanceDialogs = ({
             <AlertDialogCancel onClick={() => setIsDeleteDialogOpen(false)}>
               Annuler
             </AlertDialogCancel>
-            <AlertDialogAction onClick={onConfirmDelete}>
+            <AlertDialogAction onClick={handleDelete}>
               Confirmer
             </AlertDialogAction>
           </AlertDialogFooter>

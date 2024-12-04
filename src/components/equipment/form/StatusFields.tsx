@@ -1,6 +1,6 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
 
 interface StatusFieldsProps {
@@ -9,33 +9,24 @@ interface StatusFieldsProps {
 
 export function StatusFields({ form }: StatusFieldsProps) {
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <FormField
         control={form.control}
         name="status"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Statut</FormLabel>
-            <FormControl>
-              <RadioGroup
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                className="flex flex-col space-y-1"
-              >
-                <FormItem className="flex items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <RadioGroupItem value="En service" />
-                  </FormControl>
-                  <FormLabel className="font-normal">En service</FormLabel>
-                </FormItem>
-                <FormItem className="flex items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <RadioGroupItem value="En maintenance" />
-                  </FormControl>
-                  <FormLabel className="font-normal">En maintenance</FormLabel>
-                </FormItem>
-              </RadioGroup>
-            </FormControl>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionnez un statut" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="En service">En service</SelectItem>
+                <SelectItem value="En maintenance">En maintenance</SelectItem>
+              </SelectContent>
+            </Select>
             <FormMessage />
           </FormItem>
         )}

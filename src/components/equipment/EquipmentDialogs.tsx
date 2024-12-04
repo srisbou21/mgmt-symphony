@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { AddEquipmentForm } from "./AddEquipmentForm";
 import { Equipment } from "@/types/equipment";
+import { useToast } from "@/components/ui/use-toast";
 
 interface EquipmentDialogsProps {
   isDialogOpen: boolean;
@@ -26,6 +27,42 @@ export const EquipmentDialogs = ({
   onConfirmDelete,
   suppliers
 }: EquipmentDialogsProps) => {
+  const { toast } = useToast();
+
+  const handleSubmit = async (values: any) => {
+    try {
+      await onSubmit(values);
+      toast({
+        title: equipmentToEdit ? "Équipement modifié" : "Équipement ajouté",
+        description: equipmentToEdit 
+          ? "L'équipement a été modifié avec succès."
+          : "L'équipement a été ajouté avec succès.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'opération.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await onConfirmDelete();
+      toast({
+        title: "Équipement supprimé",
+        description: "L'équipement a été supprimé avec succès.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la suppression.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -36,7 +73,7 @@ export const EquipmentDialogs = ({
             </DialogTitle>
           </DialogHeader>
           <AddEquipmentForm 
-            onSubmit={onSubmit}
+            onSubmit={handleSubmit}
             onCancel={onCancel}
             initialData={equipmentToEdit || undefined}
             suppliers={suppliers}
@@ -56,7 +93,7 @@ export const EquipmentDialogs = ({
             <AlertDialogCancel onClick={() => setIsDeleteDialogOpen(false)}>
               Annuler
             </AlertDialogCancel>
-            <AlertDialogAction onClick={onConfirmDelete}>
+            <AlertDialogAction onClick={handleDelete}>
               Supprimer
             </AlertDialogAction>
           </AlertDialogFooter>
