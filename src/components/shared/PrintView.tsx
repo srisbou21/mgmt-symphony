@@ -1,4 +1,5 @@
 import React from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface PrintViewProps {
   title: string;
@@ -10,11 +11,25 @@ interface PrintViewProps {
 }
 
 export const PrintView = ({ title, data, columns }: PrintViewProps) => {
+  // Créer une chaîne unique pour le QR code basée sur les données et la date
+  const qrData = JSON.stringify({
+    title,
+    date: new Date().toISOString(),
+    recordCount: data.length,
+    documentId: Math.random().toString(36).substring(7)
+  });
+
   return (
     <div className="p-8 max-w-4xl mx-auto bg-white">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold">{title}</h1>
-        <p className="text-gray-500">Date d'impression: {new Date().toLocaleDateString()}</p>
+      <div className="mb-8 flex justify-between items-start">
+        <div>
+          <h1 className="text-2xl font-bold">{title}</h1>
+          <p className="text-gray-500">Date d'impression: {new Date().toLocaleDateString()}</p>
+        </div>
+        <div className="flex flex-col items-center">
+          <QRCodeSVG value={qrData} size={100} />
+          <p className="text-xs text-gray-500 mt-1">Scanner pour vérifier</p>
+        </div>
       </div>
 
       <table className="w-full border-collapse">
