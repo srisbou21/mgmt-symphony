@@ -51,15 +51,40 @@ const MaintenanceEquipment = () => {
       location: values.location,
     };
 
-    setMaintenanceEquipments([...maintenanceEquipments, updatedEquipment]);
+    if (maintenanceToEdit) {
+      // Update existing maintenance
+      setMaintenanceEquipments(maintenanceEquipments.map(eq => 
+        eq.id === selectedEquipment?.id ? updatedEquipment : eq
+      ));
+      toast({
+        title: "Maintenance mise à jour",
+        description: "Les informations de maintenance ont été mises à jour avec succès.",
+      });
+    } else {
+      // Add new maintenance
+      setMaintenanceEquipments([...maintenanceEquipments, updatedEquipment]);
+      toast({
+        title: "Maintenance ajoutée",
+        description: "L'équipement a été mis en maintenance avec succès.",
+      });
+    }
+
     setIsDialogOpen(false);
     setSelectedEquipment(null);
     setMaintenanceToEdit(null);
+  };
 
-    toast({
-      title: "Maintenance ajoutée",
-      description: "L'équipement a été mis en maintenance avec succès.",
+  const handleEditMaintenance = (equipment: Equipment) => {
+    setSelectedEquipment(equipment);
+    setMaintenanceToEdit({
+      equipmentId: equipment.id,
+      maintenanceReason: equipment.maintenanceReason || "",
+      maintenanceStartDate: equipment.maintenanceStartDate || "",
+      maintenanceEndDate: equipment.maintenanceEndDate || "",
+      location: equipment.location,
+      notes: "",
     });
+    setIsDialogOpen(true);
   };
 
   const handleDeleteMaintenance = (equipment: Equipment) => {
@@ -157,6 +182,7 @@ const MaintenanceEquipment = () => {
           <MaintenanceTable
             equipments={filteredEquipments}
             onDelete={handleDeleteMaintenance}
+            onEdit={handleEditMaintenance}
           />
         </Card>
 

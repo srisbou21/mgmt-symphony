@@ -1,14 +1,15 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { Equipment } from "@/types/equipment";
 
 interface MaintenanceTableProps {
   equipments: Equipment[];
   onDelete: (equipment: Equipment) => void;
+  onEdit: (equipment: Equipment) => void;
 }
 
-export function MaintenanceTable({ equipments, onDelete }: MaintenanceTableProps) {
+export function MaintenanceTable({ equipments, onDelete, onEdit }: MaintenanceTableProps) {
   return (
     <Table>
       <TableHeader>
@@ -35,7 +36,15 @@ export function MaintenanceTable({ equipments, onDelete }: MaintenanceTableProps
             <TableCell>{equipment.maintenanceStartDate || '-'}</TableCell>
             <TableCell>{equipment.maintenanceEndDate || '-'}</TableCell>
             <TableCell>{equipment.maintenanceReason || '-'}</TableCell>
-            <TableCell className="text-right">
+            <TableCell className="text-right space-x-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onEdit(equipment)}
+                className="hover:bg-blue-100"
+              >
+                <Pencil className="h-4 w-4 text-blue-600" />
+              </Button>
               <Button
                 variant="ghost"
                 size="icon"
