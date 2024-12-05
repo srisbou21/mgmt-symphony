@@ -15,8 +15,9 @@ interface EquipmentFieldsProps {
 }
 
 export function EquipmentFields({ form, equipments, items, setItems }: EquipmentFieldsProps) {
+  const defaultEquipmentId = equipments[0]?.id || 0;
+
   const addNewItem = () => {
-    const defaultEquipmentId = equipments[0]?.id || 0;
     const newItem: DischargeItem = {
       equipmentId: defaultEquipmentId,
       quantity: 1,
@@ -69,7 +70,7 @@ export function EquipmentFields({ form, equipments, items, setItems }: Equipment
                   <FormLabel>Équipement {index + 1}</FormLabel>
                   <Select 
                     onValueChange={(value) => field.onChange(Number(value))} 
-                    defaultValue={String(field.value || equipments[0]?.id || 0)}
+                    defaultValue={String(field.value || defaultEquipmentId)}
                   >
                     <FormControl>
                       <SelectTrigger>
