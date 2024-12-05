@@ -34,11 +34,12 @@ interface AddDischargeFormProps {
 }
 
 export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initialData }: AddDischargeFormProps) {
-  const [items, setItems] = useState<DischargeItem[]>(initialData?.items || [{ 
-    equipmentId: 0, 
+  // Initialize items with required fields having non-optional values
+  const [items, setItems] = useState<DischargeItem[]>(initialData?.items || [{
+    equipmentId: 0,
     quantity: 1,
     serialNumber: "",
-    inventoryNumber: ""
+    inventoryNumber: "",
   }]);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -48,11 +49,12 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
       status: initialData?.status || "Acquisition",
       dischargeDate: initialData?.dischargeDate ? new Date(initialData.dischargeDate) : new Date(),
       returnDate: initialData?.returnDate ? new Date(initialData.returnDate) : undefined,
-      items: initialData?.items || [{ 
-        equipmentId: 0, 
+      // Ensure default items have required fields
+      items: initialData?.items || [{
+        equipmentId: 0,
         quantity: 1,
         serialNumber: "",
-        inventoryNumber: ""
+        inventoryNumber: "",
       }],
       destination: initialData?.destination || "",
     },
