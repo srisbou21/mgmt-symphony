@@ -59,8 +59,8 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
       items: items.map(item => ({
         equipmentId: item.equipmentId,
         quantity: item.quantity,
-        serialNumber: item.serialNumber,
-        inventoryNumber: item.inventoryNumber,
+        serialNumber: item.serialNumber || "",
+        inventoryNumber: item.inventoryNumber || "",
       })),
       destination: initialData?.destination || "",
     },
@@ -74,7 +74,12 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
       status: values.status,
       dischargeDate: values.dischargeDate.toISOString(),
       returnDate: values.returnDate?.toISOString(),
-      items: values.items,
+      items: values.items.map(item => ({
+        equipmentId: item.equipmentId,
+        quantity: item.quantity,
+        serialNumber: item.serialNumber,
+        inventoryNumber: item.inventoryNumber,
+      })),
       attachedFile: values.attachedFile,
       destination: values.destination,
     };
