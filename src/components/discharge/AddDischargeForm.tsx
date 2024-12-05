@@ -54,7 +54,7 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
         serialNumber: "",
         inventoryNumber: ""
       }],
-      destination: initialData?.destination,
+      destination: initialData?.destination || "",
     },
   });
 
