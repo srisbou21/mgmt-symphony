@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Equipment, EquipmentType, EquipmentTypeStats } from "@/types/equipment";
 import { EquipmentChart } from "@/components/equipment/stats/EquipmentChart";
