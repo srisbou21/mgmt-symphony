@@ -10,9 +10,103 @@ interface DischargePrintViewProps {
 export const DischargePrintView = ({ discharge, staffName, equipments }: DischargePrintViewProps) => {
   const formattedDate = new Date(discharge.dischargeDate).toLocaleDateString();
   
+  if (discharge.status === "Restitution") {
+    return (
+      <div className="p-8 max-w-4xl mx-auto bg-white">
+        <div className="border border-black">
+          <div className="grid grid-cols-2">
+            <div className="p-4 border-r border-black">
+              <h1 className="text-lg font-bold uppercase">
+                Fiche de restitution matériel et outillage
+              </h1>
+            </div>
+            <div className="p-4">
+              <p className="font-bold">Entreprise :</p>
+              <p>CSV</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 text-right">
+          <p>EL Jadida le {formattedDate}</p>
+        </div>
+
+        <div className="mt-4">
+          <p><span className="font-bold">RESTITUTION :</span></p>
+          <p><span className="font-bold">Matériel/Outillage :</span> Entreprise : CSV Sarl</p>
+        </div>
+
+        <div className="mt-4 border border-black">
+          <div className="bg-gray-100 p-2 border-b border-black">
+            <h2 className="text-center font-bold">IDENTITE DU RESTITUTEUR</h2>
+          </div>
+          <div className="p-4">
+            <p>Le(s) sous-signé(s) confirment la restitution du matériel / outillage suivant :</p>
+            <p className="mt-2">
+              <span className="font-bold">Nom et Prénom : </span>
+              {staffName}
+            </p>
+            <div className="flex justify-between mt-2">
+              <p>
+                <span className="font-bold">Date de restitution : </span>
+                {formattedDate}
+              </p>
+              <p>
+                <span className="font-bold">Provenance : </span>
+                {discharge.destination || "N/A"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <div className="border border-black">
+            <div className="bg-gray-100 p-2 border-b border-black">
+              <h2 className="text-center font-bold">CARACTERISTIQUES DU MATERIELS / OUTILLAGE RESTITUÉ</h2>
+            </div>
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-black">
+                  <th className="border-r border-black p-2 text-left">Qte</th>
+                  <th className="border-r border-black p-2 text-left">Désignation</th>
+                  <th className="border-r border-black p-2 text-left">Type</th>
+                  <th className="border-r border-black p-2 text-left">Catégorie</th>
+                  <th className="border-r border-black p-2 text-left">État</th>
+                  <th className="p-2 text-left">Observation</th>
+                </tr>
+              </thead>
+              <tbody>
+                {equipments.map((equipment, index) => (
+                  <tr key={index} className="border-b border-black">
+                    <td className="border-r border-black p-2">{discharge.items[index]?.quantity || 1}</td>
+                    <td className="border-r border-black p-2">{equipment.name}</td>
+                    <td className="border-r border-black p-2">{equipment.type}</td>
+                    <td className="border-r border-black p-2">{equipment.category}</td>
+                    <td className="border-r border-black p-2">{"Bon état"}</td>
+                    <td className="p-2">Heure : {new Date(discharge.dischargeDate).toLocaleTimeString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="mt-8 grid grid-cols-2 gap-8">
+          <div>
+            <p className="font-bold">Signature du restituteur :</p>
+            <div className="mt-16 border-t border-black w-48"></div>
+          </div>
+          <div>
+            <p className="font-bold">Signature du responsable :</p>
+            <div className="mt-16 border-t border-black w-48"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8 max-w-4xl mx-auto bg-white">
-      {/* Header */}
       <div className="border border-black">
         <div className="grid grid-cols-2">
           <div className="p-4 border-r border-black">
@@ -27,18 +121,15 @@ export const DischargePrintView = ({ discharge, staffName, equipments }: Dischar
         </div>
       </div>
 
-      {/* Date and Location */}
       <div className="mt-8 text-right">
         <p>EL Jadida le {formattedDate}</p>
       </div>
 
-      {/* Sortie Info */}
       <div className="mt-4">
-        <p><span className="font-bold">SORTIE :</span> =</p>
-        <p><span className="font-bold">Matériel/Outillage :</span> Entreprise : CSV Sarl =</p>
+        <p><span className="font-bold">SORTIE :</span></p>
+        <p><span className="font-bold">Matériel/Outillage :</span> Entreprise : CSV Sarl</p>
       </div>
 
-      {/* Receiver Identity */}
       <div className="mt-4 border border-black">
         <div className="bg-gray-100 p-2 border-b border-black">
           <h2 className="text-center font-bold">IDENTITE DE RECEPTEUR</h2>
@@ -62,7 +153,6 @@ export const DischargePrintView = ({ discharge, staffName, equipments }: Dischar
         </div>
       </div>
 
-      {/* Equipment Table */}
       <div className="mt-4">
         <div className="border border-black">
           <div className="bg-gray-100 p-2 border-b border-black">
@@ -73,8 +163,8 @@ export const DischargePrintView = ({ discharge, staffName, equipments }: Dischar
               <tr className="border-b border-black">
                 <th className="border-r border-black p-2 text-left">Qte</th>
                 <th className="border-r border-black p-2 text-left">Désignation</th>
-                <th className="border-r border-black p-2 text-left">Marque</th>
-                <th className="border-r border-black p-2 text-left">N° du bon D'entrée</th>
+                <th className="border-r border-black p-2 text-left">Type</th>
+                <th className="border-r border-black p-2 text-left">Catégorie</th>
                 <th className="p-2 text-left">Observation</th>
               </tr>
             </thead>
@@ -83,8 +173,8 @@ export const DischargePrintView = ({ discharge, staffName, equipments }: Dischar
                 <tr key={index} className="border-b border-black">
                   <td className="border-r border-black p-2">{discharge.items[index]?.quantity || 1}</td>
                   <td className="border-r border-black p-2">{equipment.name}</td>
-                  <td className="border-r border-black p-2">{equipment.supplier || "*****"}</td>
-                  <td className="border-r border-black p-2">{equipment.inventoryNumber || "*****"}</td>
+                  <td className="border-r border-black p-2">{equipment.type}</td>
+                  <td className="border-r border-black p-2">{equipment.category}</td>
                   <td className="p-2">Heure : {new Date(discharge.dischargeDate).toLocaleTimeString()}</td>
                 </tr>
               ))}
@@ -93,7 +183,6 @@ export const DischargePrintView = ({ discharge, staffName, equipments }: Dischar
         </div>
       </div>
 
-      {/* Signature */}
       <div className="mt-8">
         <p className="font-bold">Nom & Visa du récepteur :</p>
         <div className="mt-16 border-t border-black w-48"></div>
