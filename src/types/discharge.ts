@@ -10,6 +10,7 @@ export interface DischargeItem {
 
 export interface Discharge {
   id: number;
+  dischargeNumber: number;
   staffId: number;
   items: DischargeItem[];
   status: DischargeStatus;
@@ -17,12 +18,11 @@ export interface Discharge {
   returnDate?: string;
   attachedFile?: string;
   destination?: string;
-  date?: string; // For backwards compatibility
-  quantity?: number; // For backwards compatibility
-  // Additional fields needed by Inventory.tsx
+  type?: string;
+  category?: string;
   equipmentId?: number;
   equipmentName?: string;
-  category?: string;
   serialNumber?: string;
   inventoryNumber?: string;
+  quantity?: number;
 }
