@@ -5,15 +5,26 @@ import { Button } from "@/components/ui/button";
 import { Equipment } from "@/types/equipment";
 import { Plus, Trash2 } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
+import { DischargeItem } from "@/types/discharge";
 
 interface EquipmentFieldsProps {
   form: UseFormReturn<any>;
   equipments: Equipment[];
-  items: any[];
-  setItems: (items: any[]) => void;
+  items: DischargeItem[];
+  setItems: (items: DischargeItem[]) => void;
 }
 
 export function EquipmentFields({ form, equipments, items, setItems }: EquipmentFieldsProps) {
+  const addNewItem = () => {
+    const newItem: DischargeItem = {
+      equipmentId: equipments[0]?.id || 0,
+      quantity: 1,
+      serialNumber: "",
+      inventoryNumber: "",
+    };
+    setItems([...items, newItem]);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -22,7 +33,7 @@ export function EquipmentFields({ form, equipments, items, setItems }: Equipment
           type="button" 
           variant="outline" 
           size="sm" 
-          onClick={() => setItems([...items, { equipmentId: 0, quantity: 1 }])}
+          onClick={addNewItem}
         >
           <Plus className="w-4 h-4 mr-2" />
           Ajouter un équipement
@@ -50,7 +61,7 @@ export function EquipmentFields({ form, equipments, items, setItems }: Equipment
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Équipement {index + 1}</FormLabel>
-                  <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={field.value?.toString()}>
+                  <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={String(field.value)}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Sélectionner l'équipement" />
@@ -58,7 +69,7 @@ export function EquipmentFields({ form, equipments, items, setItems }: Equipment
                     </FormControl>
                     <SelectContent>
                       {equipments.map((equipment) => (
-                        <SelectItem key={equipment.id} value={equipment.id.toString()}>
+                        <SelectItem key={equipment.id} value={String(equipment.id)}>
                           {equipment.name}
                         </SelectItem>
                       ))}
@@ -70,18 +81,16 @@ export function EquipmentFields({ form, equipments, items, setItems }: Equipment
             />
 
             {selectedEquipment && (
-              <>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-sm">
-                    <span className="font-medium">Type : </span>
-                    {selectedEquipment.type}
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-medium">Catégorie : </span>
-                    {selectedEquipment.category}
-                  </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-sm">
+                  <span className="font-medium">Type : </span>
+                  {selectedEquipment.type}
                 </div>
-              </>
+                <div className="text-sm">
+                  <span className="font-medium">Catégorie : </span>
+                  {selectedEquipment.category}
+                </div>
+              </div>
             )}
 
             <FormField

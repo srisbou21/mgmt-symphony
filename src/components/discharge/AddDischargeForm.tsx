@@ -16,8 +16,8 @@ const formSchema = z.object({
   dischargeDate: z.date(),
   returnDate: z.date().optional(),
   items: z.array(z.object({
-    equipmentId: z.number(),  // Made required by removing .optional()
-    quantity: z.number().min(1, "La quantité doit être supérieure à 0"),  // Made required
+    equipmentId: z.number(),
+    quantity: z.number().min(1, "La quantité doit être supérieure à 0"),
     serialNumber: z.string().optional(),
     inventoryNumber: z.string().optional(),
   })),
@@ -34,13 +34,16 @@ interface AddDischargeFormProps {
 }
 
 export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initialData }: AddDischargeFormProps) {
-  // Initialize items with required fields having non-optional values
-  const [items, setItems] = useState<DischargeItem[]>(initialData?.items || [{
-    equipmentId: 0,
+  const defaultItem: DischargeItem = {
+    equipmentId: equipments[0]?.id || 0,
     quantity: 1,
     serialNumber: "",
     inventoryNumber: "",
-  }]);
+  };
+
+  const [items, setItems] = useState<DischargeItem[]>(
+    initialData?.items || [defaultItem]
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,13 +52,7 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
       status: initialData?.status || "Acquisition",
       dischargeDate: initialData?.dischargeDate ? new Date(initialData.dischargeDate) : new Date(),
       returnDate: initialData?.returnDate ? new Date(initialData.returnDate) : undefined,
-      // Ensure default items have required fields
-      items: initialData?.items || [{
-        equipmentId: 0,
-        quantity: 1,
-        serialNumber: "",
-        inventoryNumber: "",
-      }],
+      items: initialData?.items || [defaultItem],
       destination: initialData?.destination || "",
     },
   });
