@@ -1,17 +1,20 @@
 export type DischargeType = "Équipement" | "Consommable";
+export type DischargeStatus = "Acquisition" | "Restitution";
+
+export interface DischargeItem {
+  equipmentId: number;
+  quantity: number;
+  serialNumber?: string;
+  inventoryNumber?: string;
+}
 
 export interface Discharge {
   id: number;
-  equipmentId: number;
   staffId: number;
-  type: DischargeType;
-  quantity: number;
-  date: string;
-  serialNumber?: string;
-  inventoryNumber?: string;
-  staffName?: string;
-  equipmentName?: string;
-  category?: "Matériel" | "Consommable";
+  items: DischargeItem[];
+  status: DischargeStatus;
+  dischargeDate: string;
+  returnDate?: string;
   attachedFile?: string;
   destination?: string;
 }

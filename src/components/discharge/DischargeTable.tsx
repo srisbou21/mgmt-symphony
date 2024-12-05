@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Equipment } from "@/types/equipment";
 import { Discharge } from "@/types/discharge";
+import { format } from "date-fns";
 
 interface DischargeTableProps {
   equipments: Equipment[];
@@ -14,11 +15,11 @@ export const DischargeTable = ({ equipments, onDischargeSelect }: DischargeTable
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Nom</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>N° Série</TableHead>
-            <TableHead>N° Inventaire</TableHead>
-            <TableHead>Emplacement</TableHead>
+            <TableHead>État</TableHead>
+            <TableHead>Date décharge</TableHead>
+            <TableHead>Date restitution</TableHead>
+            <TableHead>Équipements</TableHead>
+            <TableHead>Destination</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -29,21 +30,22 @@ export const DischargeTable = ({ equipments, onDischargeSelect }: DischargeTable
               onClick={() => {
                 onDischargeSelect({
                   id: equipment.id,
-                  equipmentId: equipment.id,
                   staffId: 1,
-                  type: "Équipement",
-                  quantity: 1,
-                  date: new Date().toISOString(),
-                  serialNumber: equipment.serialNumber,
-                  inventoryNumber: equipment.inventoryNumber,
-                  category: "Matériel",
+                  status: "Acquisition",
+                  dischargeDate: new Date().toISOString(),
+                  items: [{
+                    equipmentId: equipment.id,
+                    quantity: 1,
+                    serialNumber: equipment.serialNumber,
+                    inventoryNumber: equipment.inventoryNumber,
+                  }],
                 });
               }}
             >
-              <TableCell className="font-medium">{equipment.name}</TableCell>
-              <TableCell>{equipment.type}</TableCell>
-              <TableCell>{equipment.serialNumber}</TableCell>
-              <TableCell>{equipment.inventoryNumber}</TableCell>
+              <TableCell className="font-medium">Acquisition</TableCell>
+              <TableCell>{format(new Date(), "dd/MM/yyyy")}</TableCell>
+              <TableCell>-</TableCell>
+              <TableCell>{equipment.name}</TableCell>
               <TableCell>{equipment.location}</TableCell>
             </TableRow>
           ))}
