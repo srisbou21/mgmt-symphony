@@ -2,13 +2,12 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Package, Plus, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AddDischargeForm } from "@/components/discharge/AddDischargeForm";
 import { DischargeHeader } from "@/components/discharge/DischargeHeader";
 import { DischargeTable } from "@/components/discharge/DischargeTable";
+import { DischargeFilters } from "@/components/discharge/DischargeFilters";
 import { Discharge as DischargeType } from "@/types/discharge";
 import { Staff } from "@/types/staff";
 import { Equipment } from "@/types/equipment";
@@ -17,6 +16,13 @@ const Discharge = () => {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedDischarge, setSelectedDischarge] = useState<DischargeType | null>(null);
+  const [filters, setFilters] = useState({
+    dischargeNumber: "",
+    status: "all",
+    dischargeDate: undefined as Date | undefined,
+    category: "all",
+    service: "all",
+  });
 
   const mockStaff: Staff[] = [
     { 
@@ -72,6 +78,10 @@ const Discharge = () => {
     },
   ];
 
+  const handleFilterChange = (key: string, value: any) => {
+    setFilters({ ...filters, [key]: value });
+  };
+
   const handleAddDischarge = (values: Partial<DischargeType>) => {
     console.log("New discharge:", values);
     toast({
@@ -91,6 +101,16 @@ const Discharge = () => {
     setSelectedDischarge(null);
   };
 
+  const filteredDischarges = mockEquipments.filter((equipment) => {
+    const matchesNumber = !filters.dischargeNumber || equipment.inventoryNumber.includes(filters.dischargeNumber);
+    const matchesStatus = filters.status === "all" || equipment.status === filters.status;
+    const matchesCategory = filters.category === "all" || equipment.category === filters.category;
+    const matchesService = filters.service === "all"; // Add service filtering logic when available
+    const matchesDate = !filters.dischargeDate || equipment.lastMaintenance === filters.dischargeDate?.toISOString().split('T')[0];
+    
+    return matchesNumber && matchesStatus && matchesCategory && matchesService && matchesDate;
+  });
+
   return (
     <div className="min-h-screen bg-dmg-light p-8">
       <motion.div
@@ -104,8 +124,13 @@ const Discharge = () => {
           onPrintClick={() => window.print()}
         />
 
+        <DischargeFilters 
+          filters={filters}
+          onFilterChange={handleFilterChange}
+        />
+
         <DischargeTable 
-          equipments={mockEquipments}
+          equipments={filteredDischarges}
           onDischargeSelect={(discharge) => {
             setSelectedDischarge(discharge);
             setIsDialogOpen(true);
