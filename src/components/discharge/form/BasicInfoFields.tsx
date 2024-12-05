@@ -23,7 +23,7 @@ export function BasicInfoFields({ form, staff }: BasicInfoFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>Personnel</FormLabel>
-            <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={field.value?.toString()}>
+            <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={String(field.value || staff[0]?.id || 0)}>
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner le personnel" />
@@ -31,7 +31,7 @@ export function BasicInfoFields({ form, staff }: BasicInfoFieldsProps) {
               </FormControl>
               <SelectContent>
                 {staff.map((person) => (
-                  <SelectItem key={person.id} value={person.id.toString()}>
+                  <SelectItem key={person.id} value={String(person.id)}>
                     {person.firstName} {person.lastName}
                   </SelectItem>
                 ))}
@@ -48,7 +48,7 @@ export function BasicInfoFields({ form, staff }: BasicInfoFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>État de la décharge</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select onValueChange={field.onChange} defaultValue={field.value || "Acquisition"}>
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner l'état" />

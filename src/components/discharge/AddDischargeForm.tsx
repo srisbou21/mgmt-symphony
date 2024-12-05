@@ -34,8 +34,11 @@ interface AddDischargeFormProps {
 }
 
 export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initialData }: AddDischargeFormProps) {
+  // Ensure we have a valid default equipment ID
+  const defaultEquipmentId = equipments[0]?.id || 0;
+  
   const defaultItem: DischargeItem = {
-    equipmentId: equipments[0]?.id || 0,
+    equipmentId: defaultEquipmentId,
     quantity: 1,
     serialNumber: "",
     inventoryNumber: "",
@@ -48,7 +51,7 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      staffId: initialData?.staffId || 0,
+      staffId: initialData?.staffId || (staff[0]?.id || 0),
       status: initialData?.status || "Acquisition",
       dischargeDate: initialData?.dischargeDate ? new Date(initialData.dischargeDate) : new Date(),
       returnDate: initialData?.returnDate ? new Date(initialData.returnDate) : undefined,
