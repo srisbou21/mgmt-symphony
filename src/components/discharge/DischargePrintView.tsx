@@ -8,7 +8,7 @@ interface DischargePrintViewProps {
 }
 
 export const DischargePrintView = ({ discharge, staffName, equipments }: DischargePrintViewProps) => {
-  const formattedDate = new Date(discharge.date).toLocaleDateString();
+  const formattedDate = new Date(discharge.dischargeDate).toLocaleDateString();
   
   return (
     <div className="p-8 max-w-4xl mx-auto bg-white">
@@ -81,11 +81,11 @@ export const DischargePrintView = ({ discharge, staffName, equipments }: Dischar
             <tbody>
               {equipments.map((equipment, index) => (
                 <tr key={index} className="border-b border-black">
-                  <td className="border-r border-black p-2">{discharge.quantity}</td>
+                  <td className="border-r border-black p-2">{discharge.items[index]?.quantity || 1}</td>
                   <td className="border-r border-black p-2">{equipment.name}</td>
                   <td className="border-r border-black p-2">{equipment.supplier || "*****"}</td>
                   <td className="border-r border-black p-2">{equipment.inventoryNumber || "*****"}</td>
-                  <td className="p-2">Heure : {new Date(discharge.date).toLocaleTimeString()}</td>
+                  <td className="p-2">Heure : {new Date(discharge.dischargeDate).toLocaleTimeString()}</td>
                 </tr>
               ))}
             </tbody>

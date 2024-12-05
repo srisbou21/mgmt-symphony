@@ -31,7 +31,7 @@ const formSchema = z.object({
 });
 
 interface AddDischargeFormProps {
-  onSubmit: (values: Partial<Discharge>) => void;
+  onSubmit: (values: Discharge) => void;
   onCancel: () => void;
   equipments: Equipment[];
   staff: Staff[];
@@ -53,17 +53,23 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
     },
   });
 
-  const addItem = () => {
-    setItems([...items, { equipmentId: 0, quantity: 1 }]);
-  };
-
-  const removeItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
+  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+    const discharge: Discharge = {
+      id: initialData?.id || Math.random(), // Temporary ID generation
+      staffId: values.staffId,
+      status: values.status,
+      dischargeDate: values.dischargeDate.toISOString(),
+      returnDate: values.returnDate?.toISOString(),
+      items: values.items,
+      attachedFile: values.attachedFile,
+      destination: values.destination,
+    };
+    onSubmit(discharge);
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="staffId"
@@ -198,7 +204,7 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-medium">Équipements</h3>
-            <Button type="button" variant="outline" size="sm" onClick={addItem}>
+            <Button type="button" variant="outline" size="sm" onClick={() => setItems([...items, { equipmentId: 0, quantity: 1 }])}>
               <Plus className="w-4 h-4 mr-2" />
               Ajouter un équipement
             </Button>
@@ -211,7 +217,7 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
                 variant="ghost"
                 size="icon"
                 className="absolute top-2 right-2"
-                onClick={() => removeItem(index)}
+                onClick={() => setItems(items.filter((_, i) => i !== index))}
               >
                 <Trash2 className="w-4 h-4" />
               </Button>

@@ -17,4 +17,12 @@ export interface Discharge {
   returnDate?: string;
   attachedFile?: string;
   destination?: string;
+  date?: string; // For backwards compatibility
+  quantity?: number; // For backwards compatibility
+  // Additional fields needed by Inventory.tsx
+  equipmentId?: number;
+  equipmentName?: string;
+  category?: string;
+  serialNumber?: string;
+  inventoryNumber?: string;
 }
