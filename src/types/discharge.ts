@@ -4,8 +4,10 @@ export type DischargeStatus = "Acquisition" | "Restitution";
 export interface DischargeItem {
   equipmentId: number;
   quantity: number;
-  serialNumber?: string;
-  inventoryNumber?: string;
+  serialNumber: string;
+  inventoryNumber: string;
+  type?: string;
+  category?: string;
 }
 
 export interface Discharge {
