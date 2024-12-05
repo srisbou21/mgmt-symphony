@@ -9,7 +9,7 @@ import { equipmentTypes } from "@/types/equipment";
 
 const EquipmentTypes = () => {
   const [typeStats, setTypeStats] = useState<EquipmentTypeStats[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("all");
   const [chartData, setChartData] = useState<any[]>([]);
 
   const mockEquipments: Equipment[] = [
@@ -80,7 +80,7 @@ const EquipmentTypes = () => {
   }, []);
 
   useEffect(() => {
-    if (searchTerm) {
+    if (searchTerm && searchTerm !== "all") {
       const filteredType = typeStats.find(
         stat => stat.type === searchTerm
       );
@@ -104,7 +104,7 @@ const EquipmentTypes = () => {
   }, [searchTerm, typeStats]);
 
   const filteredStats = typeStats.filter(stat =>
-    !searchTerm || stat.type === searchTerm
+    searchTerm === "all" || stat.type === searchTerm
   );
 
   return (
@@ -126,7 +126,7 @@ const EquipmentTypes = () => {
               <SelectValue placeholder="Sélectionner un type d'équipement" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tous les types</SelectItem>
+              <SelectItem value="all">Tous les types</SelectItem>
               {equipmentTypes.map((type) => (
                 <SelectItem key={type} value={type}>
                   {type}
