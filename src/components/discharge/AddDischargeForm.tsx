@@ -18,8 +18,8 @@ const formSchema = z.object({
   items: z.array(z.object({
     equipmentId: z.number(),
     quantity: z.number().min(1, "La quantité doit être supérieure à 0"),
-    serialNumber: z.string().optional(),
-    inventoryNumber: z.string().optional(),
+    serialNumber: z.string(),
+    inventoryNumber: z.string(),
   })),
   attachedFile: z.string().optional(),
   destination: z.string().optional(),
@@ -34,8 +34,9 @@ interface AddDischargeFormProps {
 }
 
 export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initialData }: AddDischargeFormProps) {
-  // Ensure we have a valid default equipment ID
+  // Ensure we have valid default values
   const defaultEquipmentId = equipments[0]?.id || 0;
+  const defaultStaffId = staff[0]?.id || 0;
   
   const defaultItem: DischargeItem = {
     equipmentId: defaultEquipmentId,
@@ -51,7 +52,7 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      staffId: initialData?.staffId || (staff[0]?.id || 0),
+      staffId: initialData?.staffId || defaultStaffId,
       status: initialData?.status || "Acquisition",
       dischargeDate: initialData?.dischargeDate ? new Date(initialData.dischargeDate) : new Date(),
       returnDate: initialData?.returnDate ? new Date(initialData.returnDate) : undefined,

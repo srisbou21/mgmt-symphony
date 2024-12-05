@@ -16,13 +16,15 @@ interface EquipmentFieldsProps {
 
 export function EquipmentFields({ form, equipments, items, setItems }: EquipmentFieldsProps) {
   const addNewItem = () => {
+    const defaultEquipmentId = equipments[0]?.id || 0;
     const newItem: DischargeItem = {
-      equipmentId: equipments[0]?.id || 0,
+      equipmentId: defaultEquipmentId,
       quantity: 1,
       serialNumber: "",
       inventoryNumber: "",
     };
     setItems([...items, newItem]);
+    form.setValue(`items.${items.length}`, newItem);
   };
 
   return (
@@ -50,7 +52,11 @@ export function EquipmentFields({ form, equipments, items, setItems }: Equipment
               variant="ghost"
               size="icon"
               className="absolute top-2 right-2"
-              onClick={() => setItems(items.filter((_, i) => i !== index))}
+              onClick={() => {
+                const newItems = items.filter((_, i) => i !== index);
+                setItems(newItems);
+                form.setValue('items', newItems);
+              }}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -61,7 +67,10 @@ export function EquipmentFields({ form, equipments, items, setItems }: Equipment
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Équipement {index + 1}</FormLabel>
-                  <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={String(field.value)}>
+                  <Select 
+                    onValueChange={(value) => field.onChange(Number(value))} 
+                    defaultValue={String(field.value || equipments[0]?.id || 0)}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Sélectionner l'équipement" />
@@ -100,7 +109,12 @@ export function EquipmentFields({ form, equipments, items, setItems }: Equipment
                 <FormItem>
                   <FormLabel>Quantité</FormLabel>
                   <FormControl>
-                    <Input type="number" min="1" {...field} onChange={e => field.onChange(Number(e.target.value))} />
+                    <Input 
+                      type="number" 
+                      min="1" 
+                      {...field} 
+                      onChange={e => field.onChange(Number(e.target.value))} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
