@@ -1,40 +1,35 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Equipment from "./pages/Equipment";
-import MaintenanceEquipment from "./pages/MaintenanceEquipment";
-import Suppliers from "./pages/Suppliers";
-import Staff from "./pages/Staff";
 import Discharge from "./pages/Discharge";
-import Locations from "./pages/Locations";
+import EquipmentTypes from "./pages/EquipmentTypes";
+import Index from "./pages/Index";
+import Dashboard from "./pages/Dashboard";
+import Staff from "./pages/Staff";
+import Maintenance from "./pages/Maintenance";
 import Inventory from "./pages/Inventory";
-import Services from "./pages/Services";
+import Settings from "./pages/Settings";
+import { ThemeProvider } from "./components/theme-provider";
+import { Toaster } from "./components/ui/toaster";
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+function App() {
+  return (
+    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+      <Router>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/equipment" element={<Equipment />} />
-          <Route path="/maintenance" element={<MaintenanceEquipment />} />
-          <Route path="/suppliers" element={<Suppliers />} />
-          <Route path="/staff" element={<Staff />} />
           <Route path="/discharge" element={<Discharge />} />
-          <Route path="/locations" element={<Locations />} />
+          <Route path="/equipment-types" element={<EquipmentTypes />} />
+          <Route path="/staff" element={<Staff />} />
+          <Route path="/maintenance" element={<Maintenance />} />
           <Route path="/inventory" element={<Inventory />} />
-          <Route path="/services" element={<Services />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+        <Toaster />
+      </Router>
+    </ThemeProvider>
+  );
+}
 
 export default App;
