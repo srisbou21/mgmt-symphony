@@ -1,112 +1,132 @@
 import { motion } from "framer-motion";
-import { MainStats } from "@/components/dashboard/MainStats";
-import { SupplierStats } from "@/components/dashboard/SupplierStats";
-import { ActivityCard } from "@/components/dashboard/ActivityCard";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import {
+  Package,
+  Wrench,
+  Users,
+  FileText,
+  Settings,
+  BarChart3,
+  Upload,
+  Building2,
+} from "lucide-react";
 
-// Mock user role for demonstration
-const userRole = "admin";
-
-const getUserTitle = (role: string) => {
-  switch (role) {
-    case "admin":
-      return "Directeur des Moyens Généraux";
-    case "maintenance":
-      return "Équipe de Maintenance";
-    case "admin_staff":
-      return "Personnel Administratif";
-    default:
-      return "Utilisateur";
-  }
-};
-
-const getUserWelcomeMessage = (role: string) => {
-  switch (role) {
-    case "admin":
-      return "Gérez efficacement l'ensemble des ressources matérielles, logistiques et humaines";
-    case "maintenance":
-      return "Suivez les interventions de maintenance et gérez les équipements";
-    case "admin_staff":
-      return "Gérez les stocks et traitez les demandes internes";
-    default:
-      return "Bienvenue sur votre espace de gestion";
-  }
-};
-
-const tickets = [
+const menuItems = [
   {
-    title: "Maintenance imprimante 3ème étage",
-    time: "Il y a 2 heures",
-    priority: "Urgent"
+    title: "Équipements",
+    description: "Gérer les équipements et leur inventaire",
+    icon: Package,
+    path: "/equipment",
+    color: "bg-blue-100 text-blue-600",
   },
   {
-    title: "Réservation salle de réunion A",
-    time: "Il y a 3 heures",
-    priority: "Normal"
+    title: "Types d'équipements",
+    description: "Consulter les statistiques par type",
+    icon: BarChart3,
+    path: "/equipment-types",
+    color: "bg-purple-100 text-purple-600",
   },
   {
-    title: "Demande de fournitures bureau",
-    time: "Il y a 4 heures",
-    priority: "Bas"
-  }
-];
-
-const alerts = [
-  {
-    title: "Papier A4",
-    stock: "5 ramettes restantes",
-    status: "Critique"
+    title: "Maintenance",
+    description: "Suivre les maintenances et réparations",
+    icon: Wrench,
+    path: "/maintenance",
+    color: "bg-green-100 text-green-600",
   },
   {
-    title: "Cartouches d'encre",
-    stock: "3 unités restantes",
-    status: "Faible"
+    title: "Personnel",
+    description: "Gérer les équipes et les accès",
+    icon: Users,
+    path: "/staff",
+    color: "bg-yellow-100 text-yellow-600",
   },
   {
-    title: "Fournitures bureau",
-    stock: "Stock à 15%",
-    status: "À surveiller"
-  }
+    title: "Décharges",
+    description: "Gérer les sorties d'équipements",
+    icon: Upload,
+    path: "/discharge",
+    color: "bg-red-100 text-red-600",
+  },
+  {
+    title: "Inventaire",
+    description: "Suivre les stocks et les mouvements",
+    icon: FileText,
+    path: "/inventory",
+    color: "bg-indigo-100 text-indigo-600",
+  },
+  {
+    title: "Emplacements",
+    description: "Gérer les locaux et zones",
+    icon: Building2,
+    path: "/locations",
+    color: "bg-orange-100 text-orange-600",
+  },
+  {
+    title: "Paramètres",
+    description: "Configurer l'application",
+    icon: Settings,
+    path: "/settings",
+    color: "bg-gray-100 text-gray-600",
+  },
 ];
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-dmg-light p-8">
+    <div className="min-h-screen bg-gray-50 p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="max-w-7xl mx-auto"
       >
-        <header className="mb-12">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-dmg-accent/10 text-dmg-accent text-sm font-medium mb-4">
-            {getUserTitle(userRole)}
-          </div>
-          <h1 className="text-4xl font-bold text-dmg-dark mb-2">
-            Bienvenue sur votre espace de gestion
-          </h1>
-          <p className="text-dmg-muted text-lg">
-            {getUserWelcomeMessage(userRole)}
-          </p>
+        <header className="text-center mb-12">
+          <motion.h1
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-4xl font-bold text-gray-900 mb-4"
+          >
+            Gestion des Moyens Généraux
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-lg text-gray-600"
+          >
+            Plateforme centralisée pour la gestion des équipements et des ressources
+          </motion.p>
         </header>
 
-        <MainStats />
-        
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6">Gestion des fournisseurs</h2>
-          <SupplierStats />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <ActivityCard 
-            title="Tickets récents" 
-            items={tickets} 
-            type="tickets" 
-          />
-          <ActivityCard 
-            title="Alertes stocks" 
-            items={alerts} 
-            type="alerts" 
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {menuItems.map((item, index) => (
+            <motion.div
+              key={item.path}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <Link to={item.path}>
+                <Card className="h-full hover:shadow-lg transition-shadow duration-300">
+                  <div className="p-6">
+                    <div className={`w-12 h-12 rounded-lg ${item.color} flex items-center justify-center mb-4`}>
+                      <item.icon className="w-6 h-6" />
+                    </div>
+                    <h2 className="text-xl font-semibold mb-2">{item.title}</h2>
+                    <p className="text-gray-600 text-sm">{item.description}</p>
+                    <Button
+                      variant="ghost"
+                      className="w-full mt-4"
+                    >
+                      Accéder
+                    </Button>
+                  </div>
+                </Card>
+              </Link>
+            </motion.div>
+          ))}
         </div>
       </motion.div>
     </div>
