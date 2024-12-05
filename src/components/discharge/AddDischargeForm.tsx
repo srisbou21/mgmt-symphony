@@ -16,8 +16,8 @@ const formSchema = z.object({
   dischargeDate: z.date(),
   returnDate: z.date().optional(),
   items: z.array(z.object({
-    equipmentId: z.number(),
-    quantity: z.number().min(1, "La quantité doit être supérieure à 0"),
+    equipmentId: z.number(),  // Made required by removing .optional()
+    quantity: z.number().min(1, "La quantité doit être supérieure à 0"),  // Made required
     serialNumber: z.string().optional(),
     inventoryNumber: z.string().optional(),
   })),
