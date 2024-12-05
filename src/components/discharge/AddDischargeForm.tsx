@@ -44,7 +44,7 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      staffId: initialData?.staffId,
+      staffId: initialData?.staffId || 0,
       status: initialData?.status || "Acquisition",
       dischargeDate: initialData?.dischargeDate ? new Date(initialData.dischargeDate) : new Date(),
       returnDate: initialData?.returnDate ? new Date(initialData.returnDate) : undefined,

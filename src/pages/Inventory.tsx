@@ -4,7 +4,7 @@ import { Package, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Equipment } from "@/types/equipment";
+import { Equipment, EquipmentCategory } from "@/types/equipment";
 import { InventoryFilters } from "@/components/inventory/InventoryFilters";
 import { Location } from "@/types/equipment";
 import { Discharge } from "@/types/discharge";
@@ -31,27 +31,27 @@ const Inventory = () => {
         staffId: 1,
         type: "Équipement",
         quantity: 1,
-        date: "2024-03-12",
+        dischargeDate: "2024-03-12",
         serialNumber: "SN001",
         inventoryNumber: "INV001",
         category: "Matériel",
-        staffName: "John Doe",
-        equipmentName: "Ordinateur portable"
+        equipmentName: "Ordinateur portable",
+        items: [],
+        status: "Acquisition"
       },
-      // Add more sample data as needed
     ];
 
     // Convert discharge data to inventory items
     const items: Equipment[] = dischargeData.map(discharge => ({
-      id: discharge.equipmentId,
+      id: discharge.equipmentId || 0,
       name: discharge.equipmentName || "",
       type: "Informatique",
-      category: discharge.category || "Matériel",
+      category: "Matériel" as EquipmentCategory,
       status: "En service",
       location: "Bureau 101",
       serialNumber: discharge.serialNumber || "",
       inventoryNumber: discharge.inventoryNumber || "",
-      availableQuantity: discharge.quantity,
+      availableQuantity: discharge.quantity || 0,
       minQuantity: 1,
       lastMaintenance: "2024-03-12"
     }));
