@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 
 interface EquipmentTypeStats {
   type: EquipmentType;
+  equipments: Equipment[];
   count: number;
 }
 
@@ -65,13 +66,18 @@ const EquipmentTypes = () => {
   ];
 
   useEffect(() => {
-    // Calculer les statistiques par type
+    // Calculer les statistiques par type avec les détails des équipements
     const stats = mockEquipments.reduce((acc: EquipmentTypeStats[], equipment) => {
       const existingStat = acc.find(stat => stat.type === equipment.type);
       if (existingStat) {
         existingStat.count += equipment.availableQuantity;
+        existingStat.equipments.push(equipment);
       } else {
-        acc.push({ type: equipment.type, count: equipment.availableQuantity });
+        acc.push({
+          type: equipment.type,
+          count: equipment.availableQuantity,
+          equipments: [equipment]
+        });
       }
       return acc;
     }, []);
@@ -111,7 +117,28 @@ const EquipmentTypes = () => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="type" />
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload as EquipmentTypeStats;
+                      return (
+                        <div className="bg-white p-4 rounded-lg shadow border">
+                          <p className="font-bold">{data.type}</p>
+                          <p className="text-sm text-gray-600">Total: {data.count}</p>
+                          <div className="mt-2">
+                            <p className="font-semibold">Équipements:</p>
+                            <ul className="text-sm">
+                              {data.equipments.map(eq => (
+                                <li key={eq.id}>
+                                  {eq.name} ({eq.availableQuantity})
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }} />
                   <Legend />
                   <Bar dataKey="count" fill="#8884d8" name="Quantité" />
                 </BarChart>
@@ -121,22 +148,34 @@ const EquipmentTypes = () => {
 
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4">Détails par type</h2>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Type d'équipement</TableHead>
-                  <TableHead>Nombre total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredStats.map((stat) => (
-                  <TableRow key={stat.type}>
-                    <TableCell className="font-medium">{stat.type}</TableCell>
-                    <TableCell>{stat.count}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div className="overflow-auto max-h-[400px]">
+              {filteredStats.map((stat) => (
+                <div key={stat.type} className="mb-6">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-semibold">{stat.type}</h3>
+                    <span className="text-sm text-gray-600">Total: {stat.count}</span>
+                  </div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Nom</TableHead>
+                        <TableHead>Quantité</TableHead>
+                        <TableHead>Emplacement</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {stat.equipments.map((equipment) => (
+                        <TableRow key={equipment.id}>
+                          <TableCell>{equipment.name}</TableCell>
+                          <TableCell>{equipment.availableQuantity}</TableCell>
+                          <TableCell>{equipment.location}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ))}
+            </div>
           </Card>
         </div>
       </motion.div>
