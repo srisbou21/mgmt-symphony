@@ -34,11 +34,23 @@
     @apply bg-background text-foreground antialiased;
   }
 
-  .card-hover {
-    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  .glass {
+    @apply bg-white/80 backdrop-blur-md border border-white/20;
   }
 
-  .button-hover {
-    @apply transition-all duration-200 hover:opacity-90 active:scale-95;
+  .section-padding {
+    @apply px-4 py-6 md:px-6 md:py-8;
+  }
+
+  .fade-in {
+    @apply animate-fade-in;
+  }
+
+  .slide-in {
+    @apply animate-slide-in;
+  }
+
+  .card-gradient {
+    @apply bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-lg border border-white/20 shadow-lg;
   }
 }
