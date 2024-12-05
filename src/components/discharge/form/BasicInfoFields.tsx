@@ -15,6 +15,8 @@ interface BasicInfoFieldsProps {
 }
 
 export function BasicInfoFields({ form, staff }: BasicInfoFieldsProps) {
+  const defaultStaffId = staff[0]?.id || 0;
+
   return (
     <div className="space-y-4">
       <FormField
@@ -23,7 +25,10 @@ export function BasicInfoFields({ form, staff }: BasicInfoFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>Personnel</FormLabel>
-            <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={String(field.value || staff[0]?.id || 0)}>
+            <Select 
+              onValueChange={(value) => field.onChange(Number(value))} 
+              defaultValue={String(field.value || defaultStaffId)}
+            >
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner le personnel" />
