@@ -15,8 +15,8 @@ interface EquipmentTypeStats {
 const EquipmentTypes = () => {
   const [typeStats, setTypeStats] = useState<EquipmentTypeStats[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [chartData, setChartData] = useState<any[]>([]);
 
-  // Simulons des données d'équipement pour la démonstration
   const mockEquipments: Equipment[] = [
     {
       id: 1,
@@ -66,7 +66,6 @@ const EquipmentTypes = () => {
   ];
 
   useEffect(() => {
-    // Calculer les statistiques par type avec les détails des équipements
     const stats = mockEquipments.reduce((acc: EquipmentTypeStats[], equipment) => {
       const existingStat = acc.find(stat => stat.type === equipment.type);
       if (existingStat) {
@@ -84,6 +83,32 @@ const EquipmentTypes = () => {
 
     setTypeStats(stats);
   }, []);
+
+  useEffect(() => {
+    if (searchTerm) {
+      const filteredType = typeStats.find(
+        stat => stat.type.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      
+      if (filteredType) {
+        // Show individual equipment bars when type is filtered
+        setChartData(filteredType.equipments.map(eq => ({
+          name: eq.name,
+          count: eq.availableQuantity,
+          type: eq.type
+        })));
+      } else {
+        setChartData([]);
+      }
+    } else {
+      // Show type totals when no search
+      setChartData(typeStats.map(stat => ({
+        name: stat.type,
+        count: stat.count,
+        type: stat.type
+      })));
+    }
+  }, [searchTerm, typeStats]);
 
   const filteredStats = typeStats.filter(stat =>
     stat.type.toLowerCase().includes(searchTerm.toLowerCase())
@@ -110,30 +135,27 @@ const EquipmentTypes = () => {
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Répartition par type</h2>
+            <h2 className="text-xl font-semibold mb-4">Répartition {searchTerm ? "des équipements" : "par type"}</h2>
             <div className="h-[400px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={filteredStats}>
+                <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="type" />
+                  <XAxis 
+                    dataKey="name" 
+                    angle={-45}
+                    textAnchor="end"
+                    height={100}
+                    interval={0}
+                  />
                   <YAxis />
                   <Tooltip content={({ active, payload }) => {
                     if (active && payload && payload.length) {
-                      const data = payload[0].payload as EquipmentTypeStats;
+                      const data = payload[0].payload;
                       return (
                         <div className="bg-white p-4 rounded-lg shadow border">
-                          <p className="font-bold">{data.type}</p>
-                          <p className="text-sm text-gray-600">Total: {data.count}</p>
-                          <div className="mt-2">
-                            <p className="font-semibold">Équipements:</p>
-                            <ul className="text-sm">
-                              {data.equipments.map(eq => (
-                                <li key={eq.id}>
-                                  {eq.name} ({eq.availableQuantity})
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
+                          <p className="font-bold">{data.name}</p>
+                          <p className="text-sm text-gray-600">Quantité: {data.count}</p>
+                          <p className="text-sm text-gray-600">Type: {data.type}</p>
                         </div>
                       );
                     }
