@@ -50,3 +50,9 @@ export interface MaintenanceFormData {
   maintenanceEndDate?: string;
   notes?: string;
 }
+
+export interface EquipmentTypeStats {
+  type: EquipmentType;
+  equipments: Equipment[];
+  count: number;
+}
