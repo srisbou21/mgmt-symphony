@@ -34,7 +34,12 @@ interface AddDischargeFormProps {
 }
 
 export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initialData }: AddDischargeFormProps) {
-  const [items, setItems] = useState<DischargeItem[]>(initialData?.items || [{ equipmentId: 0, quantity: 1 }]);
+  const [items, setItems] = useState<DischargeItem[]>(initialData?.items || [{ 
+    equipmentId: 0, 
+    quantity: 1,
+    serialNumber: "",
+    inventoryNumber: ""
+  }]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,7 +48,12 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
       status: initialData?.status || "Acquisition",
       dischargeDate: initialData?.dischargeDate ? new Date(initialData.dischargeDate) : new Date(),
       returnDate: initialData?.returnDate ? new Date(initialData.returnDate) : undefined,
-      items: initialData?.items || [{ equipmentId: 0, quantity: 1 }],
+      items: initialData?.items || [{ 
+        equipmentId: 0, 
+        quantity: 1,
+        serialNumber: "",
+        inventoryNumber: ""
+      }],
       destination: initialData?.destination,
     },
   });

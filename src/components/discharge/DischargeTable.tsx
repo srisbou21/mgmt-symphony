@@ -30,6 +30,7 @@ export const DischargeTable = ({ equipments, onDischargeSelect }: DischargeTable
               onClick={() => {
                 onDischargeSelect({
                   id: equipment.id,
+                  dischargeNumber: Math.floor(Math.random() * 10000),
                   staffId: 1,
                   status: "Acquisition",
                   dischargeDate: new Date().toISOString(),
