@@ -1,29 +1,24 @@
 import { motion } from "framer-motion";
-import { SupplierTable } from "@/components/suppliers/SupplierTable";
+import { SupplierTable, type Supplier } from "@/components/suppliers/SupplierTable";
 import { AddSupplierForm } from "@/components/suppliers/AddSupplierForm";
 import { useState } from "react";
-
-export interface Supplier {
-  id?: number;
-  name: string;
-  contact: string;
-  email: string;
-  phone: string;
-  address: string;
-  commercialRegister?: string;
-}
 
 const Suppliers = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [isAddingSupplier, setIsAddingSupplier] = useState(false);
 
-  const handleAddSupplier = (supplier: Supplier) => {
+  const handleAddSupplier = (supplier: Omit<Supplier, 'id'>) => {
     setSuppliers([...suppliers, { ...supplier, id: suppliers.length + 1 }]);
     setIsAddingSupplier(false);
   };
 
   const handleDeleteSupplier = (id: number) => {
     setSuppliers(suppliers.filter(supplier => supplier.id !== id));
+  };
+
+  const handleEditSupplier = (supplier: Supplier) => {
+    // Add edit functionality here
+    console.log('Editing supplier:', supplier);
   };
 
   return (
@@ -43,8 +38,8 @@ const Suppliers = () => {
       ) : (
         <SupplierTable 
           suppliers={suppliers}
+          onEdit={handleEditSupplier}
           onDelete={handleDeleteSupplier}
-          onAdd={() => setIsAddingSupplier(true)}
         />
       )}
     </motion.div>
