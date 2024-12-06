@@ -9,15 +9,39 @@ import {
   FileText, 
   Calendar,
   Bell,
-  BarChart3
+  BarChart3,
+  BellDot
 } from "lucide-react";
+import { Equipment } from "@/types/equipment";
+
+// Mock data pour tester les alertes
+const mockEquipments: Equipment[] = [
+  {
+    id: 1,
+    name: "Ordinateur portable Dell XPS",
+    type: "Informatique",
+    availableQuantity: 2,
+    minQuantity: 5,
+    category: "Matériel",
+    status: "En service",
+    location: "Bureau 201",
+    supplier: "Dell",
+    serialNumber: "XPS-2024-001",
+    inventoryNumber: "INV-2024-001",
+    lastMaintenance: "2024-01-15",
+  }
+];
+
+const hasLowStockAlerts = (equipments: Equipment[]) => {
+  return equipments.some(equipment => equipment.availableQuantity <= equipment.minQuantity);
+};
 
 const stats = [
   {
     title: "Équipements",
     value: "1,234",
-    icon: Package,
-    color: "bg-dmg-accent/10 text-dmg-accent",
+    icon: hasLowStockAlerts(mockEquipments) ? BellDot : Package,
+    color: hasLowStockAlerts(mockEquipments) ? "bg-red-100 text-red-600" : "bg-dmg-accent/10 text-dmg-accent",
     details: "Gestion des équipements et des stocks",
     description: "Suivi des équipements, gestion des stocks, alertes de réapprovisionnement",
     link: "/equipment"
