@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import type { Equipment, EquipmentType } from "@/types/equipment";
+import type { Equipment, EquipmentTypeValue } from "@/types/equipment";
 import { EquipmentHeader } from "@/components/equipment/EquipmentHeader";
 import { EquipmentTable } from "@/components/equipment/EquipmentTable";
 import { EquipmentDialogs } from "@/components/equipment/EquipmentDialogs";
@@ -111,7 +111,7 @@ const Equipment = () => {
 
   const handleFilterChange = (key: keyof Equipment, value: string) => {
     if (key === 'type') {
-      setFilters({ ...filters, [key]: value === 'all' ? undefined : value as EquipmentType });
+      setFilters({ ...filters, [key]: value === 'all' ? undefined : value as EquipmentTypeValue });
     } else {
       setFilters({ ...filters, [key]: value === 'all' ? undefined : value });
     }

@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Equipment, EquipmentType } from "@/types/equipment";
+import { Equipment, EquipmentTypeValue } from "@/types/equipment";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 
 interface EquipmentTypeStats {
-  type: EquipmentType;
+  type: EquipmentTypeValue;
   count: number;
 }
 
@@ -138,8 +138,8 @@ const Dashboard = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {typeStats.map((stat) => (
-                  <TableRow key={stat.type}>
+                {typeStats.map((stat, index) => (
+                  <TableRow key={index}>
                     <TableCell className="font-medium">{stat.type}</TableCell>
                     <TableCell>{stat.count}</TableCell>
                   </TableRow>
