@@ -56,3 +56,9 @@ export interface EquipmentTypeStats {
   equipments: Equipment[];
   count: number;
 }
+
+export interface EquipmentType {
+  id: number;
+  name: string;
+  description?: string;
+}
