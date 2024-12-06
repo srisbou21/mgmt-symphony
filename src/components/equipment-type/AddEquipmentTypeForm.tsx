@@ -24,9 +24,10 @@ interface AddEquipmentTypeFormProps {
 export function AddEquipmentTypeForm({ onSubmit, onCancel, initialData }: AddEquipmentTypeFormProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
-      name: "",
-      description: "",
+    defaultValues: {
+      id: initialData?.id,
+      name: initialData?.name || "",
+      description: initialData?.description || "",
     },
   });
 

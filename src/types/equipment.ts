@@ -1,7 +1,4 @@
-export type EquipmentType = "Informatique" | "Mobilier" | "Électroménager" | "Outillage" | "Véhicule" | "Matériel médical" | "Équipement sportif" | "Matériel audiovisuel";
-export type EquipmentStatus = "En service" | "En maintenance";
-export type EquipmentCategory = "Consommable" | "Matériel";
-
+// Types d'équipement disponibles
 export const equipmentTypes = [
   "Informatique",
   "Mobilier",
@@ -13,10 +10,12 @@ export const equipmentTypes = [
   "Matériel audiovisuel"
 ] as const;
 
+export type EquipmentTypeValue = typeof equipmentTypes[number];
+
 export interface Equipment {
   id: number;
   name: string;
-  type: EquipmentType;
+  type: EquipmentTypeValue;
   category: EquipmentCategory;
   status: EquipmentStatus;
   location: string;
@@ -33,6 +32,9 @@ export interface Equipment {
   maintenanceEndDate?: string;
   invoice?: File;
 }
+
+export type EquipmentStatus = "En service" | "En maintenance";
+export type EquipmentCategory = "Consommable" | "Matériel";
 
 export interface Location {
   id: number;
@@ -52,7 +54,7 @@ export interface MaintenanceFormData {
 }
 
 export interface EquipmentTypeStats {
-  type: EquipmentType;
+  type: EquipmentTypeValue;
   equipments: Equipment[];
   count: number;
 }
