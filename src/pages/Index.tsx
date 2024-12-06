@@ -133,18 +133,9 @@ const Index = () => {
           >
             Plateforme centralisée pour la gestion des équipements et des ressources
           </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="max-w-3xl mx-auto mb-12"
-          >
-            <StockAlerts equipments={mockEquipments} />
-          </motion.div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
           {menuItems.map((item, index) => (
             <motion.div
               key={item.path}
@@ -169,6 +160,15 @@ const Index = () => {
             </motion.div>
           ))}
         </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mt-8"
+        >
+          <StockAlerts equipments={mockEquipments} />
+        </motion.div>
       </motion.div>
     </div>
   );
