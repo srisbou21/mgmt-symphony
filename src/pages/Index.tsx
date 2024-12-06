@@ -11,6 +11,7 @@ import {
   BarChart3,
   Upload,
   Building2,
+  Truck,
 } from "lucide-react";
 
 const menuItems = [
@@ -22,10 +23,10 @@ const menuItems = [
     color: "bg-blue-100 text-blue-600",
   },
   {
-    title: "Types d'équipements",
+    title: "Statistiques",
     description: "Consulter les statistiques par type",
     icon: BarChart3,
-    path: "/equipment-types",
+    path: "/statistics",
     color: "bg-purple-100 text-purple-600",
   },
   {
@@ -57,10 +58,10 @@ const menuItems = [
     color: "bg-indigo-100 text-indigo-600",
   },
   {
-    title: "Emplacements",
-    description: "Gérer les locaux et zones",
-    icon: Building2,
-    path: "/locations",
+    title: "Fournisseurs",
+    description: "Gérer les fournisseurs",
+    icon: Truck,
+    path: "/suppliers",
     color: "bg-orange-100 text-orange-600",
   },
   {
