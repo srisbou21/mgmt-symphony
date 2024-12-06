@@ -14,9 +14,10 @@ import {
   Building2,
   Truck,
 } from "lucide-react";
+import { Equipment, EquipmentTypeValue } from "@/types/equipment";
 
 // Mock data pour les équipements avec stock bas
-const mockEquipments = [
+const mockEquipments: Equipment[] = [
   {
     id: 1,
     name: "Ordinateur portable Dell XPS",
