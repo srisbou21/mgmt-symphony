@@ -16,7 +16,14 @@ export const PrintView = ({ title, data, columns }: PrintViewProps) => {
     title,
     date: new Date().toISOString(),
     recordCount: data.length,
-    documentId: Math.random().toString(36).substring(7)
+    documentId: Math.random().toString(36).substring(7),
+    data: data.map(item => {
+      const mainFields = {};
+      columns.forEach(col => {
+        mainFields[col.header] = item[col.accessor];
+      });
+      return mainFields;
+    })
   });
 
   return (

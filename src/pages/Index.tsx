@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { StockAlerts } from "@/components/alerts/StockAlerts";
 import {
   Package,
   Wrench,
@@ -13,6 +14,38 @@ import {
   Building2,
   Truck,
 } from "lucide-react";
+
+// Mock data pour les équipements avec stock bas
+const mockEquipments = [
+  {
+    id: 1,
+    name: "Ordinateur portable Dell XPS",
+    type: "Informatique",
+    availableQuantity: 2,
+    minQuantity: 5,
+    category: "Matériel",
+    status: "En service",
+    location: "Bureau 201",
+    supplier: "Dell",
+    serialNumber: "XPS-2024-001",
+    inventoryNumber: "INV-2024-001",
+    lastMaintenance: "2024-01-15",
+  },
+  {
+    id: 2,
+    name: "Imprimante HP LaserJet",
+    type: "Informatique",
+    availableQuantity: 1,
+    minQuantity: 3,
+    category: "Matériel",
+    status: "En service",
+    location: "Bureau 202",
+    supplier: "HP",
+    serialNumber: "HP-2024-001",
+    inventoryNumber: "INV-2024-002",
+    lastMaintenance: "2024-01-16",
+  }
+];
 
 const menuItems = [
   {
@@ -95,10 +128,19 @@ const Index = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-lg text-gray-600"
+            className="text-lg text-gray-600 mb-8"
           >
             Plateforme centralisée pour la gestion des équipements et des ressources
           </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="max-w-3xl mx-auto mb-12"
+          >
+            <StockAlerts equipments={mockEquipments} />
+          </motion.div>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -117,10 +159,7 @@ const Index = () => {
                     </div>
                     <h2 className="text-xl font-semibold mb-2">{item.title}</h2>
                     <p className="text-gray-600 text-sm">{item.description}</p>
-                    <Button
-                      variant="ghost"
-                      className="w-full mt-4"
-                    >
+                    <Button variant="ghost" className="w-full mt-4">
                       Accéder
                     </Button>
                   </div>
