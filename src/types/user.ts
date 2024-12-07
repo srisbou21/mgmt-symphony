@@ -1,6 +1,17 @@
+export interface UserPermissions {
+  canManageUsers: boolean;
+  canManageEquipment: boolean;
+  canManageMaintenance: boolean;
+  canViewReports: boolean;
+}
+
 export interface User {
   id: number;
   username: string;
-  password: string;
-  isAdmin?: boolean;
+  role: "admin" | "user";
+  permissions: UserPermissions;
 }
+
+export type UserFormValues = Omit<User, "id"> & {
+  password: string;
+};

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
+import { User, UserFormValues } from "@/types/user";
 
 const userFormSchema = z.object({
   username: z.string().min(3, "Le nom d'utilisateur doit contenir au moins 3 caractères"),
@@ -23,11 +24,21 @@ const userFormSchema = z.object({
 
 export function UserManagementForm() {
   const { toast } = useToast();
-  const [users, setUsers] = useState([
-    { id: 1, username: "admin", role: "admin", permissions: { canManageUsers: true, canManageEquipment: true, canManageMaintenance: true, canViewReports: true } }
+  const [users, setUsers] = useState<User[]>([
+    { 
+      id: 1, 
+      username: "admin", 
+      role: "admin", 
+      permissions: { 
+        canManageUsers: true, 
+        canManageEquipment: true, 
+        canManageMaintenance: true, 
+        canViewReports: true 
+      } 
+    }
   ]);
 
-  const form = useForm<z.infer<typeof userFormSchema>>({
+  const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
       username: "",
@@ -42,8 +53,15 @@ export function UserManagementForm() {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof userFormSchema>) => {
-    setUsers([...users, { id: users.length + 1, ...values }]);
+  const onSubmit = (values: UserFormValues) => {
+    const newUser: User = {
+      id: users.length + 1,
+      username: values.username,
+      role: values.role,
+      permissions: values.permissions
+    };
+    
+    setUsers([...users, newUser]);
     toast({
       title: "Utilisateur créé",
       description: "Le nouvel utilisateur a été créé avec succès.",
