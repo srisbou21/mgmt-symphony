@@ -12,6 +12,10 @@ export interface User {
   permissions: UserPermissions;
 }
 
+export interface AuthUser extends User {
+  password: string;
+}
+
 export type UserFormValues = Omit<User, "id"> & {
   password: string;
 };

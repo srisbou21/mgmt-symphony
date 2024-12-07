@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User } from '@/types/user';
+import { User, AuthUser } from '@/types/user';
 import { useToast } from "@/components/ui/use-toast";
 
 interface AuthContextType {
@@ -24,29 +24,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const { toast } = useToast();
 
-  // Initialiser avec un utilisateur admin par défaut si aucun utilisateur n'existe
   useEffect(() => {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
     if (users.length === 0) {
-      const defaultAdmin = {
+      const defaultAdmin: AuthUser = {
         id: 1,
         username: 'admin',
         password: 'admin123',
-        isAdmin: true
+        role: 'admin',
+        permissions: {
+          canManageUsers: true,
+          canManageEquipment: true,
+          canManageMaintenance: true,
+          canViewReports: true
+        }
       };
       localStorage.setItem('users', JSON.stringify([defaultAdmin]));
     }
   }, []);
 
   const login = (username: string, password: string): boolean => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const foundUser = users.find((u: User) => 
+    const users = JSON.parse(localStorage.getItem('users') || '[]') as AuthUser[];
+    const foundUser = users.find((u) => 
       u.username === username && u.password === password
     );
 
     if (foundUser) {
-      setUser(foundUser);
-      localStorage.setItem('currentUser', JSON.stringify(foundUser));
+      const { password: _, ...userWithoutPassword } = foundUser;
+      setUser(userWithoutPassword);
+      localStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
       toast({
         title: "Connexion réussie",
         description: `Bienvenue, ${username}!`,
@@ -74,10 +80,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const changePassword = (oldPassword: string, newPassword: string): boolean => {
     if (!user) return false;
 
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const userIndex = users.findIndex((u: User) => u.id === user.id);
+    const users = JSON.parse(localStorage.getItem('users') || '[]') as AuthUser[];
+    const userIndex = users.findIndex((u) => u.id === user.id);
+    const currentUser = users[userIndex];
 
-    if (userIndex === -1 || users[userIndex].password !== oldPassword) {
+    if (userIndex === -1 || currentUser.password !== oldPassword) {
       toast({
         title: "Erreur",
         description: "Ancien mot de passe incorrect",
@@ -88,8 +95,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     users[userIndex].password = newPassword;
     localStorage.setItem('users', JSON.stringify(users));
-    setUser(users[userIndex]);
-    localStorage.setItem('currentUser', JSON.stringify(users[userIndex]));
     
     toast({
       title: "Succès",
@@ -99,7 +104,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const createUser = (username: string, password: string): boolean => {
-    if (!user?.isAdmin) {
+    if (!user || user.role !== 'admin') {
       toast({
         title: "Erreur",
         description: "Seul un administrateur peut créer de nouveaux utilisateurs",
@@ -108,8 +113,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return false;
     }
 
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    if (users.some((u: User) => u.username === username)) {
+    const users = JSON.parse(localStorage.getItem('users') || '[]') as AuthUser[];
+    if (users.some((u) => u.username === username)) {
       toast({
         title: "Erreur",
         description: "Ce nom d'utilisateur existe déjà",
@@ -118,11 +123,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return false;
     }
 
-    const newUser = {
+    const newUser: AuthUser = {
       id: users.length + 1,
       username,
       password,
-      isAdmin: false
+      role: 'user',
+      permissions: {
+        canManageUsers: false,
+        canManageEquipment: false,
+        canManageMaintenance: false,
+        canViewReports: false
+      }
     };
 
     users.push(newUser);
