@@ -12,6 +12,8 @@ import Inventory from "@/pages/Inventory";
 import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import Discharge from "@/pages/Discharge";
+import Staff from "@/pages/Staff";
+import Statistics from "@/pages/Statistics";
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
             <Route path="/inventory" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/discharge" element={<ProtectedRoute><Discharge /></ProtectedRoute>} />
+            <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
+            <Route path="/statistics" element={<ProtectedRoute><Statistics /></ProtectedRoute>} />
           </Routes>
           <Toaster />
         </Router>

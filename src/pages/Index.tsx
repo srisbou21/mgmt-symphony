@@ -14,7 +14,7 @@ import {
   Building2,
   Truck,
 } from "lucide-react";
-import { Equipment, EquipmentTypeValue } from "@/types/equipment";
+import { Equipment } from "@/types/equipment";
 
 // Mock data pour les équipements avec stock bas
 const mockEquipments: Equipment[] = [
@@ -67,7 +67,7 @@ const menuItems = [
     title: "Maintenance",
     description: "Suivre les maintenances et réparations",
     icon: Wrench,
-    path: "/maintenance",
+    path: "/maintenance-equipment",
     color: "bg-green-100 text-green-600",
   },
   {
