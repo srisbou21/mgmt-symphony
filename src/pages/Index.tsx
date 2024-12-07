@@ -13,8 +13,11 @@ import {
   Upload,
   Building2,
   Truck,
+  BellDot
 } from "lucide-react";
 import { Equipment } from "@/types/equipment";
+import { useToast } from "@/components/ui/use-toast";
+import { useEffect } from "react";
 
 // Mock data pour les équipements avec stock bas
 const mockEquipments: Equipment[] = [
@@ -108,6 +111,23 @@ const menuItems = [
 ];
 
 const Index = () => {
+  const { toast } = useToast();
+
+  // Vérifier les alertes au chargement
+  useEffect(() => {
+    const hasLowStock = mockEquipments.some(
+      equipment => equipment.availableQuantity <= equipment.minQuantity
+    );
+
+    if (hasLowStock) {
+      toast({
+        title: "Alerte stock",
+        description: "Certains équipements sont en quantité critique",
+        variant: "destructive",
+      });
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <motion.div
@@ -117,6 +137,14 @@ const Index = () => {
         className="max-w-7xl mx-auto"
       >
         <header className="text-center mb-12">
+          <div className="flex justify-end mb-4">
+            {mockEquipments.some(eq => eq.availableQuantity <= eq.minQuantity) && (
+              <Link to="/inventory" className="inline-flex items-center text-red-600">
+                <BellDot className="h-6 w-6 mr-2 animate-pulse" />
+                <span>Alertes stock</span>
+              </Link>
+            )}
+          </div>
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
