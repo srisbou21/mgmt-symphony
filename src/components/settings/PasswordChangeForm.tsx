@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -5,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const passwordFormSchema = z.object({
   currentPassword: z.string().min(1, "Le mot de passe actuel est requis"),
@@ -17,6 +20,11 @@ const passwordFormSchema = z.object({
 
 export function PasswordChangeForm() {
   const { toast } = useToast();
+  const { changePassword } = useAuth();
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const form = useForm<z.infer<typeof passwordFormSchema>>({
     resolver: zodResolver(passwordFormSchema),
     defaultValues: {
@@ -27,12 +35,24 @@ export function PasswordChangeForm() {
   });
 
   const onSubmit = (values: z.infer<typeof passwordFormSchema>) => {
-    console.log(values);
-    toast({
-      title: "Mot de passe modifié",
-      description: "Votre mot de passe a été modifié avec succès.",
-    });
-    form.reset();
+    const success = changePassword(values.currentPassword, values.newPassword);
+    if (success) {
+      form.reset();
+    }
+  };
+
+  const togglePasswordVisibility = (field: 'current' | 'new' | 'confirm') => {
+    switch (field) {
+      case 'current':
+        setShowCurrentPassword(!showCurrentPassword);
+        break;
+      case 'new':
+        setShowNewPassword(!showNewPassword);
+        break;
+      case 'confirm':
+        setShowConfirmPassword(!showConfirmPassword);
+        break;
+    }
   };
 
   return (
@@ -44,9 +64,27 @@ export function PasswordChangeForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Mot de passe actuel</FormLabel>
-              <FormControl>
-                <Input type="password" {...field} />
-              </FormControl>
+              <div className="relative">
+                <FormControl>
+                  <Input 
+                    type={showCurrentPassword ? "text" : "password"} 
+                    {...field} 
+                  />
+                </FormControl>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                  onClick={() => togglePasswordVisibility('current')}
+                >
+                  {showCurrentPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -58,9 +96,27 @@ export function PasswordChangeForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Nouveau mot de passe</FormLabel>
-              <FormControl>
-                <Input type="password" {...field} />
-              </FormControl>
+              <div className="relative">
+                <FormControl>
+                  <Input 
+                    type={showNewPassword ? "text" : "password"} 
+                    {...field} 
+                  />
+                </FormControl>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                  onClick={() => togglePasswordVisibility('new')}
+                >
+                  {showNewPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -72,9 +128,27 @@ export function PasswordChangeForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Confirmer le nouveau mot de passe</FormLabel>
-              <FormControl>
-                <Input type="password" {...field} />
-              </FormControl>
+              <div className="relative">
+                <FormControl>
+                  <Input 
+                    type={showConfirmPassword ? "text" : "password"} 
+                    {...field} 
+                  />
+                </FormControl>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                  onClick={() => togglePasswordVisibility('confirm')}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
               <FormMessage />
             </FormItem>
           )}
