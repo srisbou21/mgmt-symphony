@@ -4,7 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface AuthContextType {
   user: User | null;
-  login: (username: string, password: string) => boolean;
+  login: (username: string, password: string, rememberMe?: boolean) => boolean;
   logout: () => void;
   changePassword: (oldPassword: string, newPassword: string) => boolean;
   createUser: (username: string, password: string) => boolean;
@@ -23,6 +23,14 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const { toast } = useToast();
+
+  // Charger l'utilisateur depuis le localStorage au démarrage
+  useEffect(() => {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
 
   useEffect(() => {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
@@ -43,7 +51,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const login = (username: string, password: string): boolean => {
+  const login = (username: string, password: string, rememberMe: boolean = false): boolean => {
     const users = JSON.parse(localStorage.getItem('users') || '[]') as AuthUser[];
     const foundUser = users.find((u) => 
       u.username === username && u.password === password
@@ -52,7 +60,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (foundUser) {
       const { password: _, ...userWithoutPassword } = foundUser;
       setUser(userWithoutPassword);
-      localStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
+      
+      // Sauvegarder l'utilisateur si rememberMe est true
+      if (rememberMe) {
+        localStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
+      } else {
+        localStorage.removeItem('currentUser');
+      }
+      
       toast({
         title: "Connexion réussie",
         description: `Bienvenue, ${username}!`,
