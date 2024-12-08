@@ -73,7 +73,7 @@ export const EquipmentFilters = ({ filters, onFilterChange, locations }: Equipme
         <SelectTrigger>
           <SelectValue placeholder="Emplacement" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="max-h-[200px] overflow-y-auto">
           <SelectItem value="all">Tous les emplacements</SelectItem>
           {locations.map((location) => (
             <SelectItem key={location.id} value={location.name}>
