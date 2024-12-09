@@ -1,187 +1,196 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Package, Printer } from "lucide-react";
+import { Equipment } from "@/types/equipment";
+import { EquipmentTable } from "@/components/equipment/EquipmentTable";
+import { EquipmentFilters } from "@/components/equipment/EquipmentFilters";
+import { EquipmentDialogs } from "@/components/equipment/EquipmentDialogs";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Equipment, EquipmentCategory } from "@/types/equipment";
-import { InventoryFilters } from "@/components/inventory/InventoryFilters";
-import { Location } from "@/types/equipment";
-import { Discharge } from "@/types/discharge";
+import { useToast } from "@/components/ui/use-toast";
 
 const Inventory = () => {
-  const [inventoryItems, setInventoryItems] = useState<Equipment[]>([]);
-  const [locations, setLocations] = useState<Location[]>([
-    { id: 1, name: "Bureau 101", building: "Bâtiment A" },
-    { id: 2, name: "Salle de réunion", building: "Bâtiment B" },
-  ]);
-  const [filters, setFilters] = useState({
+  const { toast } = useToast();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [equipmentToDelete, setEquipmentToDelete] = useState<number | null>(null);
+  const [equipmentToEdit, setEquipmentToEdit] = useState<Equipment | null>(null);
+  const [filters, setFilters] = useState<Partial<Equipment>>({
     name: "",
-    location: "",
-    category: "",
-    type: "",
+    type: undefined,
+    category: undefined,
+    serialNumber: "",
+    inventoryNumber: "",
+    location: ""
   });
+  const [suppliers] = useState([
+    { id: 1, name: "Dell" },
+    { id: 2, name: "HP" },
+    { id: 3, name: "Office Pro" }
+  ]);
 
-  // Simulate loading discharge data
-  useEffect(() => {
-    const dischargeData: Discharge[] = [
-      {
-        id: 1,
-        equipmentId: 1,
-        staffId: 1,
-        type: "Équipement",
-        quantity: 1,
-        dischargeDate: "2024-03-12",
-        serialNumber: "SN001",
-        inventoryNumber: "INV001",
-        category: "Matériel",
-        equipmentName: "Ordinateur portable",
-        items: [],
-        status: "Acquisition"
-      },
-    ];
-
-    // Convert discharge data to inventory items
-    const items: Equipment[] = dischargeData.map(discharge => ({
-      id: discharge.equipmentId || 0,
-      name: discharge.equipmentName || "",
+  const [equipments, setEquipments] = useState<Equipment[]>([
+    {
+      id: 1,
+      name: "Ordinateur portable Dell XPS",
       type: "Informatique",
-      category: "Matériel" as EquipmentCategory,
+      category: "Matériel",
       status: "En service",
-      location: "Bureau 101",
-      serialNumber: discharge.serialNumber || "",
-      inventoryNumber: discharge.inventoryNumber || "",
-      availableQuantity: discharge.quantity || 0,
+      location: "Bureau 201",
+      service: "Service Informatique",
+      lastMaintenance: "2024-01-15",
+      supplier: "Dell",
+      serialNumber: "XPS-2024-001",
+      inventoryNumber: "INV-2024-001",
+      observation: "RAS",
+      availableQuantity: 1,
       minQuantity: 1,
-      lastMaintenance: "2024-03-12"
-    }));
+    },
+    {
+      id: 2,
+      name: "Imprimante HP LaserJet",
+      type: "Informatique",
+      category: "Matériel",
+      status: "En maintenance",
+      location: "Salle de reprographie",
+      service: "Service Reprographie",
+      lastMaintenance: "2024-02-01",
+      supplier: "HP",
+      serialNumber: "HP-2024-001",
+      inventoryNumber: "INV-2024-002",
+      observation: "Maintenance préventive",
+      availableQuantity: 1,
+      minQuantity: 1,
+      maintenanceReason: "Maintenance préventive",
+      maintenanceStartDate: "2024-02-01",
+    },
+    {
+      id: 3,
+      name: "Bureau ergonomique",
+      type: "Mobilier",
+      category: "Matériel",
+      status: "En service",
+      location: "Bureau 305",
+      service: "Service Administratif",
+      lastMaintenance: "2024-01-20",
+      supplier: "Office Pro",
+      serialNumber: "DESK-2024-001",
+      inventoryNumber: "INV-2024-003",
+      observation: "",
+      availableQuantity: 1,
+      minQuantity: 1,
+    },
+  ]);
 
-    setInventoryItems(items);
-  }, []);
-
-  const handleFilterChange = (key: string, value: string) => {
-    setFilters({ ...filters, [key]: value });
+  const handleSubmit = (values: Equipment) => {
+    if (equipmentToEdit) {
+      setEquipments(equipments.map(e => e.id === equipmentToEdit.id ? { ...values, id: equipmentToEdit.id } : e));
+      toast({
+        title: "Équipement modifié",
+        description: "L'équipement a été mis à jour avec succès.",
+      });
+    } else {
+      const newEquipment = { ...values, id: Math.max(0, ...equipments.map(e => e.id)) + 1 };
+      setEquipments([...equipments, newEquipment]);
+      toast({
+        title: "Équipement ajouté",
+        description: "L'équipement a été ajouté avec succès.",
+      });
+    }
+    setIsDialogOpen(false);
+    setEquipmentToEdit(null);
   };
 
-  const filteredItems = inventoryItems.filter((item) => {
-    return (
-      (!filters.name || item.name.toLowerCase().includes(filters.name.toLowerCase())) &&
-      (!filters.location || item.location.toLowerCase().includes(filters.location.toLowerCase())) &&
-      (!filters.category || item.category === filters.category) &&
-      (!filters.type || item.type === filters.type)
-    );
-  });
+  const handleDelete = () => {
+    if (equipmentToDelete !== null) {
+      setEquipments(equipments.filter(e => e.id !== equipmentToDelete));
+      toast({
+        title: "Équipement supprimé",
+        description: "L'équipement a été supprimé avec succès.",
+      });
+      setEquipmentToDelete(null);
+    }
+    setIsDeleteDialogOpen(false);
+  };
 
-  const handlePrint = () => {
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Inventaire des Emplacements</title>
-            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-          </head>
-          <body>
-            <div class="p-8">
-              <h1 class="text-2xl font-bold mb-6">Inventaire des Emplacements</h1>
-              <table class="w-full border-collapse">
-                <thead>
-                  <tr>
-                    <th class="border p-2">Nom</th>
-                    <th class="border p-2">Type</th>
-                    <th class="border p-2">Catégorie</th>
-                    <th class="border p-2">N° Série</th>
-                    <th class="border p-2">N° Inventaire</th>
-                    <th class="border p-2">Emplacement</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${filteredItems.map(item => `
-                    <tr>
-                      <td class="border p-2">${item.name}</td>
-                      <td class="border p-2">${item.type}</td>
-                      <td class="border p-2">${item.category}</td>
-                      <td class="border p-2">${item.serialNumber}</td>
-                      <td class="border p-2">${item.inventoryNumber}</td>
-                      <td class="border p-2">${item.location}</td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-              <div class="mt-8 text-right">
-                <p>Signature :</p>
-                <div class="mt-4 border-t border-gray-300 w-48 ml-auto"></div>
-              </div>
-            </div>
-            <script>
-              window.onload = () => window.print();
-            </script>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
+  const handleFilterChange = (key: keyof Equipment, value: string) => {
+    if (key === 'type') {
+      setFilters({ ...filters, [key]: value === 'all' ? undefined : value });
+    } else {
+      setFilters({ ...filters, [key]: value === 'all' ? undefined : value });
     }
   };
 
+  const filteredEquipments = equipments.filter(equipment => {
+    const matchName = !filters.name || 
+      equipment.name.toLowerCase().includes(filters.name.toLowerCase());
+    const matchType = !filters.type || 
+      equipment.type === filters.type;
+    const matchCategory = !filters.category || 
+      equipment.category === filters.category;
+    const matchSerialNumber = !filters.serialNumber || 
+      equipment.serialNumber.toLowerCase().includes(filters.serialNumber.toLowerCase());
+    const matchInventoryNumber = !filters.inventoryNumber || 
+      equipment.inventoryNumber.toLowerCase().includes(filters.inventoryNumber.toLowerCase());
+    const matchLocation = !filters.location || 
+      equipment.location === filters.location;
+    
+    return matchName && matchType && matchCategory && 
+           matchSerialNumber && matchInventoryNumber && matchLocation;
+  });
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 p-8">
+    <div className="min-h-screen bg-dmg-light p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="max-w-7xl mx-auto"
       >
-        <header className="mb-8">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-800 text-sm font-medium mb-4">
-            <Package className="w-4 h-4 mr-2" />
-            Inventaire des Emplacements
-          </div>
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-4xl font-bold text-gray-900">
-              Inventaire
-            </h1>
-            <Button onClick={handlePrint} variant="outline" className="gap-2 bg-white hover:bg-gray-50">
-              <Printer className="w-4 h-4" />
-              Imprimer
-            </Button>
-          </div>
-          <p className="text-gray-600 text-lg mb-6">
-            Gérez l'inventaire des emplacements
-          </p>
-        </header>
-
-        <InventoryFilters 
-          filters={filters} 
+        <EquipmentFilters 
+          filters={filters}
           onFilterChange={handleFilterChange}
-          locations={locations}
+          locations={[
+            { id: 1, name: "Bureau 201" },
+            { id: 2, name: "Salle de réunion" },
+            { id: 3, name: "Atelier" }
+          ]}
         />
 
-        <Card className="overflow-hidden bg-white/80 backdrop-blur-sm shadow-xl">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-50/50">
-                <TableHead>Nom</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Catégorie</TableHead>
-                <TableHead>N° Série</TableHead>
-                <TableHead>N° Inventaire</TableHead>
-                <TableHead>Emplacement</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredItems.map((item) => (
-                <TableRow key={item.id} className="hover:bg-gray-50/50">
-                  <TableCell className="font-medium">{item.name}</TableCell>
-                  <TableCell>{item.type}</TableCell>
-                  <TableCell>{item.category}</TableCell>
-                  <TableCell>{item.serialNumber}</TableCell>
-                  <TableCell>{item.inventoryNumber}</TableCell>
-                  <TableCell>{item.location}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
+        <EquipmentTable
+          equipments={filteredEquipments}
+          onEdit={(equipment) => {
+            setEquipmentToEdit(equipment);
+            setIsDialogOpen(true);
+          }}
+          onDelete={(id) => {
+            setEquipmentToDelete(id);
+            setIsDeleteDialogOpen(true);
+          }}
+        />
+
+        <EquipmentDialogs
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+          isDeleteDialogOpen={isDeleteDialogOpen}
+          setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+          equipmentToEdit={equipmentToEdit}
+          onSubmit={handleSubmit}
+          onCancel={() => {
+            setIsDialogOpen(false);
+            setEquipmentToEdit(null);
+          }}
+          onConfirmDelete={handleDelete}
+          suppliers={suppliers}
+          locations={[
+            { id: 1, name: "Bureau 201" },
+            { id: 2, name: "Salle de réunion" },
+            { id: 3, name: "Atelier" }
+          ]}
+          services={[
+            { id: 1, name: "Service Informatique" },
+            { id: 2, name: "Service Reprographie" },
+            { id: 3, name: "Service Administratif" }
+          ]}
+        />
       </motion.div>
     </div>
   );

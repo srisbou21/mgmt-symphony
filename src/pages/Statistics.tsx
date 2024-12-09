@@ -1,19 +1,30 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Equipment, EquipmentType, EquipmentTypeStats } from "@/types/equipment";
-import { EquipmentChart } from "@/components/equipment/stats/EquipmentChart";
-import { EquipmentDetailsList } from "@/components/equipment/stats/EquipmentDetailsList";
-import { equipmentTypes } from "@/types/equipment";
-import { Button } from "@/components/ui/button";
-import { Printer } from "lucide-react";
-import { PrintView, handlePrint } from "@/components/shared/PrintView";
+import { Card } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Equipment, EquipmentTypeValue } from "@/types/equipment";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 
-const EquipmentTypes = () => {
+interface EquipmentTypeStats {
+  type: EquipmentTypeValue;
+  count: number;
+}
+
+const COLORS = [
+  "#0088FE",
+  "#00C49F",
+  "#FFBB28",
+  "#FF8042",
+  "#8884D8",
+  "#82CA9D",
+  "#FFC658",
+  "#FF7C43",
+];
+
+const Statistics = () => {
   const [typeStats, setTypeStats] = useState<EquipmentTypeStats[]>([]);
-  const [searchTerm, setSearchTerm] = useState("all");
-  const [chartData, setChartData] = useState<any[]>([]);
 
+  // Simulons des données d'équipement pour la démonstration
   const mockEquipments: Equipment[] = [
     {
       id: 1,
@@ -22,6 +33,7 @@ const EquipmentTypes = () => {
       category: "Matériel",
       status: "En service",
       location: "Bureau 201",
+      service: "Service Informatique",
       supplier: "Dell",
       serialNumber: "XPS-2024-001",
       inventoryNumber: "INV-2024-001",
@@ -37,6 +49,7 @@ const EquipmentTypes = () => {
       category: "Matériel",
       status: "En maintenance",
       location: "Salle de reprographie",
+      service: "Service Reprographie",
       supplier: "HP",
       serialNumber: "HP-2024-001",
       inventoryNumber: "INV-2024-002",
@@ -52,6 +65,7 @@ const EquipmentTypes = () => {
       category: "Matériel",
       status: "En service",
       location: "Bureau 305",
+      service: "Service Administratif",
       supplier: "Office Pro",
       serialNumber: "DESK-2024-001",
       inventoryNumber: "INV-2024-003",
@@ -63,17 +77,13 @@ const EquipmentTypes = () => {
   ];
 
   useEffect(() => {
+    // Calculer les statistiques par type
     const stats = mockEquipments.reduce((acc: EquipmentTypeStats[], equipment) => {
       const existingStat = acc.find(stat => stat.type === equipment.type);
       if (existingStat) {
         existingStat.count += equipment.availableQuantity;
-        existingStat.equipments.push(equipment);
       } else {
-        acc.push({
-          type: equipment.type,
-          count: equipment.availableQuantity,
-          equipments: [equipment]
-        });
+        acc.push({ type: equipment.type, count: equipment.availableQuantity });
       }
       return acc;
     }, []);
@@ -81,105 +91,69 @@ const EquipmentTypes = () => {
     setTypeStats(stats);
   }, []);
 
-  useEffect(() => {
-    if (searchTerm && searchTerm !== "all") {
-      const filteredType = typeStats.find(
-        stat => stat.type === searchTerm
-      );
-      
-      if (filteredType) {
-        setChartData(filteredType.equipments.map(eq => ({
-          name: eq.name,
-          count: eq.availableQuantity,
-          type: eq.type
-        })));
-      } else {
-        setChartData([]);
-      }
-    } else {
-      setChartData(typeStats.map(stat => ({
-        name: stat.type,
-        count: stat.count,
-        type: stat.type
-      })));
-    }
-  }, [searchTerm, typeStats]);
-
-  const filteredStats = typeStats.filter(stat =>
-    searchTerm === "all" || stat.type === searchTerm
-  );
-
-  const handlePrintClick = () => {
-    const columns = [
-      { header: "Type", accessor: "type" },
-      { header: "Quantité totale", accessor: "count" },
-      { header: "Nombre d'équipements", accessor: "equipmentCount" }
-    ];
-
-    const printData = typeStats.map(stat => ({
-      type: stat.type,
-      count: stat.count,
-      equipmentCount: stat.equipments.length
-    }));
-
-    const printContent = (
-      <PrintView
-        title="Statistiques des équipements par type"
-        data={printData}
-        columns={columns}
-      />
-    );
-
-    handlePrint(printContent);
-  };
-
   return (
-    <div className="min-h-screen bg-dmg-light p-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="max-w-7xl mx-auto"
       >
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Types d'équipements</h1>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handlePrintClick}
-            className="gap-2"
-          >
-            <Printer className="h-4 w-4" />
-            Imprimer
-          </Button>
-        </div>
-        
-        <div className="mb-6">
-          <Select
-            value={searchTerm}
-            onValueChange={setSearchTerm}
-          >
-            <SelectTrigger className="max-w-md">
-              <SelectValue placeholder="Sélectionner un type d'équipement" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tous les types</SelectItem>
-              {equipmentTypes.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <h1 className="text-3xl font-bold mb-8">Tableau de bord</h1>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <EquipmentChart data={chartData} searchTerm={searchTerm} />
-          <EquipmentDetailsList stats={filteredStats} />
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4">Répartition par type</h2>
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={typeStats}
+                    dataKey="count"
+                    nameKey="type"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={150}
+                    fill="#8884d8"
+                    label
+                  >
+                    {typeStats.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4">Détails par type</h2>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Type d'équipement</TableHead>
+                  <TableHead>Nombre total</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {typeStats.map((stat, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="font-medium">{stat.type}</TableCell>
+                    <TableCell>{stat.count}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
         </div>
       </motion.div>
     </div>
   );
 };
 
-export default EquipmentTypes;
+export default Statistics;
