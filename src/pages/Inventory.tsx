@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Equipment } from "@/types/equipment";
+import { Equipment, EquipmentTypeValue } from "@/types/equipment";
 import { EquipmentTable } from "@/components/equipment/EquipmentTable";
 import { EquipmentFilters } from "@/components/equipment/EquipmentFilters";
 import { EquipmentDialogs } from "@/components/equipment/EquipmentDialogs";
@@ -54,8 +54,6 @@ const Inventory = () => {
       observation: "Maintenance préventive",
       availableQuantity: 1,
       minQuantity: 1,
-      maintenanceReason: "Maintenance préventive",
-      maintenanceStartDate: "2024-02-01",
     },
     {
       id: 3,
@@ -108,9 +106,11 @@ const Inventory = () => {
 
   const handleFilterChange = (key: keyof Equipment, value: string) => {
     if (key === 'type') {
-      setFilters({ ...filters, [key]: value === 'all' ? undefined : value });
+      // Ensure the type value is valid before setting it
+      const typeValue = value === 'all' ? undefined : value as EquipmentTypeValue;
+      setFilters(prev => ({ ...prev, [key]: typeValue }));
     } else {
-      setFilters({ ...filters, [key]: value === 'all' ? undefined : value });
+      setFilters(prev => ({ ...prev, [key]: value === 'all' ? undefined : value }));
     }
   };
 
