@@ -51,6 +51,7 @@ export const EquipmentTable = ({ equipments, onEdit, onDelete }: EquipmentTableP
             <TableHead>N° Inventaire</TableHead>
             <TableHead>Statut</TableHead>
             <TableHead>Emplacement</TableHead>
+            <TableHead>Service</TableHead>
             <TableHead>Qté Dispo</TableHead>
             <TableHead>Qté Min</TableHead>
             <TableHead>Observation</TableHead>
@@ -78,6 +79,7 @@ export const EquipmentTable = ({ equipments, onEdit, onDelete }: EquipmentTableP
                 </span>
               </TableCell>
               <TableCell>{equipment.location}</TableCell>
+              <TableCell>{equipment.service}</TableCell>
               <TableCell>{equipment.availableQuantity}</TableCell>
               <TableCell>{equipment.minQuantity}</TableCell>
               <TableCell>{equipment.observation || "-"}</TableCell>

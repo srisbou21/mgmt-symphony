@@ -34,7 +34,8 @@ const formSchema = z.object({
     required_error: "Veuillez sélectionner une catégorie",
   }),
   status: z.enum(["En service", "En maintenance"] as const),
-  location: z.string().min(2, "L'emplacement doit contenir au moins 2 caractères"),
+  location: z.string().min(1, "Veuillez sélectionner un emplacement"),
+  service: z.string().min(1, "Veuillez sélectionner un service"),
   supplier: z.string().min(1, "Veuillez sélectionner un fournisseur"),
   serialNumber: z.string().min(1, "Le numéro de série est requis"),
   inventoryNumber: z.string().min(1, "Le numéro d'inventaire est requis"),
@@ -49,9 +50,18 @@ interface AddEquipmentFormProps {
   onCancel: () => void;
   initialData?: Equipment;
   suppliers: Array<{ id: number; name: string }>;
+  locations: Array<{ id: number; name: string }>;
+  services: Array<{ id: number; name: string }>;
 }
 
-export function AddEquipmentForm({ onSubmit, onCancel, initialData, suppliers }: AddEquipmentFormProps) {
+export function AddEquipmentForm({ 
+  onSubmit, 
+  onCancel, 
+  initialData, 
+  suppliers,
+  locations,
+  services 
+}: AddEquipmentFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,6 +70,7 @@ export function AddEquipmentForm({ onSubmit, onCancel, initialData, suppliers }:
       category: initialData?.category || "Matériel",
       status: initialData?.status || "En service",
       location: initialData?.location || "",
+      service: initialData?.service || "",
       supplier: initialData?.supplier || "",
       serialNumber: initialData?.serialNumber || "",
       inventoryNumber: initialData?.inventoryNumber || "",
