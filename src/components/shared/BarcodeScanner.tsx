@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Scanner } from 'react-barcode-reader';
+import React from 'react';
+import { useZxing } from 'react-zxing';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
@@ -12,23 +12,26 @@ interface BarcodeScannerProps {
 
 export const BarcodeScanner = ({ onScan, isOpen, onClose }: BarcodeScannerProps) => {
   const { toast } = useToast();
-  const [error, setError] = useState<string | null>(null);
 
-  const handleScan = (data: string) => {
-    if (data) {
+  const { ref } = useZxing({
+    onDecodeResult(result) {
+      const data = result.getText();
       onScan(data);
       toast({
         title: "Code-barres scanné",
         description: `Code lu: ${data}`,
       });
       onClose();
-    }
-  };
-
-  const handleError = (err: any) => {
-    setError("Erreur lors de la lecture du code-barres");
-    console.error("Scanner error:", err);
-  };
+    },
+    onError(error) {
+      console.error("Scanner error:", error);
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la lecture du code-barres",
+        variant: "destructive",
+      });
+    },
+  });
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -37,15 +40,9 @@ export const BarcodeScanner = ({ onScan, isOpen, onClose }: BarcodeScannerProps)
           <DialogTitle>Scanner un code-barres</DialogTitle>
         </DialogHeader>
         <div className="min-h-[300px] flex flex-col items-center justify-center">
-          {error ? (
-            <div className="text-red-500 mb-4">{error}</div>
-          ) : (
-            <Scanner
-              onScan={handleScan}
-              onError={handleError}
-              facingMode="environment"
-            />
-          )}
+          <div className="relative w-full max-w-[300px] aspect-video mb-4">
+            <video ref={ref} className="w-full h-full object-cover rounded-lg" />
+          </div>
           <Button onClick={onClose} className="mt-4">Fermer</Button>
         </div>
       </DialogContent>
