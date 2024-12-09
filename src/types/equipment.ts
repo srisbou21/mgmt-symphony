@@ -27,6 +27,8 @@ export type Location = {
   id: number;
   name: string;
   description?: string;
+  building?: string;
+  floor?: string;
 };
 
 export type EquipmentCategory = "Consommable" | "Matériel";

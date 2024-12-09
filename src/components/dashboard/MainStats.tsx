@@ -25,6 +25,7 @@ const mockEquipments: Equipment[] = [
     category: "Matériel",
     status: "En service",
     location: "Bureau 201",
+    service: "Service Informatique",
     supplier: "Dell",
     serialNumber: "XPS-2024-001",
     inventoryNumber: "INV-2024-001",

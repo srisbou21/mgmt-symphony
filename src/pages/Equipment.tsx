@@ -185,6 +185,16 @@ const Equipment = () => {
           }}
           onConfirmDelete={handleDelete}
           suppliers={suppliers}
+          locations={[
+            { id: 1, name: "Bureau 201" },
+            { id: 2, name: "Salle de réunion" },
+            { id: 3, name: "Atelier" }
+          ]}
+          services={[
+            { id: 1, name: "Service Informatique" },
+            { id: 2, name: "Service Reprographie" },
+            { id: 3, name: "Service Administratif" }
+          ]}
         />
       </motion.div>
     </div>
