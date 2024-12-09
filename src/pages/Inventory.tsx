@@ -21,11 +21,6 @@ const Inventory = () => {
     inventoryNumber: "",
     location: ""
   });
-  const [suppliers] = useState([
-    { id: 1, name: "Dell" },
-    { id: 2, name: "HP" },
-    { id: 3, name: "Office Pro" }
-  ]);
 
   const [equipments, setEquipments] = useState<Equipment[]>([
     {
@@ -179,7 +174,11 @@ const Inventory = () => {
             setEquipmentToEdit(null);
           }}
           onConfirmDelete={handleDelete}
-          suppliers={suppliers}
+          suppliers={[
+            { id: 1, name: "Dell" },
+            { id: 2, name: "HP" },
+            { id: 3, name: "Office Pro" }
+          ]}
           locations={[
             { id: 1, name: "Bureau 201" },
             { id: 2, name: "Salle de réunion" },

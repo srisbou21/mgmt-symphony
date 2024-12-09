@@ -97,7 +97,11 @@ export function AddEquipmentForm({
 
             <Card className="p-4">
               <h3 className="text-lg font-semibold mb-4">Statut et emplacement</h3>
-              <StatusFields form={form} />
+              <StatusFields 
+                form={form} 
+                locations={locations}
+                services={services}
+              />
             </Card>
 
             <Card className="p-4">
