@@ -14,6 +14,8 @@ interface EquipmentDialogsProps {
   onCancel: () => void;
   onConfirmDelete: () => void;
   suppliers: Array<{ id: number; name: string }>;
+  locations: Array<{ id: number; name: string }>;
+  services: Array<{ id: number; name: string }>;
 }
 
 export const EquipmentDialogs = ({
@@ -25,7 +27,9 @@ export const EquipmentDialogs = ({
   onSubmit,
   onCancel,
   onConfirmDelete,
-  suppliers
+  suppliers,
+  locations,
+  services
 }: EquipmentDialogsProps) => {
   const { toast } = useToast();
 
@@ -77,6 +81,8 @@ export const EquipmentDialogs = ({
             onCancel={onCancel}
             initialData={equipmentToEdit || undefined}
             suppliers={suppliers}
+            locations={locations}
+            services={services}
           />
         </DialogContent>
       </Dialog>

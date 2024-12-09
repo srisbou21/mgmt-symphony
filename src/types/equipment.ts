@@ -11,11 +11,31 @@ export const equipmentTypes = [
 
 export type EquipmentTypeValue = typeof equipmentTypes[number];
 
+export type EquipmentType = {
+  id: number;
+  name: string;
+  description?: string;
+};
+
+export type EquipmentTypeStats = {
+  type: EquipmentTypeValue;
+  count: number;
+  equipments: Equipment[];
+};
+
+export type Location = {
+  id: number;
+  name: string;
+  description?: string;
+};
+
+export type EquipmentCategory = "Consommable" | "Matériel";
+
 export type Equipment = {
   id: number;
   name: string;
   type: EquipmentTypeValue;
-  category: "Consommable" | "Matériel";
+  category: EquipmentCategory;
   status: "En service" | "En maintenance";
   location: string;
   service: string;
