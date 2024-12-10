@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Equipment } from "@/types/equipment";
+import type { Equipment } from "@/types/equipment";
 import { EquipmentHeader } from "@/components/equipment/EquipmentHeader";
 import { EquipmentTable } from "@/components/equipment/EquipmentTable";
 import { EquipmentDialogs } from "@/components/equipment/EquipmentDialogs";
 import { EquipmentFilters } from "@/components/equipment/EquipmentFilters";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { useEquipmentData } from "@/hooks/useEquipmentData";
 
 const Equipment = () => {
   const { toast } = useToast();
@@ -14,101 +15,7 @@ const Equipment = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [equipmentToDelete, setEquipmentToDelete] = useState<number | null>(null);
   const [equipmentToEdit, setEquipmentToEdit] = useState<Equipment | null>(null);
-  const [filters, setFilters] = useState<Partial<Equipment>>({
-    name: "",
-    type: undefined,
-    category: undefined,
-    location: ""
-  });
-
-  const [equipments, setEquipments] = useState<Equipment[]>([
-    {
-      id: 1,
-      name: "Ordinateur portable Dell XPS",
-      type: "Informatique",
-      category: "Matériel",
-      status: "En service",
-      location: "Bureau 201",
-      service: "Service Informatique",
-      lastMaintenance: "2024-01-15",
-      supplier: "Dell",
-      serialNumbers: [
-        { id: 1, number: "XPS-2024-001", inventoryNumber: "INV-2024-001", isAvailable: true, equipmentId: 1 },
-        { id: 2, number: "XPS-2024-002", inventoryNumber: "INV-2024-002", isAvailable: false, equipmentId: 1 }
-      ],
-      observation: "RAS",
-      availableQuantity: 2,
-      minQuantity: 1,
-    },
-    {
-      id: 2,
-      name: "Imprimante HP LaserJet",
-      type: "Informatique",
-      category: "Matériel",
-      status: "En maintenance",
-      location: "Salle de reprographie",
-      service: "Service Reprographie",
-      lastMaintenance: "2024-02-01",
-      supplier: "HP",
-      serialNumbers: [
-        { id: 3, number: "HP-2024-001", inventoryNumber: "INV-2024-003", isAvailable: true, equipmentId: 2 }
-      ],
-      observation: "Maintenance préventive",
-      availableQuantity: 1,
-      minQuantity: 1,
-    },
-    {
-      id: 3,
-      name: "Bureau ergonomique",
-      type: "Mobilier",
-      category: "Matériel",
-      status: "En service",
-      location: "Bureau 305",
-      service: "Service Administratif",
-      lastMaintenance: "2024-01-20",
-      supplier: "Office Pro",
-      serialNumbers: [
-        { id: 4, number: "DESK-2024-001", inventoryNumber: "INV-2024-004", isAvailable: true, equipmentId: 3 }
-      ],
-      observation: "",
-      availableQuantity: 1,
-      minQuantity: 1,
-    },
-    {
-      id: 4,
-      name: "Projecteur Epson",
-      type: "Matériel audiovisuel",
-      category: "Matériel",
-      status: "En service",
-      location: "Salle de conférence",
-      service: "Service Événementiel",
-      lastMaintenance: "2024-03-01",
-      supplier: "Epson",
-      serialNumbers: [
-        { id: 5, number: "PROJ-2024-001", inventoryNumber: "INV-2024-005", isAvailable: true, equipmentId: 4 }
-      ],
-      observation: "Lampe à changer dans 3 mois",
-      availableQuantity: 1,
-      minQuantity: 1,
-    },
-    {
-      id: 5,
-      name: "Cafetière Nespresso",
-      type: "Électroménager",
-      category: "Matériel",
-      status: "En service",
-      location: "Cuisine",
-      service: "Service Général",
-      lastMaintenance: "2024-02-15",
-      supplier: "Nespresso",
-      serialNumbers: [
-        { id: 6, number: "COFFEE-2024-001", inventoryNumber: "INV-2024-006", isAvailable: true, equipmentId: 5 }
-      ],
-      observation: "Détartrage mensuel requis",
-      availableQuantity: 1,
-      minQuantity: 1,
-    }
-  ]);
+  const { equipments, setEquipments, filteredEquipments, handleFilterChange, filters } = useEquipmentData();
 
   const handleSubmit = (values: Equipment) => {
     if (equipmentToEdit) {
@@ -141,27 +48,6 @@ const Equipment = () => {
     setIsDeleteDialogOpen(false);
   };
 
-  const handleFilterChange = (key: keyof Equipment, value: string) => {
-    if (key === 'type') {
-      setFilters(prev => ({ ...prev, [key]: value === 'all' ? undefined : value as EquipmentTypeValue }));
-    } else {
-      setFilters(prev => ({ ...prev, [key]: value === 'all' ? undefined : value }));
-    }
-  };
-
-  const filteredEquipments = equipments.filter(equipment => {
-    const matchName = !filters.name || 
-      equipment.name.toLowerCase().includes(filters.name.toLowerCase());
-    const matchType = !filters.type || 
-      equipment.type === filters.type;
-    const matchCategory = !filters.category || 
-      equipment.category === filters.category;
-    const matchLocation = !filters.location || 
-      equipment.location === filters.location;
-    
-    return matchName && matchType && matchCategory && matchLocation;
-  });
-
   return (
     <div className="min-h-screen bg-dmg-light p-8">
       <motion.div
@@ -184,7 +70,7 @@ const Equipment = () => {
 
         <Card className="overflow-hidden">
           <EquipmentTable
-            equipments={equipments}
+            equipments={filteredEquipments}
             onEdit={(equipment) => {
               setEquipmentToEdit(equipment);
               setIsDialogOpen(true);
