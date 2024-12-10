@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import type { Equipment, EquipmentType } from "@/types/equipment";
+import type { Equipment, EquipmentTypeValue } from "@/types/equipment";
 import { EquipmentHeader } from "@/components/equipment/EquipmentHeader";
 import { EquipmentTable } from "@/components/equipment/EquipmentTable";
 import { EquipmentDialogs } from "@/components/equipment/EquipmentDialogs";
