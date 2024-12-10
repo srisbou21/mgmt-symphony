@@ -22,7 +22,7 @@ const formSchema = z.object({
     equipmentId: z.number(),
     quantity: z.number().min(1, "La quantité doit être supérieure à 0"),
     serialNumber: z.string(),
-    inventoryNumber: z.string(),
+    inventoryNumber: z.string().optional(),
   })),
   attachedFile: z.string().optional(),
   destination: z.string().optional(),
@@ -39,71 +39,71 @@ interface AddDischargeFormProps {
 export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initialData }: AddDischargeFormProps) {
   const { toast } = useToast();
   const [isScannerOpen, setIsScannerOpen] = useState(false);
-  
-  // Ensure we have valid default values
-  const defaultEquipmentId = equipments[0]?.id || 0;
-  const defaultStaffId = staff[0]?.id || 0;
-  
-  const defaultItem: DischargeItem = {
-    equipmentId: defaultEquipmentId,
-    quantity: 1,
-    serialNumber: "",
-    inventoryNumber: "",
-  };
-
-  const [items, setItems] = useState<DischargeItem[]>(
-    initialData?.items || [defaultItem]
-  );
+  const [items, setItems] = useState<DischargeItem[]>(initialData?.items || []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      staffId: initialData?.staffId || defaultStaffId,
+      staffId: initialData?.staffId || staff[0]?.id || 0,
       status: initialData?.status || "Acquisition",
       dischargeDate: initialData?.dischargeDate ? new Date(initialData.dischargeDate) : new Date(),
       returnDate: initialData?.returnDate ? new Date(initialData.returnDate) : undefined,
-      items: items.map(item => ({
-        equipmentId: item.equipmentId,
-        quantity: item.quantity,
-        serialNumber: item.serialNumber || "",
-        inventoryNumber: item.inventoryNumber || "",
-      })),
+      items: items,
       destination: initialData?.destination || "",
     },
   });
 
   const handleScan = (scannedCode: string) => {
     // Rechercher l'équipement correspondant au code scanné
-    const equipment = equipments.find(
-      e => e.serialNumber === scannedCode || e.inventoryNumber === scannedCode
+    const equipment = equipments.find(e => 
+      e.serialNumbers.some(sn => 
+        sn.number === scannedCode || 
+        (e.category === "Matériel" && sn.inventoryNumber === scannedCode)
+      )
     );
 
     if (equipment) {
-      // Vérifier si l'équipement est déjà dans la liste
-      const existingItemIndex = items.findIndex(item => item.equipmentId === equipment.id);
+      const serialNumber = equipment.serialNumbers.find(sn => 
+        sn.number === scannedCode || 
+        (equipment.category === "Matériel" && sn.inventoryNumber === scannedCode)
+      );
 
-      if (existingItemIndex !== -1) {
-        // Incrémenter la quantité si l'équipement existe déjà
-        const updatedItems = [...items];
-        updatedItems[existingItemIndex].quantity += 1;
-        setItems(updatedItems);
-        form.setValue(`items.${existingItemIndex}.quantity`, updatedItems[existingItemIndex].quantity);
+      if (serialNumber && serialNumber.isAvailable) {
+        // Vérifier si l'équipement est déjà dans la liste
+        const existingItemIndex = items.findIndex(item => 
+          item.equipmentId === equipment.id && 
+          item.serialNumber === serialNumber.number
+        );
+
+        if (existingItemIndex === -1) {
+          // Ajouter un nouvel équipement à la liste
+          const newItem: DischargeItem = {
+            equipmentId: equipment.id,
+            quantity: 1,
+            serialNumber: serialNumber.number,
+            inventoryNumber: equipment.category === "Matériel" ? serialNumber.inventoryNumber : undefined,
+          };
+          setItems([...items, newItem]);
+          form.setValue('items', [...items, newItem]);
+
+          toast({
+            title: "Équipement ajouté",
+            description: `${equipment.name} a été ajouté à la décharge`,
+          });
+        } else {
+          toast({
+            title: "Équipement déjà scanné",
+            description: "Cet équipement est déjà dans la liste",
+            variant: "warning",
+          });
+        }
       } else {
-        // Ajouter un nouvel équipement à la liste
-        const newItem: DischargeItem = {
-          equipmentId: equipment.id,
-          quantity: 1,
-          serialNumber: equipment.serialNumber,
-          inventoryNumber: equipment.inventoryNumber,
-        };
-        setItems([...items, newItem]);
-        form.setValue(`items`, [...items, newItem]);
+        toast({
+          title: "Équipement non disponible",
+          description: "Cet équipement n'est pas disponible ou a déjà été déchargé",
+          variant: "destructive",
+        });
       }
-
-      toast({
-        title: "Équipement ajouté",
-        description: `${equipment.name} a été ajouté à la décharge`,
-      });
     } else {
       toast({
         title: "Équipement non trouvé",
@@ -121,12 +121,7 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
       status: values.status,
       dischargeDate: values.dischargeDate.toISOString(),
       returnDate: values.returnDate?.toISOString(),
-      items: values.items.map(item => ({
-        equipmentId: item.equipmentId,
-        quantity: item.quantity,
-        serialNumber: item.serialNumber,
-        inventoryNumber: item.inventoryNumber,
-      })),
+      items: values.items,
       attachedFile: values.attachedFile,
       destination: values.destination,
     };
@@ -149,7 +144,12 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
         </div>
 
         <BasicInfoFields form={form} staff={staff} />
-        <EquipmentFields form={form} equipments={equipments} items={items} setItems={setItems} />
+        <EquipmentFields 
+          form={form} 
+          equipments={equipments} 
+          items={items} 
+          setItems={setItems} 
+        />
 
         <div className="flex justify-end space-x-4">
           <Button type="button" variant="outline" onClick={onCancel}>

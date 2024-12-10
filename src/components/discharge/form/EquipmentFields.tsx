@@ -15,14 +15,18 @@ interface EquipmentFieldsProps {
 }
 
 export function EquipmentFields({ form, equipments, items, setItems }: EquipmentFieldsProps) {
-  const defaultEquipmentId = equipments[0]?.id || 0;
-
   const addNewItem = () => {
+    const defaultEquipment = equipments[0];
+    if (!defaultEquipment) return;
+
+    const defaultSerialNumber = defaultEquipment.serialNumbers[0];
+    if (!defaultSerialNumber) return;
+
     const newItem: DischargeItem = {
-      equipmentId: defaultEquipmentId,
+      equipmentId: defaultEquipment.id,
       quantity: 1,
-      serialNumber: "",
-      inventoryNumber: "",
+      serialNumber: defaultSerialNumber.number,
+      inventoryNumber: defaultSerialNumber.inventoryNumber,
     };
     setItems([...items, newItem]);
     form.setValue(`items.${items.length}`, newItem);
@@ -44,7 +48,8 @@ export function EquipmentFields({ form, equipments, items, setItems }: Equipment
       </div>
 
       {items.map((item, index) => {
-        const selectedEquipment = equipments.find(e => e.id === Number(form.getValues(`items.${index}.equipmentId`)));
+        const selectedEquipment = equipments.find(e => e.id === item.equipmentId);
+        const availableSerialNumbers = selectedEquipment?.serialNumbers.filter(sn => sn.isAvailable) || [];
         
         return (
           <div key={index} className="space-y-4 p-4 border rounded-lg relative">
@@ -69,8 +74,17 @@ export function EquipmentFields({ form, equipments, items, setItems }: Equipment
                 <FormItem>
                   <FormLabel>Équipement {index + 1}</FormLabel>
                   <Select 
-                    onValueChange={(value) => field.onChange(Number(value))} 
-                    defaultValue={String(field.value || defaultEquipmentId)}
+                    onValueChange={(value) => {
+                      const equipment = equipments.find(e => e.id === Number(value));
+                      if (equipment && equipment.serialNumbers[0]) {
+                        field.onChange(Number(value));
+                        form.setValue(`items.${index}.serialNumber`, equipment.serialNumbers[0].number);
+                        if (equipment.category === "Matériel" && equipment.serialNumbers[0].inventoryNumber) {
+                          form.setValue(`items.${index}.inventoryNumber`, equipment.serialNumbers[0].inventoryNumber);
+                        }
+                      }
+                    }}
+                    defaultValue={String(field.value)}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -91,64 +105,88 @@ export function EquipmentFields({ form, equipments, items, setItems }: Equipment
             />
 
             {selectedEquipment && (
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-sm">
-                  <span className="font-medium">Type : </span>
-                  {selectedEquipment.type}
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-sm">
+                    <span className="font-medium">Type : </span>
+                    {selectedEquipment.type}
+                  </div>
+                  <div className="text-sm">
+                    <span className="font-medium">Catégorie : </span>
+                    {selectedEquipment.category}
+                  </div>
                 </div>
-                <div className="text-sm">
-                  <span className="font-medium">Catégorie : </span>
-                  {selectedEquipment.category}
-                </div>
-              </div>
+
+                <FormField
+                  control={form.control}
+                  name={`items.${index}.serialNumber`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>N° Série</FormLabel>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          const serialNumber = selectedEquipment.serialNumbers.find(sn => sn.number === value);
+                          if (serialNumber && selectedEquipment.category === "Matériel") {
+                            form.setValue(`items.${index}.inventoryNumber`, serialNumber.inventoryNumber || '');
+                          }
+                        }}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner un numéro de série" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {availableSerialNumbers.map((sn) => (
+                            <SelectItem key={sn.id} value={sn.number}>
+                              {sn.number}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {selectedEquipment.category === "Matériel" && (
+                  <FormField
+                    control={form.control}
+                    name={`items.${index}.inventoryNumber`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>N° Inventaire</FormLabel>
+                        <FormControl>
+                          <Input {...field} readOnly />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                <FormField
+                  control={form.control}
+                  name={`items.${index}.quantity`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Quantité</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          min="1" 
+                          {...field} 
+                          onChange={e => field.onChange(Number(e.target.value))} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
             )}
-
-            <FormField
-              control={form.control}
-              name={`items.${index}.quantity`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quantité</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      min="1" 
-                      {...field} 
-                      onChange={e => field.onChange(Number(e.target.value))} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name={`items.${index}.serialNumber`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>N° Série</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name={`items.${index}.inventoryNumber`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>N° Inventaire</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </div>
         );
       })}

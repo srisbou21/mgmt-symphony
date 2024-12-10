@@ -33,7 +33,15 @@ export type Location = {
 
 export type EquipmentCategory = "Consommable" | "Matériel";
 
-export type Equipment = {
+export interface SerialNumber {
+  id: number;
+  number: string;
+  inventoryNumber?: string; // Obligatoire pour Matériel, absent pour Consommable
+  isAvailable: boolean;
+  equipmentId: number;
+}
+
+export interface Equipment {
   id: number;
   name: string;
   type: EquipmentTypeValue;
@@ -43,12 +51,11 @@ export type Equipment = {
   service: string;
   lastMaintenance?: string;
   supplier?: string;
-  serialNumber: string;
-  inventoryNumber: string;
+  serialNumbers: SerialNumber[];
   observation?: string;
   availableQuantity: number;
   minQuantity: number;
   maintenanceReason?: string;
   maintenanceStartDate?: string;
   maintenanceEndDate?: string;
-};
+}

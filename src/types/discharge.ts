@@ -4,7 +4,7 @@ export type DischargeStatus = "Acquisition" | "Restitution";
 export interface DischargeItem {
   equipmentId: number;
   quantity: number;
-  serialNumber?: string;
+  serialNumber: string;
   inventoryNumber?: string;
   type?: string;
   category?: string;
@@ -12,7 +12,7 @@ export interface DischargeItem {
 
 export interface Discharge {
   id: number;
-  dischargeNumber?: number;
+  dischargeNumber: number;
   staffId: number;
   items: DischargeItem[];
   status: DischargeStatus;
@@ -20,11 +20,4 @@ export interface Discharge {
   returnDate?: string;
   attachedFile?: string;
   destination?: string;
-  type?: string;
-  category?: string;
-  equipmentId?: number;
-  equipmentName?: string;
-  serialNumber?: string;
-  inventoryNumber?: string;
-  quantity?: number;
 }
