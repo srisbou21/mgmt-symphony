@@ -18,15 +18,8 @@ const Equipment = () => {
     name: "",
     type: undefined,
     category: undefined,
-    serialNumber: "",
-    inventoryNumber: "",
     location: ""
   });
-  const [suppliers] = useState([
-    { id: 1, name: "Dell" },
-    { id: 2, name: "HP" },
-    { id: 3, name: "Office Pro" }
-  ]);
 
   const [equipments, setEquipments] = useState<Equipment[]>([
     {
@@ -39,8 +32,13 @@ const Equipment = () => {
       service: "Service Informatique",
       lastMaintenance: "2024-01-15",
       supplier: "Dell",
-      serialNumber: "XPS-2024-001",
-      inventoryNumber: "INV-2024-001",
+      serialNumbers: [{
+        id: 1,
+        number: "XPS-2024-001",
+        inventoryNumber: "INV-2024-001",
+        isAvailable: true,
+        equipmentId: 1
+      }],
       observation: "RAS",
       availableQuantity: 1,
       minQuantity: 1,
@@ -55,8 +53,13 @@ const Equipment = () => {
       service: "Service Reprographie",
       lastMaintenance: "2024-02-01",
       supplier: "HP",
-      serialNumber: "HP-2024-001",
-      inventoryNumber: "INV-2024-002",
+      serialNumbers: [{
+        id: 2,
+        number: "HP-2024-001",
+        inventoryNumber: "INV-2024-002",
+        isAvailable: true,
+        equipmentId: 2
+      }],
       observation: "Maintenance préventive",
       availableQuantity: 1,
       minQuantity: 1,
@@ -73,8 +76,13 @@ const Equipment = () => {
       service: "Service Administratif",
       lastMaintenance: "2024-01-20",
       supplier: "Office Pro",
-      serialNumber: "DESK-2024-001",
-      inventoryNumber: "INV-2024-003",
+      serialNumbers: [{
+        id: 3,
+        number: "DESK-2024-001",
+        inventoryNumber: "INV-2024-003",
+        isAvailable: true,
+        equipmentId: 3
+      }],
       observation: "",
       availableQuantity: 1,
       minQuantity: 1,
@@ -127,15 +135,12 @@ const Equipment = () => {
       equipment.type === filters.type;
     const matchCategory = !filters.category || 
       equipment.category === filters.category;
-    const matchSerialNumber = !filters.serialNumber || 
-      equipment.serialNumber.toLowerCase().includes(filters.serialNumber.toLowerCase());
-    const matchInventoryNumber = !filters.inventoryNumber || 
-      equipment.inventoryNumber.toLowerCase().includes(filters.inventoryNumber.toLowerCase());
+    const matchSerialNumber = !filters.serialNumbers || 
+      equipment.serialNumbers.some(sn => sn.number.toLowerCase().includes(filters.serialNumbers?.[0]?.number.toLowerCase() || ''));
     const matchLocation = !filters.location || 
       equipment.location === filters.location;
     
-    return matchName && matchType && matchCategory && 
-           matchSerialNumber && matchInventoryNumber && matchLocation;
+    return matchName && matchType && matchCategory && matchSerialNumber && matchLocation;
   });
 
   return (
@@ -184,7 +189,11 @@ const Equipment = () => {
             setEquipmentToEdit(null);
           }}
           onConfirmDelete={handleDelete}
-          suppliers={suppliers}
+          suppliers={[
+            { id: 1, name: "Dell" },
+            { id: 2, name: "HP" },
+            { id: 3, name: "Office Pro" }
+          ]}
           locations={[
             { id: 1, name: "Bureau 201" },
             { id: 2, name: "Salle de réunion" },

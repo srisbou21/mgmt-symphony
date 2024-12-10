@@ -91,7 +91,7 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
           toast({
             title: "Équipement déjà scanné",
             description: "Cet équipement est déjà dans la liste",
-            variant: "warning",
+            variant: "destructive",
           });
         }
       } else {

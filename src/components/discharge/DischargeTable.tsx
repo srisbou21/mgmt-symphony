@@ -34,6 +34,7 @@ export const DischargeTable = ({
         </TableHeader>
         <TableBody>
           {equipments.map((equipment) => {
+            const defaultSerialNumber = equipment.serialNumbers[0];
             const discharge: Discharge = {
               id: equipment.id,
               dischargeNumber: Math.floor(Math.random() * 10000),
@@ -43,8 +44,8 @@ export const DischargeTable = ({
               items: [{
                 equipmentId: equipment.id,
                 quantity: 1,
-                serialNumber: equipment.serialNumber,
-                inventoryNumber: equipment.inventoryNumber,
+                serialNumber: defaultSerialNumber?.number || '',
+                inventoryNumber: defaultSerialNumber?.inventoryNumber,
               }],
             };
 
