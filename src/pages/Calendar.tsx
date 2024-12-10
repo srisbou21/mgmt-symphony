@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
 import { Card } from "@/components/ui/card";
 import { ReservationCalendar } from "@/components/calendar/ReservationCalendar";
 import { ReservationDialog } from "@/components/calendar/ReservationDialog";
@@ -17,11 +16,11 @@ const CalendarPage = () => {
 
   const handleAddReservation = (reservation: Reservation) => {
     setReservations([...reservations, reservation]);
+    setIsDialogOpen(false);
     toast({
       title: "Réservation créée",
       description: "La réservation a été créée avec succès.",
     });
-    setIsDialogOpen(false);
   };
 
   return (
@@ -41,7 +40,7 @@ const CalendarPage = () => {
             Réservation des emplacements
           </h1>
           <p className="text-lg text-gray-600">
-            Gérez les réservations des salles et espaces de l'université
+            Gérez les réservations des salles et espaces
           </p>
         </header>
 

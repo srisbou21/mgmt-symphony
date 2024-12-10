@@ -60,7 +60,7 @@ export const ReservationDialog = ({
     const reservation: Reservation = {
       id: Math.random(),
       title: values.title,
-      description: values.description,
+      description: values.description || "",
       userId: 1,
       locationId: values.locationId,
       status: "pending",
