@@ -33,8 +33,8 @@ const mockEquipments: Equipment[] = [
     service: "Service Informatique",
     supplier: "Dell",
     serialNumbers: [
-      { number: "XPS-2024-001", inventoryNumber: "INV-2024-001", isAvailable: true },
-      { number: "XPS-2024-002", inventoryNumber: "INV-2024-002", isAvailable: false }
+      { id: 1, number: "XPS-2024-001", inventoryNumber: "INV-2024-001", isAvailable: true, equipmentId: 1 },
+      { id: 2, number: "XPS-2024-002", inventoryNumber: "INV-2024-002", isAvailable: false, equipmentId: 1 }
     ],
     lastMaintenance: "2024-01-15",
   },
@@ -50,7 +50,7 @@ const mockEquipments: Equipment[] = [
     service: "Service Reprographie",
     supplier: "HP",
     serialNumbers: [
-      { number: "HP-2024-001", inventoryNumber: "INV-2024-003", isAvailable: true }
+      { id: 3, number: "HP-2024-001", inventoryNumber: "INV-2024-003", isAvailable: true, equipmentId: 2 }
     ],
     lastMaintenance: "2024-01-16",
   }

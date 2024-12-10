@@ -1,3 +1,9 @@
+export interface EquipmentTypeDefinition {
+  id: number;
+  name: string;
+  description?: string;
+}
+
 export const equipmentTypes = [
   "Informatique",
   "Mobilier",
