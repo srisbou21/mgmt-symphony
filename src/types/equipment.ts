@@ -15,7 +15,8 @@ export const equipmentTypes = [
   "Matériel audiovisuel"
 ] as const;
 
-export type EquipmentType = typeof equipmentTypes[number];
+export type EquipmentType = EquipmentTypeDefinition;
+export type EquipmentTypeValue = typeof equipmentTypes[number];
 
 export type EquipmentCategory = "Matériel" | "Consommable";
 
@@ -30,7 +31,7 @@ export interface SerialNumber {
 export interface Equipment {
   id: number;
   name: string;
-  type: EquipmentType;
+  type: EquipmentTypeValue;
   category: EquipmentCategory;
   status: "En service" | "En maintenance";
   location: string;
@@ -47,7 +48,7 @@ export interface Equipment {
 }
 
 export interface EquipmentTypeStats {
-  type: EquipmentType;
+  type: EquipmentTypeValue;
   count: number;
   equipments: Equipment[];
 }
@@ -58,9 +59,4 @@ export interface Location {
   description?: string;
   building?: string;
   floor?: string;
-}
-
-export interface EquipmentFilters extends Partial<Equipment> {
-  serialNumberFilter?: string;
-  inventoryNumberFilter?: string;
 }

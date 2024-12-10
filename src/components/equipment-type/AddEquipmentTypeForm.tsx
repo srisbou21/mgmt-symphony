@@ -8,7 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { EquipmentType } from "@/types/equipment";
 
 const formSchema = z.object({
-  id: z.number().optional(),
   name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
   description: z.string().optional(),
 });
@@ -25,7 +24,6 @@ export function AddEquipmentTypeForm({ onSubmit, onCancel, initialData }: AddEqu
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: initialData?.id,
       name: initialData?.name || "",
       description: initialData?.description || "",
     },
