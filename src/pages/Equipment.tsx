@@ -63,8 +63,6 @@ const Equipment = () => {
       observation: "Maintenance préventive",
       availableQuantity: 1,
       minQuantity: 1,
-      maintenanceReason: "Maintenance préventive",
-      maintenanceStartDate: "2024-02-01",
     },
     {
       id: 3,
@@ -122,9 +120,9 @@ const Equipment = () => {
 
   const handleFilterChange = (key: keyof Equipment, value: string) => {
     if (key === 'type') {
-      setFilters({ ...filters, [key]: value === 'all' ? undefined : value as EquipmentTypeValue });
+      setFilters(prev => ({ ...prev, [key]: value === 'all' ? undefined : value as EquipmentTypeValue }));
     } else {
-      setFilters({ ...filters, [key]: value === 'all' ? undefined : value });
+      setFilters(prev => ({ ...prev, [key]: value === 'all' ? undefined : value }));
     }
   };
 
@@ -135,12 +133,10 @@ const Equipment = () => {
       equipment.type === filters.type;
     const matchCategory = !filters.category || 
       equipment.category === filters.category;
-    const matchSerialNumber = !filters.serialNumbers || 
-      equipment.serialNumbers.some(sn => sn.number.toLowerCase().includes(filters.serialNumbers?.[0]?.number.toLowerCase() || ''));
     const matchLocation = !filters.location || 
       equipment.location === filters.location;
     
-    return matchName && matchType && matchCategory && matchSerialNumber && matchLocation;
+    return matchName && matchType && matchCategory && matchLocation;
   });
 
   return (

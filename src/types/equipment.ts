@@ -15,7 +15,6 @@ export const equipmentTypes = [
   "Matériel audiovisuel"
 ] as const;
 
-export type EquipmentType = EquipmentTypeDefinition;
 export type EquipmentTypeValue = typeof equipmentTypes[number];
 
 export interface SerialNumber {
