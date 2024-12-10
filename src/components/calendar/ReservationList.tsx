@@ -40,10 +40,10 @@ export const ReservationList = ({ reservations, selectedDate }: ReservationListP
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-medium">{reservation.title}</h3>
                 <Badge variant={
-                  reservation.status === 'approved' ? 'success' :
+                  reservation.status === 'approved' ? 'default' :
                   reservation.status === 'rejected' ? 'destructive' :
                   reservation.status === 'cancelled' ? 'secondary' :
-                  'default'
+                  'outline'
                 }>
                   {reservation.status}
                 </Badge>
@@ -62,4 +62,4 @@ export const ReservationList = ({ reservations, selectedDate }: ReservationListP
       )}
     </div>
   );
-};
+}

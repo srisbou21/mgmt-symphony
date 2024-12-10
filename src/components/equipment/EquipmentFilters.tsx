@@ -14,8 +14,8 @@ const equipmentTypes = [
 ] as const;
 
 interface EquipmentFiltersProps {
-  filters: Partial<Equipment>;
-  onFilterChange: (key: keyof Equipment, value: string) => void;
+  filters: Partial<Equipment> & { serialNumberFilter?: string; inventoryNumberFilter?: string };
+  onFilterChange: (key: string, value: string) => void;
   locations: { id: number; name: string }[];
 }
 
@@ -58,13 +58,13 @@ export const EquipmentFilters = ({ filters, onFilterChange, locations }: Equipme
       </Select>
       <Input
         placeholder="N° Série..."
-        value={filters.serialNumber || ""}
-        onChange={(e) => onFilterChange("serialNumber", e.target.value)}
+        value={filters.serialNumberFilter || ""}
+        onChange={(e) => onFilterChange("serialNumberFilter", e.target.value)}
       />
       <Input
         placeholder="N° Inventaire..."
-        value={filters.inventoryNumber || ""}
-        onChange={(e) => onFilterChange("inventoryNumber", e.target.value)}
+        value={filters.inventoryNumberFilter || ""}
+        onChange={(e) => onFilterChange("inventoryNumberFilter", e.target.value)}
       />
       <Select
         value={filters.location || "all"}
