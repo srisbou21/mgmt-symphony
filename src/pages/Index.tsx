@@ -1,32 +1,19 @@
+import { Equipment } from "@/types/equipment";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { StockAlerts } from "@/components/alerts/StockAlerts";
-import {
-  Package,
-  Wrench,
-  Users,
-  FileText,
-  Settings,
-  BarChart3,
-  Upload,
-  Calendar as CalendarIcon,
-  Truck,
-  BellDot
-} from "lucide-react";
-import { Equipment } from "@/types/equipment";
+import { Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { EquipmentTable } from "@/components/equipment/EquipmentTable";
+import { AddEquipmentForm } from "@/components/equipment/AddEquipmentForm";
 import { useToast } from "@/components/ui/use-toast";
-import { useEffect } from "react";
 
-// Mock data pour les équipements avec stock bas
 const mockEquipments: Equipment[] = [
   {
     id: 1,
     name: "Ordinateur portable Dell XPS",
     type: "Informatique",
-    availableQuantity: 2,
-    minQuantity: 5,
     category: "Matériel",
     status: "En service",
     location: "Bureau 201",
@@ -37,177 +24,128 @@ const mockEquipments: Equipment[] = [
       { id: 2, number: "XPS-2024-002", inventoryNumber: "INV-2024-002", isAvailable: false, equipmentId: 1 }
     ],
     lastMaintenance: "2024-01-15",
+    availableQuantity: 1,
+    minQuantity: 1,
+    observation: "RAS"
   },
   {
     id: 2,
     name: "Imprimante HP LaserJet",
     type: "Informatique",
-    availableQuantity: 1,
-    minQuantity: 3,
     category: "Matériel",
-    status: "En service",
-    location: "Bureau 202",
+    status: "En maintenance",
+    location: "Salle de reprographie",
     service: "Service Reprographie",
     supplier: "HP",
     serialNumbers: [
       { id: 3, number: "HP-2024-001", inventoryNumber: "INV-2024-003", isAvailable: true, equipmentId: 2 }
     ],
     lastMaintenance: "2024-01-16",
+    availableQuantity: 1,
+    minQuantity: 1,
+    observation: "Maintenance préventive",
+    maintenanceReason: "Maintenance préventive",
+    maintenanceStartDate: "2024-02-01"
   }
-];
-
-const menuItems = [
-  {
-    title: "Équipements",
-    description: "Gérer les équipements et leur inventaire",
-    icon: Package,
-    path: "/equipment",
-    color: "bg-blue-100 text-blue-600",
-  },
-  {
-    title: "Statistiques",
-    description: "Consulter les statistiques par type",
-    icon: BarChart3,
-    path: "/statistics",
-    color: "bg-purple-100 text-purple-600",
-  },
-  {
-    title: "Maintenance",
-    description: "Suivre les maintenances et réparations",
-    icon: Wrench,
-    path: "/maintenance-equipment",
-    color: "bg-green-100 text-green-600",
-  },
-  {
-    title: "Personnel",
-    description: "Gérer les équipes et les accès",
-    icon: Users,
-    path: "/staff",
-    color: "bg-yellow-100 text-yellow-600",
-  },
-  {
-    title: "Décharges",
-    description: "Gérer les sorties d'équipements",
-    icon: Upload,
-    path: "/discharge",
-    color: "bg-red-100 text-red-600",
-  },
-  {
-    title: "Inventaire",
-    description: "Suivre les stocks et les mouvements",
-    icon: FileText,
-    path: "/inventory",
-    color: "bg-indigo-100 text-indigo-600",
-  },
-  {
-    title: "Fournisseurs",
-    description: "Gérer les fournisseurs",
-    icon: Truck,
-    path: "/suppliers",
-    color: "bg-orange-100 text-orange-600",
-  },
-  {
-    title: "Calendrier",
-    description: "Gérer les réservations",
-    icon: CalendarIcon,
-    path: "/calendar",
-    color: "bg-pink-100 text-pink-600",
-  },
-  {
-    title: "Paramètres",
-    description: "Configurer l'application",
-    icon: Settings,
-    path: "/settings",
-    color: "bg-gray-100 text-gray-600",
-  },
 ];
 
 const Index = () => {
   const { toast } = useToast();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [equipments, setEquipments] = useState<Equipment[]>(mockEquipments);
+  const [equipmentToEdit, setEquipmentToEdit] = useState<Equipment | null>(null);
 
-  useEffect(() => {
-    const hasLowStock = mockEquipments.some(
-      equipment => equipment.availableQuantity <= equipment.minQuantity
-    );
-
-    if (hasLowStock) {
+  const handleSubmit = (values: Equipment) => {
+    if (equipmentToEdit) {
+      setEquipments(equipments.map(e => e.id === equipmentToEdit.id ? { ...values, id: equipmentToEdit.id } : e));
       toast({
-        title: "Alerte stock",
-        description: "Certains équipements sont en quantité critique",
-        variant: "destructive",
+        title: "Équipement modifié",
+        description: "L'équipement a été mis à jour avec succès.",
+      });
+    } else {
+      const newEquipment = { ...values, id: Math.max(0, ...equipments.map(e => e.id)) + 1 };
+      setEquipments([...equipments, newEquipment]);
+      toast({
+        title: "Équipement ajouté",
+        description: "L'équipement a été ajouté avec succès.",
       });
     }
-  }, []);
+    setIsDialogOpen(false);
+    setEquipmentToEdit(null);
+  };
+
+  const handleDelete = (id: number) => {
+    setEquipments(equipments.filter(e => e.id !== id));
+    toast({
+      title: "Équipement supprimé",
+      description: "L'équipement a été supprimé avec succès.",
+    });
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-dmg-light p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="max-w-7xl mx-auto"
       >
-        <header className="text-center mb-12">
-          <div className="flex justify-end mb-4">
-            {mockEquipments.some(eq => eq.availableQuantity <= eq.minQuantity) && (
-              <Link to="/inventory" className="inline-flex items-center text-red-600">
-                <BellDot className="h-6 w-6 mr-2 animate-pulse" />
-                <span>Alertes stock</span>
-              </Link>
-            )}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold">Équipements</h1>
+            <p className="text-gray-600 mt-2">
+              Gérez votre inventaire d'équipements
+            </p>
           </div>
-          <motion.h1
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-4xl font-bold text-gray-900 mb-4"
-          >
-            Gestion des Moyens Généraux
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-lg text-gray-600 mb-8"
-          >
-            Plateforme centralisée pour la gestion des équipements et des ressources
-          </motion.p>
-        </header>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-          {menuItems.map((item, index) => (
-            <motion.div
-              key={item.path}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <Link to={item.path}>
-                <Card className="h-full hover:shadow-lg transition-shadow duration-300">
-                  <div className="p-6">
-                    <div className={`w-12 h-12 rounded-lg ${item.color} flex items-center justify-center mb-4`}>
-                      <item.icon className="w-6 h-6" />
-                    </div>
-                    <h2 className="text-xl font-semibold mb-2">{item.title}</h2>
-                    <p className="text-gray-600 text-sm">{item.description}</p>
-                    <Button variant="ghost" className="w-full mt-4">
-                      Accéder
-                    </Button>
-                  </div>
-                </Card>
-              </Link>
-            </motion.div>
-          ))}
+          <Button onClick={() => setIsDialogOpen(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Ajouter un équipement
+          </Button>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="mt-8"
-        >
-          <StockAlerts equipments={mockEquipments} />
-        </motion.div>
+        <Card className="overflow-hidden">
+          <EquipmentTable
+            equipments={equipments}
+            onEdit={(equipment) => {
+              setEquipmentToEdit(equipment);
+              setIsDialogOpen(true);
+            }}
+            onDelete={handleDelete}
+          />
+        </Card>
+
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>
+                {equipmentToEdit ? "Modifier l'équipement" : "Ajouter un équipement"}
+              </DialogTitle>
+            </DialogHeader>
+            <AddEquipmentForm
+              onSubmit={handleSubmit}
+              onCancel={() => {
+                setIsDialogOpen(false);
+                setEquipmentToEdit(null);
+              }}
+              initialData={equipmentToEdit}
+              suppliers={[
+                { id: 1, name: "Dell" },
+                { id: 2, name: "HP" },
+                { id: 3, name: "Office Pro" }
+              ]}
+              locations={[
+                { id: 1, name: "Bureau 201" },
+                { id: 2, name: "Salle de réunion" },
+                { id: 3, name: "Atelier" }
+              ]}
+              services={[
+                { id: 1, name: "Service Informatique" },
+                { id: 2, name: "Service Reprographie" },
+                { id: 3, name: "Service Administratif" }
+              ]}
+            />
+          </DialogContent>
+        </Dialog>
       </motion.div>
     </div>
   );
