@@ -15,7 +15,8 @@ export const equipmentTypes = [
   "Matériel audiovisuel"
 ] as const;
 
-export type EquipmentType = typeof equipmentTypes[number];
+export type EquipmentType = EquipmentTypeDefinition;
+export type EquipmentTypeValue = typeof equipmentTypes[number];
 
 export interface SerialNumber {
   id: number;
@@ -28,7 +29,7 @@ export interface SerialNumber {
 export interface Equipment {
   id: number;
   name: string;
-  type: EquipmentType;
+  type: EquipmentTypeValue;
   category: "Matériel" | "Consommable";
   status: "En service" | "En maintenance";
   location: string;
@@ -42,6 +43,12 @@ export interface Equipment {
   maintenanceReason?: string;
   maintenanceStartDate?: string;
   maintenanceEndDate?: string;
+}
+
+export interface EquipmentTypeStats {
+  type: EquipmentTypeValue;
+  count: number;
+  equipments: Equipment[];
 }
 
 export interface Location {
