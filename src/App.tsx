@@ -14,6 +14,7 @@ import Login from "@/pages/Login";
 import Discharge from "@/pages/Discharge";
 import Staff from "@/pages/Staff";
 import Statistics from "@/pages/Statistics";
+import Calendar from "@/pages/Calendar";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             <Route path="/discharge" element={<ProtectedRoute><Discharge /></ProtectedRoute>} />
             <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
             <Route path="/statistics" element={<ProtectedRoute><Statistics /></ProtectedRoute>} />
+            <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
           </Routes>
           <Toaster />
         </Router>
