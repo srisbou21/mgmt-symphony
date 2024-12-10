@@ -6,8 +6,6 @@ export interface DischargeItem {
   quantity: number;
   serialNumber: string;
   inventoryNumber?: string;
-  type?: string;
-  category?: string;
 }
 
 export interface Discharge {

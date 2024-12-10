@@ -54,7 +54,6 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
   });
 
   const handleScan = (scannedCode: string) => {
-    // Rechercher l'équipement correspondant au code scanné
     const equipment = equipments.find(e => 
       e.serialNumbers.some(sn => 
         sn.number === scannedCode || 
@@ -69,14 +68,12 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
       );
 
       if (serialNumber && serialNumber.isAvailable) {
-        // Vérifier si l'équipement est déjà dans la liste
         const existingItemIndex = items.findIndex(item => 
           item.equipmentId === equipment.id && 
           item.serialNumber === serialNumber.number
         );
 
         if (existingItemIndex === -1) {
-          // Ajouter un nouvel équipement à la liste
           const newItem: DischargeItem = {
             equipmentId: equipment.id,
             quantity: 1,

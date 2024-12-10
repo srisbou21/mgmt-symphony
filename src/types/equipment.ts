@@ -36,7 +36,7 @@ export type EquipmentCategory = "Consommable" | "Matériel";
 export interface SerialNumber {
   id: number;
   number: string;
-  inventoryNumber?: string; // Obligatoire pour Matériel, absent pour Consommable
+  inventoryNumber?: string;
   isAvailable: boolean;
   equipmentId: number;
 }
@@ -58,4 +58,9 @@ export interface Equipment {
   maintenanceReason?: string;
   maintenanceStartDate?: string;
   maintenanceEndDate?: string;
+}
+
+export interface EquipmentFilters extends Partial<Equipment> {
+  serialNumberFilter?: string;
+  inventoryNumberFilter?: string;
 }

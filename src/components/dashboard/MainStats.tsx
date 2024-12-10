@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { Equipment } from "@/types/equipment";
 
-// Mock data pour tester les alertes
 const mockEquipments: Equipment[] = [
   {
     id: 1,
@@ -27,8 +26,15 @@ const mockEquipments: Equipment[] = [
     location: "Bureau 201",
     service: "Service Informatique",
     supplier: "Dell",
-    serialNumber: "XPS-2024-001",
-    inventoryNumber: "INV-2024-001",
+    serialNumbers: [
+      {
+        id: 1,
+        number: "XPS-2024-001",
+        inventoryNumber: "INV-2024-001",
+        isAvailable: true,
+        equipmentId: 1
+      }
+    ],
     lastMaintenance: "2024-01-15",
   }
 ];

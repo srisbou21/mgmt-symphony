@@ -59,8 +59,10 @@ export const ReservationDialog = ({
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     const reservation: Reservation = {
       id: Math.random(),
-      ...values,
+      title: values.title,
+      description: values.description,
       userId: 1,
+      locationId: values.locationId,
       status: "pending",
       createdAt: new Date().toISOString(),
       startDate: values.startDate.toISOString(),
