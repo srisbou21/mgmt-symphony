@@ -11,7 +11,7 @@ import {
   Settings,
   BarChart3,
   Upload,
-  Building2,
+  Calendar as CalendarIcon,
   Truck,
   BellDot
 } from "lucide-react";
@@ -32,8 +32,10 @@ const mockEquipments: Equipment[] = [
     location: "Bureau 201",
     service: "Service Informatique",
     supplier: "Dell",
-    serialNumber: "XPS-2024-001",
-    inventoryNumber: "INV-2024-001",
+    serialNumbers: [
+      { number: "XPS-2024-001", inventoryNumber: "INV-2024-001", isAvailable: true },
+      { number: "XPS-2024-002", inventoryNumber: "INV-2024-002", isAvailable: false }
+    ],
     lastMaintenance: "2024-01-15",
   },
   {
@@ -47,8 +49,9 @@ const mockEquipments: Equipment[] = [
     location: "Bureau 202",
     service: "Service Reprographie",
     supplier: "HP",
-    serialNumber: "HP-2024-001",
-    inventoryNumber: "INV-2024-002",
+    serialNumbers: [
+      { number: "HP-2024-001", inventoryNumber: "INV-2024-003", isAvailable: true }
+    ],
     lastMaintenance: "2024-01-16",
   }
 ];
@@ -104,6 +107,13 @@ const menuItems = [
     color: "bg-orange-100 text-orange-600",
   },
   {
+    title: "Calendrier",
+    description: "Gérer les réservations",
+    icon: CalendarIcon,
+    path: "/calendar",
+    color: "bg-pink-100 text-pink-600",
+  },
+  {
     title: "Paramètres",
     description: "Configurer l'application",
     icon: Settings,
@@ -115,7 +125,6 @@ const menuItems = [
 const Index = () => {
   const { toast } = useToast();
 
-  // Vérifier les alertes au chargement
   useEffect(() => {
     const hasLowStock = mockEquipments.some(
       equipment => equipment.availableQuantity <= equipment.minQuantity

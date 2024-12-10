@@ -7,12 +7,19 @@ import { ReservationDialog } from "@/components/calendar/ReservationDialog";
 import { ReservationList } from "@/components/calendar/ReservationList";
 import { useToast } from "@/components/ui/use-toast";
 import type { Reservation } from "@/types/reservation";
+import { useAuth } from "@/contexts/AuthContext";
+import { Navigate } from "react-router-dom";
 
 const CalendarPage = () => {
+  const { user } = useAuth();
   const { toast } = useToast();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [reservations, setReservations] = useState<Reservation[]>([]);
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
   const handleAddReservation = (reservation: Reservation) => {
     setReservations([...reservations, reservation]);
