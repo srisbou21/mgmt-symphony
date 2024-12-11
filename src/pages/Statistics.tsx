@@ -35,8 +35,9 @@ const Statistics = () => {
       location: "Bureau 201",
       service: "Service Informatique",
       supplier: "Dell",
-      serialNumber: "XPS-2024-001",
-      inventoryNumber: "INV-2024-001",
+      serialNumbers: [
+        { id: 1, number: "XPS-2024-001", inventoryNumber: "INV-2024-001", isAvailable: true, equipmentId: 1 }
+      ],
       observation: "RAS",
       availableQuantity: 5,
       minQuantity: 2,
@@ -51,8 +52,9 @@ const Statistics = () => {
       location: "Salle de reprographie",
       service: "Service Reprographie",
       supplier: "HP",
-      serialNumber: "HP-2024-001",
-      inventoryNumber: "INV-2024-002",
+      serialNumbers: [
+        { id: 2, number: "HP-2024-001", inventoryNumber: "INV-2024-002", isAvailable: true, equipmentId: 2 }
+      ],
       observation: "",
       availableQuantity: 3,
       minQuantity: 1,
@@ -67,8 +69,9 @@ const Statistics = () => {
       location: "Bureau 305",
       service: "Service Administratif",
       supplier: "Office Pro",
-      serialNumber: "DESK-2024-001",
-      inventoryNumber: "INV-2024-003",
+      serialNumbers: [
+        { id: 3, number: "DESK-2024-001", inventoryNumber: "INV-2024-003", isAvailable: true, equipmentId: 3 }
+      ],
       observation: "",
       availableQuantity: 2,
       minQuantity: 1,
@@ -99,7 +102,7 @@ const Statistics = () => {
         transition={{ duration: 0.5 }}
         className="max-w-7xl mx-auto"
       >
-        <h1 className="text-3xl font-bold mb-8">Tableau de bord</h1>
+        <h1 className="text-3xl font-bold mb-8">Statistiques des Équipements</h1>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <Card className="p-6">

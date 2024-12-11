@@ -55,8 +55,9 @@ const Discharge = () => {
       location: "Bureau 201",
       service: "Service Informatique",
       supplier: "Dell",
-      serialNumber: "XPS-2024-001",
-      inventoryNumber: "INV-2024-001",
+      serialNumbers: [
+        { id: 1, number: "XPS-2024-001", inventoryNumber: "INV-2024-001", isAvailable: true, equipmentId: 1 }
+      ],
       observation: "RAS",
       availableQuantity: 0,
       minQuantity: 0,
@@ -71,8 +72,9 @@ const Discharge = () => {
       location: "Salle de reprographie",
       service: "Service Reprographie",
       supplier: "HP",
-      serialNumber: "HP-2024-001",
-      inventoryNumber: "INV-2024-002",
+      serialNumbers: [
+        { id: 2, number: "HP-2024-001", inventoryNumber: "INV-2024-002", isAvailable: true, equipmentId: 2 }
+      ],
       observation: "",
       availableQuantity: 0,
       minQuantity: 0,
@@ -104,7 +106,7 @@ const Discharge = () => {
   };
 
   const filteredDischarges = mockEquipments.filter((equipment) => {
-    const matchesNumber = !filters.dischargeNumber || equipment.inventoryNumber.includes(filters.dischargeNumber);
+    const matchesNumber = !filters.dischargeNumber || equipment.serialNumbers.some(sn => sn.inventoryNumber.includes(filters.dischargeNumber));
     const matchesStatus = filters.status === "all" || equipment.status === filters.status;
     const matchesCategory = filters.category === "all" || equipment.category === filters.category;
     const matchesService = filters.service === "all"; // Add service filtering logic when available

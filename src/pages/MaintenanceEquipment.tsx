@@ -42,7 +42,7 @@ const MaintenanceEquipment = () => {
 
   const filteredEquipments = maintenanceEquipments.filter((equipment) => {
     const matchInventoryNumber = !filters.inventoryNumber || 
-      equipment.inventoryNumber.toLowerCase().includes(filters.inventoryNumber.toLowerCase());
+      equipment.serialNumbers.some(sn => sn.inventoryNumber?.toLowerCase().includes(filters.inventoryNumber.toLowerCase()));
     const matchLocation = filters.location === "all" || 
       equipment.location === filters.location;
     const matchType = filters.type === "all" || 
