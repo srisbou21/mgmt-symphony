@@ -23,19 +23,22 @@ export const EquipmentPrintView = ({ equipments }: EquipmentPrintViewProps) => {
           </tr>
         </thead>
         <tbody>
-          {equipments.map((equipment) => (
-            <tr key={equipment.id}>
-              <td className="border p-2">{equipment.name}</td>
-              <td className="border p-2">{equipment.type}</td>
-              <td className="border p-2">{equipment.serialNumber}</td>
-              <td className="border p-2">{equipment.inventoryNumber}</td>
-              <td className="border p-2">{equipment.status}</td>
-              <td className="border p-2">{equipment.location}</td>
-              <td className="border p-2">{equipment.availableQuantity}</td>
-              <td className="border p-2">{equipment.minQuantity}</td>
-              <td className="border p-2">{equipment.observation}</td>
-            </tr>
-          ))}
+          {equipments.map((equipment) => {
+            const defaultSerialNumber = equipment.serialNumbers[0];
+            return (
+              <tr key={equipment.id}>
+                <td className="border p-2">{equipment.name}</td>
+                <td className="border p-2">{equipment.type}</td>
+                <td className="border p-2">{equipment.serialNumbers.map(sn => sn.number).join(', ')}</td>
+                <td className="border p-2">{equipment.serialNumbers.map(sn => sn.inventoryNumber).join(', ')}</td>
+                <td className="border p-2">{equipment.status}</td>
+                <td className="border p-2">{equipment.location}</td>
+                <td className="border p-2">{equipment.availableQuantity}</td>
+                <td className="border p-2">{equipment.minQuantity}</td>
+                <td className="border p-2">{equipment.observation}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

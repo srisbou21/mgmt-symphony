@@ -16,8 +16,9 @@ export const useMaintenanceData = () => {
       service: "Service Informatique",
       lastMaintenance: "2024-03-15",
       supplier: "Dell",
-      serialNumber: "XPS-2024-001",
-      inventoryNumber: "INV-2024-001",
+      serialNumbers: [
+        { id: 1, number: "XPS-2024-001", inventoryNumber: "INV-2024-001", isAvailable: true, equipmentId: 1 }
+      ],
       observation: "Problème de batterie",
       availableQuantity: 1,
       minQuantity: 1,
@@ -35,8 +36,9 @@ export const useMaintenanceData = () => {
       service: "Service Reprographie",
       lastMaintenance: "2024-03-10",
       supplier: "HP",
-      serialNumber: "HP-2024-001",
-      inventoryNumber: "INV-2024-002",
+      serialNumbers: [
+        { id: 2, number: "HP-2024-001", inventoryNumber: "INV-2024-002", isAvailable: true, equipmentId: 2 }
+      ],
       observation: "Maintenance préventive",
       availableQuantity: 1,
       minQuantity: 1,
@@ -54,8 +56,9 @@ export const useMaintenanceData = () => {
       service: "Service Général",
       lastMaintenance: "2024-03-12",
       supplier: "Nespresso",
-      serialNumber: "NSP-2024-001",
-      inventoryNumber: "INV-2024-003",
+      serialNumbers: [
+        { id: 3, number: "NSP-2024-001", inventoryNumber: "INV-2024-003", isAvailable: true, equipmentId: 3 }
+      ],
       observation: "Détartrage nécessaire",
       availableQuantity: 1,
       minQuantity: 1,
