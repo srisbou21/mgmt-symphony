@@ -44,12 +44,6 @@ export interface Equipment {
   maintenanceEndDate?: string;
 }
 
-export interface EquipmentTypeStats {
-  type: EquipmentTypeValue;
-  count: number;
-  equipments: Equipment[];
-}
-
 export interface Location {
   id: number;
   name: string;
