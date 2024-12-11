@@ -48,7 +48,12 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
       status: initialData?.status || "Acquisition",
       dischargeDate: initialData?.dischargeDate ? new Date(initialData.dischargeDate) : new Date(),
       returnDate: initialData?.returnDate ? new Date(initialData.returnDate) : undefined,
-      items: items,
+      items: items.map(item => ({
+        equipmentId: item.equipmentId,
+        quantity: item.quantity,
+        serialNumber: item.serialNumber,
+        inventoryNumber: item.inventoryNumber
+      })),
       destination: initialData?.destination || "",
     },
   });
