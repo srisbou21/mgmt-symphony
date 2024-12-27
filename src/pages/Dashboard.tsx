@@ -24,7 +24,6 @@ const COLORS = [
 const Dashboard = () => {
   const [typeStats, setTypeStats] = useState<EquipmentTypeStats[]>([]);
 
-  // Simulons des données d'équipement pour la démonstration
   const mockEquipments: Equipment[] = [
     {
       id: 1,
@@ -80,7 +79,6 @@ const Dashboard = () => {
   ];
 
   useEffect(() => {
-    // Calculer les statistiques par type
     const stats = mockEquipments.reduce((acc: EquipmentTypeStats[], equipment) => {
       const existingStat = acc.find(stat => stat.type === equipment.type);
       if (existingStat) {
