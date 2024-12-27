@@ -106,7 +106,7 @@ const Discharge = () => {
   };
 
   const filteredDischarges = mockEquipments.filter((equipment) => {
-    const matchesNumber = !filters.dischargeNumber || equipment.serialNumbers.some(sn => sn.inventoryNumber.includes(filters.dischargeNumber));
+    const matchesNumber = !filters.dischargeNumber || equipment.serialNumbers.some(sn => sn.inventoryNumber?.includes(filters.dischargeNumber));
     const matchesStatus = filters.status === "all" || equipment.status === filters.status;
     const matchesCategory = filters.category === "all" || equipment.category === filters.category;
     const matchesService = filters.service === "all"; // Add service filtering logic when available

@@ -24,7 +24,6 @@ const COLORS = [
 const Statistics = () => {
   const [typeStats, setTypeStats] = useState<EquipmentTypeStats[]>([]);
 
-  // Simulons des données d'équipement pour la démonstration
   const mockEquipments: Equipment[] = [
     {
       id: 1,
