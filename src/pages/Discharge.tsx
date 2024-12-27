@@ -51,7 +51,7 @@ const Discharge = () => {
       name: "Ordinateur portable Dell XPS",
       type: "Informatique",
       category: "Matériel",
-      status: "En maintenance",
+      status: "En service",
       location: "Bureau 201",
       service: "Service Informatique",
       supplier: "Dell",

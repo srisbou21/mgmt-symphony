@@ -13,6 +13,7 @@ const Inventory = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [equipmentToDelete, setEquipmentToDelete] = useState<number | null>(null);
   const [equipmentToEdit, setEquipmentToEdit] = useState<Equipment | null>(null);
+
   const [filters, setFilters] = useState<Partial<Equipment>>({
     name: "",
     type: undefined,
@@ -126,6 +127,8 @@ const Inventory = () => {
     
     return matchName && matchType && matchCategory && matchLocation;
   });
+
+  // ... keep existing code
 
   return (
     <div className="min-h-screen bg-dmg-light p-8">

@@ -53,7 +53,7 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
         quantity: item.quantity,
         serialNumber: item.serialNumber,
         inventoryNumber: item.inventoryNumber
-      })),
+      })) as DischargeItem[],
       destination: initialData?.destination || "",
     },
   });

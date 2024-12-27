@@ -79,7 +79,6 @@ const Statistics = () => {
   ];
 
   useEffect(() => {
-    // Calculer les statistiques par type
     const stats = mockEquipments.reduce((acc: EquipmentTypeStats[], equipment) => {
       const existingStat = acc.find(stat => stat.type === equipment.type);
       if (existingStat) {
