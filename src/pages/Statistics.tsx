@@ -3,26 +3,30 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Equipment, EquipmentTypeValue } from "@/types/equipment";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import { Button } from "@/components/ui/button";
 
 interface EquipmentTypeStats {
   type: EquipmentTypeValue;
   count: number;
 }
 
+interface DetailedStats {
+  name: string;
+  quantity: number;
+  location: string;
+  status: string;
+}
+
 const COLORS = [
-  "#0088FE",
-  "#00C49F",
-  "#FFBB28",
-  "#FF8042",
-  "#8884D8",
-  "#82CA9D",
-  "#FFC658",
-  "#FF7C43",
+  "#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8",
+  "#82CA9D", "#FFC658", "#FF7C43",
 ];
 
 const Statistics = () => {
   const [typeStats, setTypeStats] = useState<EquipmentTypeStats[]>([]);
+  const [selectedType, setSelectedType] = useState<EquipmentTypeValue | null>(null);
+  const [detailedStats, setDetailedStats] = useState<DetailedStats[]>([]);
 
   const mockEquipments: Equipment[] = [
     {
@@ -92,6 +96,18 @@ const Statistics = () => {
     setTypeStats(stats);
   }, []);
 
+  const handleTypeClick = (type: EquipmentTypeValue) => {
+    setSelectedType(type);
+    const filteredEquipments = mockEquipments.filter(eq => eq.type === type);
+    const detailed = filteredEquipments.map(eq => ({
+      name: eq.name,
+      quantity: eq.availableQuantity,
+      location: eq.location,
+      status: eq.status
+    }));
+    setDetailedStats(detailed);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 p-8">
       <motion.div
@@ -117,6 +133,8 @@ const Statistics = () => {
                     outerRadius={150}
                     fill="#8884d8"
                     label
+                    onClick={(entry) => handleTypeClick(entry.type)}
+                    className="cursor-pointer"
                   >
                     {typeStats.map((entry, index) => (
                       <Cell
@@ -133,25 +151,51 @@ const Statistics = () => {
           </Card>
 
           <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Détails par type</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              {selectedType ? `Détails pour ${selectedType}` : 'Sélectionnez un type'}
+            </h2>
+            {selectedType && (
+              <div className="h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={detailedStats}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="quantity" fill="#8884d8" name="Quantité" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </Card>
+        </div>
+
+        {selectedType && (
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4">Liste détaillée</h2>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Type d'équipement</TableHead>
-                  <TableHead>Nombre total</TableHead>
+                  <TableHead>Équipement</TableHead>
+                  <TableHead>Quantité</TableHead>
+                  <TableHead>Emplacement</TableHead>
+                  <TableHead>Statut</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {typeStats.map((stat, index) => (
+                {detailedStats.map((stat, index) => (
                   <TableRow key={index}>
-                    <TableCell className="font-medium">{stat.type}</TableCell>
-                    <TableCell>{stat.count}</TableCell>
+                    <TableCell className="font-medium">{stat.name}</TableCell>
+                    <TableCell>{stat.quantity}</TableCell>
+                    <TableCell>{stat.location}</TableCell>
+                    <TableCell>{stat.status}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </Card>
-        </div>
+        )}
       </motion.div>
     </div>
   );
