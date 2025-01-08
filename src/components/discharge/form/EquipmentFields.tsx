@@ -27,6 +27,7 @@ export function EquipmentFields({ form, equipments, items, setItems }: Equipment
       quantity: 1,
       serialNumber: defaultSerialNumber.number,
       inventoryNumber: defaultSerialNumber.inventoryNumber,
+      category: defaultEquipment.category === "Matériel" ? "Matériel" : "Consommable"
     };
     setItems([...items, newItem]);
     form.setValue(`items.${items.length}`, newItem);

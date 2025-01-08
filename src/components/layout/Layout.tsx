@@ -14,7 +14,7 @@ export const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="flex h-screen bg-gray-100">
       <div className={`transition-all duration-300 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
-        <Sidebar collapsed={isSidebarCollapsed} />
+        <Sidebar />
       </div>
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />

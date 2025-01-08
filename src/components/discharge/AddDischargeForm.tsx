@@ -23,6 +23,7 @@ const formSchema = z.object({
     quantity: z.number().min(1, "La quantité doit être supérieure à 0"),
     serialNumber: z.string(),
     inventoryNumber: z.string().optional(),
+    category: z.enum(["Matériel", "Consommable"] as const),
   })),
   attachedFile: z.string().optional(),
   destination: z.string().optional(),
@@ -52,7 +53,8 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
         equipmentId: item.equipmentId,
         quantity: item.quantity,
         serialNumber: item.serialNumber,
-        inventoryNumber: item.inventoryNumber
+        inventoryNumber: item.inventoryNumber,
+        category: item.category,
       })) as DischargeItem[],
       destination: initialData?.destination || "",
     },
@@ -84,6 +86,7 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
             quantity: 1,
             serialNumber: serialNumber.number,
             inventoryNumber: equipment.category === "Matériel" ? serialNumber.inventoryNumber : undefined,
+            category: equipment.category === "Matériel" ? "Matériel" : "Consommable",
           };
           setItems([...items, newItem]);
           form.setValue('items', [...items, newItem]);
@@ -128,6 +131,7 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
         quantity: item.quantity,
         serialNumber: item.serialNumber,
         inventoryNumber: item.inventoryNumber,
+        category: item.category,
       })),
       attachedFile: values.attachedFile,
       destination: values.destination,

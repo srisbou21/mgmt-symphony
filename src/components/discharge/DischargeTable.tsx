@@ -46,6 +46,7 @@ export const DischargeTable = ({
                 quantity: 1,
                 serialNumber: defaultSerialNumber?.number || '',
                 inventoryNumber: defaultSerialNumber?.inventoryNumber,
+                category: equipment.category === "Matériel" ? "Matériel" : "Consommable"
               }],
             };
 
