@@ -26,18 +26,23 @@ export const EquipmentTable = ({ equipments, items, showState = false }: Equipme
             </tr>
           </thead>
           <tbody>
-            {equipments.map((equipment, index) => (
-              <tr key={index} className="border-b border-black">
-                <td className="border-r border-black p-2">{items[index]?.quantity || 1}</td>
-                <td className="border-r border-black p-2">{equipment.name}</td>
-                <td className="border-r border-black p-2">{equipment.type}</td>
-                <td className="border-r border-black p-2">{equipment.category}</td>
-                {showState && <td className="border-r border-black p-2">{"Bon état"}</td>}
-                <td className="p-2">
-                  Heure : {new Date(items[index]?.dischargeDate || new Date()).toLocaleTimeString()}
-                </td>
-              </tr>
-            ))}
+            {items.map((item, index) => {
+              const equipment = equipments.find(e => e.id === item.equipmentId);
+              if (!equipment) return null;
+
+              return (
+                <tr key={index} className="border-b border-black">
+                  <td className="border-r border-black p-2">{item.quantity}</td>
+                  <td className="border-r border-black p-2">{equipment.name}</td>
+                  <td className="border-r border-black p-2">{equipment.type}</td>
+                  <td className="border-r border-black p-2">{equipment.category}</td>
+                  {showState && <td className="border-r border-black p-2">{"Bon état"}</td>}
+                  <td className="p-2">
+                    {equipment.observation || '-'}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
