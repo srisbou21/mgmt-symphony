@@ -70,6 +70,42 @@ export function EquipmentFields({ form, equipments, items, setItems }: Equipment
 
             <FormField
               control={form.control}
+              name={`items.${index}.category`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Catégorie</FormLabel>
+                  <Select 
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      const filteredEquipments = equipments.filter(e => e.category === value);
+                      if (filteredEquipments.length > 0) {
+                        const firstEquipment = filteredEquipments[0];
+                        form.setValue(`items.${index}.equipmentId`, firstEquipment.id);
+                        if (firstEquipment.serialNumbers[0]) {
+                          form.setValue(`items.${index}.serialNumber`, firstEquipment.serialNumbers[0].number);
+                          form.setValue(`items.${index}.inventoryNumber`, firstEquipment.serialNumbers[0].inventoryNumber || '');
+                        }
+                      }
+                    }}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner une catégorie" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Matériel">Matériel</SelectItem>
+                      <SelectItem value="Consommable">Consommable</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name={`items.${index}.equipmentId`}
               render={({ field }) => (
                 <FormItem>
@@ -93,11 +129,13 @@ export function EquipmentFields({ form, equipments, items, setItems }: Equipment
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {equipments.map((equipment) => (
-                        <SelectItem key={equipment.id} value={String(equipment.id)}>
-                          {equipment.name}
-                        </SelectItem>
-                      ))}
+                      {equipments
+                        .filter(e => e.category === item.category)
+                        .map((equipment) => (
+                          <SelectItem key={equipment.id} value={String(equipment.id)}>
+                            {equipment.name}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

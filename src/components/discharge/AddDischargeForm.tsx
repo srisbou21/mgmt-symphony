@@ -12,6 +12,9 @@ import { Button } from "@/components/ui/button";
 import { BarcodeScanner } from "@/components/shared/BarcodeScanner";
 import { Scan } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Home, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   staffId: z.number(),
@@ -39,6 +42,7 @@ interface AddDischargeFormProps {
 
 export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initialData }: AddDischargeFormProps) {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [items, setItems] = useState<DischargeItem[]>(initialData?.items || []);
 
@@ -141,43 +145,64 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-medium">Ajouter des équipements</h3>
-          <Button 
-            type="button" 
-            variant="outline"
-            onClick={() => setIsScannerOpen(true)}
+    <div className="min-h-screen bg-gray-50">
+      <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
           >
-            <Scan className="w-4 h-4 mr-2" />
-            Scanner un code-barres
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/')}
+          >
+            <Home className="h-5 w-5" />
           </Button>
         </div>
+        <Button 
+          type="button" 
+          variant="outline"
+          onClick={() => setIsScannerOpen(true)}
+        >
+          <Scan className="w-4 h-4 mr-2" />
+          Scanner un code-barres
+        </Button>
+      </div>
 
-        <BasicInfoFields form={form} staff={staff} />
-        <EquipmentFields 
-          form={form} 
-          equipments={equipments} 
-          items={items} 
-          setItems={setItems} 
-        />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="container mx-auto py-6">
+          <ScrollArea className="h-[calc(100vh-200px)] pr-4">
+            <div className="space-y-6 p-4">
+              <BasicInfoFields form={form} staff={staff} />
+              <EquipmentFields 
+                form={form} 
+                equipments={equipments} 
+                items={items} 
+                setItems={setItems} 
+              />
+            </div>
+          </ScrollArea>
 
-        <div className="flex justify-end space-x-4">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Annuler
-          </Button>
-          <Button type="submit">
-            {initialData ? "Modifier" : "Créer"} la décharge
-          </Button>
-        </div>
+          <div className="flex justify-end space-x-4 mt-6 p-4 border-t bg-white">
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Annuler
+            </Button>
+            <Button type="submit">
+              {initialData ? "Modifier" : "Créer"} la décharge
+            </Button>
+          </div>
 
-        <BarcodeScanner
-          isOpen={isScannerOpen}
-          onClose={() => setIsScannerOpen(false)}
-          onScan={handleScan}
-        />
-      </form>
-    </Form>
+          <BarcodeScanner
+            isOpen={isScannerOpen}
+            onClose={() => setIsScannerOpen(false)}
+            onScan={handleScan}
+          />
+        </form>
+      </Form>
+    </div>
   );
 }

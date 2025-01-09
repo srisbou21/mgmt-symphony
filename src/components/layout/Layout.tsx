@@ -1,8 +1,9 @@
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowLeft, Home } from "lucide-react";
 import { Button } from "../ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,6 +11,7 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -18,6 +20,22 @@ export const Layout = ({ children }: LayoutProps) => {
       </div>
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
+        <div className="flex items-center space-x-4 p-4 border-b bg-white">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/')}
+          >
+            <Home className="h-5 w-5" />
+          </Button>
+        </div>
         <Button
           variant="ghost"
           size="icon"
