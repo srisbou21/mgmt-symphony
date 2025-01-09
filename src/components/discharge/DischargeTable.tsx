@@ -40,6 +40,7 @@ export const DischargeTable = ({
               dischargeNumber: Math.floor(Math.random() * 10000),
               staffId: 1,
               status: "Acquisition",
+              category: equipment.category === "Matériel" ? "Matériel" : "Consommable",
               dischargeDate: new Date().toISOString(),
               items: [{
                 equipmentId: equipment.id,

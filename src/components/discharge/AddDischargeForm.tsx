@@ -124,6 +124,7 @@ export function AddDischargeForm({ onSubmit, onCancel, equipments, staff, initia
       dischargeNumber: Math.floor(Math.random() * 10000),
       staffId: values.staffId,
       status: values.status,
+      category: values.items[0]?.category || "Matériel",
       dischargeDate: values.dischargeDate.toISOString(),
       returnDate: values.returnDate?.toISOString(),
       items: values.items.map(item => ({
