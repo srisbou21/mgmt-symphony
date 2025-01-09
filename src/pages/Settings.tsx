@@ -5,6 +5,7 @@ import { UserManagementForm } from "@/components/settings/UserManagementForm";
 import { PasswordChangeForm } from "@/components/settings/PasswordChangeForm";
 import { LocationTable } from "@/components/locations/LocationTable";
 import { ServiceTable } from "@/components/service/ServiceTable";
+import { CompanySettingsForm } from "@/components/settings/CompanySettingsForm";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useState } from "react";
@@ -127,6 +128,7 @@ const Settings = () => {
             <TabsTrigger value="password">Changer le mot de passe</TabsTrigger>
             <TabsTrigger value="locations">Emplacements</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
+            <TabsTrigger value="company">Société</TabsTrigger>
           </TabsList>
           
           <TabsContent value="users">
@@ -179,6 +181,10 @@ const Settings = () => {
                 onDelete={handleServiceDelete}
               />
             </Card>
+          </TabsContent>
+
+          <TabsContent value="company">
+            <CompanySettingsForm />
           </TabsContent>
         </Tabs>
 

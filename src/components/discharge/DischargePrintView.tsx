@@ -1,5 +1,6 @@
 import { Discharge } from "@/types/discharge";
 import { Equipment } from "@/types/equipment";
+import { QRCodeSVG } from "qrcode.react";
 
 interface DischargePrintViewProps {
   discharge: Discharge;
@@ -9,7 +10,23 @@ interface DischargePrintViewProps {
 
 export const DischargePrintView = ({ discharge, staffName, equipments }: DischargePrintViewProps) => {
   const formattedDate = new Date(discharge.dischargeDate).toLocaleDateString();
+  const companyName = localStorage.getItem('company_name') || 'CSV';
+  const companyAddress = localStorage.getItem('company_address') || '';
+  const companyPhone = localStorage.getItem('company_phone') || '';
+  const companyEmail = localStorage.getItem('company_email') || '';
   
+  // Créer les données pour le QR code
+  const qrData = JSON.stringify({
+    dischargeNumber: discharge.dischargeNumber,
+    date: discharge.dischargeDate,
+    staff: staffName,
+    items: discharge.items.map(item => ({
+      equipmentId: item.equipmentId,
+      serialNumber: item.serialNumber,
+      category: item.category
+    }))
+  });
+
   if (discharge.status === "Restitution") {
     return (
       <div className="p-8 max-w-4xl mx-auto bg-white">
@@ -22,18 +39,25 @@ export const DischargePrintView = ({ discharge, staffName, equipments }: Dischar
             </div>
             <div className="p-4">
               <p className="font-bold">Entreprise :</p>
-              <p>CSV</p>
+              <p>{companyName}</p>
+              <p className="text-sm">{companyAddress}</p>
+              <p className="text-sm">{companyPhone}</p>
+              <p className="text-sm">{companyEmail}</p>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 text-right">
+        <div className="mt-8 flex justify-between items-start">
           <p>EL Jadida le {formattedDate}</p>
+          <div>
+            <QRCodeSVG value={qrData} size={100} />
+            <p className="text-xs text-center mt-1">Scan pour vérifier</p>
+          </div>
         </div>
 
         <div className="mt-4">
           <p><span className="font-bold">RESTITUTION :</span></p>
-          <p><span className="font-bold">Matériel/Outillage :</span> Entreprise : CSV Sarl</p>
+          <p><span className="font-bold">Matériel/Outillage :</span> Entreprise : {companyName}</p>
         </div>
 
         <div className="mt-4 border border-black">
@@ -116,18 +140,25 @@ export const DischargePrintView = ({ discharge, staffName, equipments }: Dischar
           </div>
           <div className="p-4">
             <p className="font-bold">Entreprise :</p>
-            <p>CSV</p>
+            <p>{companyName}</p>
+            <p className="text-sm">{companyAddress}</p>
+            <p className="text-sm">{companyPhone}</p>
+            <p className="text-sm">{companyEmail}</p>
           </div>
         </div>
       </div>
 
-      <div className="mt-8 text-right">
+      <div className="mt-8 flex justify-between items-start">
         <p>EL Jadida le {formattedDate}</p>
+        <div>
+          <QRCodeSVG value={qrData} size={100} />
+          <p className="text-xs text-center mt-1">Scan pour vérifier</p>
+        </div>
       </div>
 
       <div className="mt-4">
         <p><span className="font-bold">SORTIE :</span></p>
-        <p><span className="font-bold">Matériel/Outillage :</span> Entreprise : CSV Sarl</p>
+        <p><span className="font-bold">Matériel/Outillage :</span> Entreprise : {companyName}</p>
       </div>
 
       <div className="mt-4 border border-black">
