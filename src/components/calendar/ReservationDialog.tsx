@@ -22,7 +22,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DatePicker } from "@/components/ui/date-picker";
-import type { Reservation } from "@/types/reservation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { Reservation, Location } from "@/types/reservation";
 
 const formSchema = z.object({
   title: z.string().min(2, "Le titre doit contenir au moins 2 caractères"),
@@ -37,6 +44,7 @@ interface ReservationDialogProps {
   onClose: () => void;
   onSubmit: (reservation: Reservation) => void;
   selectedDate?: Date;
+  locations: Location[];
 }
 
 export const ReservationDialog = ({
@@ -44,6 +52,7 @@ export const ReservationDialog = ({
   onClose,
   onSubmit,
   selectedDate,
+  locations,
 }: ReservationDialogProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,7 +61,7 @@ export const ReservationDialog = ({
       description: "",
       startDate: selectedDate || new Date(),
       endDate: selectedDate || new Date(),
-      locationId: 1,
+      locationId: locations[0]?.id || 1,
     },
   });
 
@@ -106,6 +115,34 @@ export const ReservationDialog = ({
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="locationId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Emplacement</FormLabel>
+                  <Select
+                    onValueChange={(value) => field.onChange(Number(value))}
+                    defaultValue={String(field.value)}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez un emplacement" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {locations.map((location) => (
+                        <SelectItem key={location.id} value={String(location.id)}>
+                          {location.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
