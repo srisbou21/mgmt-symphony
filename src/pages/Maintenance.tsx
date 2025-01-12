@@ -2,19 +2,25 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MaintenanceTable } from "@/components/maintenance/MaintenanceTable";
-import { AddMaintenanceForm } from "@/components/maintenance/AddMaintenanceForm";
 import { useMaintenanceData } from "@/hooks/useMaintenanceData";
+import { useEquipmentData } from "@/hooks/useEquipmentData";
+import { MaintenanceDialogs } from "@/components/maintenance/MaintenanceDialogs";
 import { Equipment } from "@/types/equipment";
 
 const Maintenance = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { equipments } = useEquipmentData();
   const {
     maintenanceEquipments,
+    selectedEquipment,
+    setSelectedEquipment,
+    maintenanceToEdit,
+    setMaintenanceToEdit,
     handleAddMaintenance,
     handleDeleteMaintenance,
-    confirmDelete,
+    confirmDelete
   } = useMaintenanceData();
 
   const locations = [
@@ -52,22 +58,19 @@ const Maintenance = () => {
           onEdit={() => {}}
         />
 
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Ajouter une maintenance</DialogTitle>
-            </DialogHeader>
-            <AddMaintenanceForm
-              onSubmit={(values) => {
-                handleAddMaintenance(values);
-                setIsDialogOpen(false);
-              }}
-              onCancel={() => setIsDialogOpen(false)}
-              equipmentId={1}
-              locations={locations}
-            />
-          </DialogContent>
-        </Dialog>
+        <MaintenanceDialogs
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+          isDeleteDialogOpen={isDeleteDialogOpen}
+          setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+          selectedEquipment={selectedEquipment}
+          maintenanceToEdit={maintenanceToEdit}
+          onSubmit={handleAddMaintenance}
+          onCancel={() => setIsDialogOpen(false)}
+          onConfirmDelete={confirmDelete}
+          locations={locations}
+          equipments={equipments}
+        />
       </motion.div>
     </div>
   );

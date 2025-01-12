@@ -16,6 +16,7 @@ interface MaintenanceDialogsProps {
   onCancel: () => void;
   onConfirmDelete: () => void;
   locations: Location[];
+  equipments: Equipment[];
 }
 
 export const MaintenanceDialogs = ({
@@ -28,7 +29,8 @@ export const MaintenanceDialogs = ({
   onSubmit,
   onCancel,
   onConfirmDelete,
-  locations
+  locations,
+  equipments
 }: MaintenanceDialogsProps) => {
   const { toast } = useToast();
 
@@ -81,6 +83,7 @@ export const MaintenanceDialogs = ({
               onCancel={onCancel}
               equipmentId={selectedEquipment.id}
               locations={locations}
+              equipments={equipments}
               initialData={maintenanceToEdit || undefined}
             />
           )}
