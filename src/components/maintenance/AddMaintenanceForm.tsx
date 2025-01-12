@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Location } from "@/types/equipment";
 import { MaintenanceFormData } from "@/types/maintenance";
+import { Equipment } from "@/types/equipment";
 
 const formSchema = z.object({
   equipmentId: z.number(),
@@ -23,10 +24,18 @@ interface AddMaintenanceFormProps {
   onCancel: () => void;
   equipmentId: number;
   locations: Location[];
+  equipments: Equipment[];
   initialData?: MaintenanceFormData;
 }
 
-export function AddMaintenanceForm({ onSubmit, onCancel, equipmentId, locations, initialData }: AddMaintenanceFormProps) {
+export function AddMaintenanceForm({ 
+  onSubmit, 
+  onCancel, 
+  equipmentId, 
+  locations, 
+  equipments,
+  initialData 
+}: AddMaintenanceFormProps) {
   const form = useForm<MaintenanceFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
@@ -42,6 +51,34 @@ export function AddMaintenanceForm({ onSubmit, onCancel, equipmentId, locations,
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="equipmentId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Équipement</FormLabel>
+              <Select
+                onValueChange={(value) => field.onChange(Number(value))}
+                defaultValue={String(field.value)}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionner l'équipement" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {equipments.map((equipment) => (
+                    <SelectItem key={equipment.id} value={String(equipment.id)}>
+                      {equipment.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="maintenanceReason"
