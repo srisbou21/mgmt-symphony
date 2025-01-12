@@ -5,15 +5,10 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PrintTemplate } from "@/types/printTemplate";
 import { useToast } from "@/components/ui/use-toast";
+import { PdfGenerator } from "@/utils/pdfGenerator";
 
 export const PrintTemplateSettings = () => {
   const { toast } = useToast();
@@ -23,26 +18,66 @@ export const PrintTemplateSettings = () => {
   const handleSaveTemplate = () => {
     if (!currentTemplate) return;
 
-    // Ici, vous ajouteriez la logique pour sauvegarder le template dans votre base de données
+    setTemplates(prev => {
+      const existing = prev.find(t => t.id === currentTemplate.id);
+      if (existing) {
+        return prev.map(t => t.id === currentTemplate.id ? currentTemplate : t);
+      }
+      return [...prev, currentTemplate];
+    });
+
     toast({
       title: "Modèle sauvegardé",
       description: "Le modèle d'impression a été sauvegardé avec succès.",
     });
   };
 
+  const handlePreview = async () => {
+    if (!currentTemplate) return;
+
+    try {
+      const pdfGenerator = new PdfGenerator(currentTemplate);
+      
+      // Exemple de données pour la prévisualisation
+      const headers = ['Nom', 'Type', 'État', 'Emplacement'];
+      const data = [
+        ['Équipement 1', 'Matériel', 'En service', 'Bureau 201'],
+        ['Équipement 2', 'Outillage', 'En maintenance', 'Atelier'],
+      ];
+
+      pdfGenerator.addTable(headers, data);
+      await pdfGenerator.generate(`preview_${currentTemplate.name}.pdf`);
+
+      toast({
+        title: "Prévisualisation générée",
+        description: "Le PDF de prévisualisation a été créé avec succès.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la génération du PDF.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // ... keep existing code (template form fields and UI)
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Modèles d'impression</h2>
-        <Button onClick={() => setCurrentTemplate({
-          id: templates.length + 1,
-          name: "Nouveau modèle",
-          type: "discharge",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        })}>
-          Nouveau modèle
-        </Button>
+        <div className="space-x-2">
+          <Button onClick={() => setCurrentTemplate({
+            id: templates.length + 1,
+            name: "Nouveau modèle",
+            type: "discharge",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          })}>
+            Nouveau modèle
+          </Button>
+        </div>
       </div>
 
       {currentTemplate && (
@@ -184,6 +219,9 @@ export const PrintTemplateSettings = () => {
           <div className="flex justify-end space-x-4">
             <Button variant="outline" onClick={() => setCurrentTemplate(null)}>
               Annuler
+            </Button>
+            <Button variant="outline" onClick={handlePreview}>
+              Prévisualiser
             </Button>
             <Button onClick={handleSaveTemplate}>
               Enregistrer
