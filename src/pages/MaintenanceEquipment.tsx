@@ -6,6 +6,7 @@ import { MaintenanceFilters } from "@/components/maintenance/MaintenanceFilters"
 import { MaintenanceTable } from "@/components/maintenance/MaintenanceTable";
 import { MaintenanceDialogs } from "@/components/maintenance/MaintenanceDialogs";
 import { useMaintenanceData } from "@/hooks/useMaintenanceData";
+import { useEquipmentData } from "@/hooks/useEquipmentData";
 import { MaintenanceFormData } from "@/types/maintenance";
 
 const MaintenanceEquipment = () => {
@@ -17,6 +18,7 @@ const MaintenanceEquipment = () => {
     type: "all",
   });
 
+  const { equipments } = useEquipmentData();
   const {
     maintenanceEquipments,
     selectedEquipment,
@@ -115,6 +117,7 @@ const MaintenanceEquipment = () => {
           }}
           onConfirmDelete={confirmDelete}
           locations={locations}
+          equipments={equipments}
         />
       </motion.div>
     </div>
