@@ -1,7 +1,9 @@
 import { ResizableTable } from "@/components/shared/ResizableTable";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, FileText } from "lucide-react";
-import { Supplier } from "@/types/supplier";
+import type { Supplier } from "@/types/supplier";
+
+export type { Supplier };  // Re-export the Supplier type
 
 interface SupplierTableProps {
   suppliers: Supplier[];
