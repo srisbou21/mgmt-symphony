@@ -36,6 +36,8 @@ const formSchema = z.object({
   description: z.string().optional(),
   startDate: z.date(),
   endDate: z.date(),
+  startTime: z.string(),
+  endTime: z.string(),
   locationId: z.number(),
 });
 
@@ -61,11 +63,21 @@ export const ReservationDialog = ({
       description: "",
       startDate: selectedDate || new Date(),
       endDate: selectedDate || new Date(),
+      startTime: "09:00",
+      endTime: "10:00",
       locationId: locations[0]?.id || 1,
     },
   });
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
+    const startDateTime = new Date(values.startDate);
+    const [startHours, startMinutes] = values.startTime.split(':');
+    startDateTime.setHours(parseInt(startHours), parseInt(startMinutes));
+
+    const endDateTime = new Date(values.endDate);
+    const [endHours, endMinutes] = values.endTime.split(':');
+    endDateTime.setHours(parseInt(endHours), parseInt(endMinutes));
+
     const reservation: Reservation = {
       id: Math.random(),
       title: values.title,
@@ -74,8 +86,8 @@ export const ReservationDialog = ({
       locationId: values.locationId,
       status: "pending",
       createdAt: new Date().toISOString(),
-      startDate: values.startDate.toISOString(),
-      endDate: values.endDate.toISOString(),
+      startDate: startDateTime.toISOString(),
+      endDate: endDateTime.toISOString(),
     };
     onSubmit(reservation);
   };
@@ -177,6 +189,36 @@ export const ReservationDialog = ({
                         date={field.value}
                         onChange={field.onChange}
                       />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="startTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Heure de début</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="endTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Heure de fin</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
