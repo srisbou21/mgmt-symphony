@@ -4,6 +4,6 @@ export interface Supplier {
   email: string;
   phone: string;
   address: string;
-  category: string;
-  status: 'active' | 'inactive';
+  contact: string;
+  commercialRegister?: string;
 }
