@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
 import { NavigationButtons } from "../shared/NavigationButtons";
+import { useAutoLogout } from "@/hooks/useAutoLogout";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,6 +12,7 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  useAutoLogout();
 
   return (
     <div className="flex h-screen bg-gray-100">
