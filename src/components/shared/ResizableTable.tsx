@@ -9,6 +9,7 @@ interface Column {
   key: string;
   header: string;
   width: number;
+  render?: (row: any) => React.ReactNode;
 }
 
 interface ResizableTableProps {
@@ -73,7 +74,7 @@ export const ResizableTable = ({ columns: initialColumns, data, fileName }: Resi
                     key={column.key}
                     style={{ width: column.width }}
                   >
-                    {row[column.key]}
+                    {column.render ? column.render(row) : row[column.key]}
                   </TableCell>
                 ))}
               </TableRow>
