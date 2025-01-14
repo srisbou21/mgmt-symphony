@@ -27,11 +27,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { User } from "@/types/user";
+import { Paperclip } from "lucide-react";
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 const formSchema = z.object({
   receiverId: z.number(),
   subject: z.string().min(1, "Le sujet est requis"),
   content: z.string().min(1, "Le message est requis"),
+  attachments: z.array(z.any()).optional(),
 });
 
 interface ComposeMessageProps {
@@ -47,9 +51,28 @@ export const ComposeMessage = ({
   onSubmit,
   users,
 }: ComposeMessageProps) => {
+  const [attachments, setAttachments] = useState<File[]>([]);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      attachments: [],
+    }
   });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const validFiles = files.filter(file => file.size <= MAX_FILE_SIZE);
+    setAttachments(prev => [...prev, ...validFiles]);
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+    onSubmit({ ...values, attachments });
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -59,7 +82,7 @@ export const ComposeMessage = ({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="receiverId"
@@ -119,6 +142,44 @@ export const ComposeMessage = ({
                 </FormItem>
               )}
             />
+
+            <div className="space-y-2">
+              <FormLabel>Pièces jointes</FormLabel>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => document.getElementById("file-upload")?.click()}
+                >
+                  <Paperclip className="w-4 h-4 mr-2" />
+                  Ajouter un fichier
+                </Button>
+                <Input
+                  id="file-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileChange}
+                  multiple
+                />
+              </div>
+              {attachments.length > 0 && (
+                <div className="mt-2 space-y-2">
+                  {attachments.map((file, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 border rounded">
+                      <span className="text-sm truncate">{file.name}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeAttachment(index)}
+                      >
+                        Supprimer
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div className="flex justify-end space-x-4">
               <Button type="button" variant="outline" onClick={onClose}>

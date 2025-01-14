@@ -10,7 +10,8 @@ import {
   Calendar,
   Bell,
   BarChart3,
-  BellDot
+  BellDot,
+  Mail
 } from "lucide-react";
 import { Equipment } from "@/types/equipment";
 
@@ -106,6 +107,15 @@ const stats = [
     details: "Gestion des tickets",
     description: "Suivi des demandes internes et des interventions",
     link: "/tickets"
+  },
+  {
+    title: "Messages",
+    value: "0",
+    icon: Mail,
+    color: "bg-blue-100 text-blue-600",
+    details: "Messagerie interne",
+    description: "Envoi et réception de messages entre utilisateurs",
+    link: "/messages"
   },
   {
     title: "Rapports",
