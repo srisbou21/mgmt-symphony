@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { ReservationCalendar } from "@/components/calendar/ReservationCalendar";
 import { ReservationDialog } from "@/components/calendar/ReservationDialog";
 import { ReservationList } from "@/components/calendar/ReservationList";
+import { DayAvailability } from "@/components/calendar/DayAvailability";
 import { useToast } from "@/components/ui/use-toast";
 import type { Reservation, Location } from "@/types/reservation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -24,13 +25,13 @@ const CalendarPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<Location>(mockLocations[0]);
 
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
   const handleAddReservation = (reservation: Reservation) => {
-    // Vérifier si l'emplacement est disponible
     const isLocationAvailable = !reservations.some(r => 
       r.locationId === reservation.locationId &&
       new Date(r.startDate) <= new Date(reservation.endDate) &&
@@ -80,8 +81,19 @@ const CalendarPage = () => {
             <Card className="p-4 lg:col-span-2">
               <ReservationCalendar
                 reservations={reservations}
+                locations={mockLocations}
                 onAddReservation={() => setIsDialogOpen(true)}
+                onDateSelect={setSelectedDate}
               />
+              {selectedDate && (
+                <div className="mt-6">
+                  <DayAvailability
+                    date={selectedDate}
+                    location={selectedLocation}
+                    reservations={reservations.filter(r => r.locationId === selectedLocation.id)}
+                  />
+                </div>
+              )}
             </Card>
 
             <Card className="p-4">
