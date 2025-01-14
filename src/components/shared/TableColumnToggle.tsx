@@ -12,18 +12,21 @@ import { Eye } from "lucide-react";
 interface Column {
   id: string;
   label: string;
+  width?: number;
 }
 
 interface TableColumnToggleProps {
   columns: Column[];
   visibleColumns: string[];
   onToggleColumn: (columnId: string) => void;
+  onColumnResize?: (columnId: string, width: number) => void;
 }
 
 export function TableColumnToggle({
   columns,
   visibleColumns,
   onToggleColumn,
+  onColumnResize,
 }: TableColumnToggleProps) {
   return (
     <DropdownMenu>
