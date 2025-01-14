@@ -4,6 +4,7 @@ export interface Message {
   receiverId: number;
   subject: string;
   content: string;
+  attachments?: File[];
   read: boolean;
   createdAt: string;
 }

@@ -17,8 +17,8 @@ export default function Messages() {
       role: "user",
       permissions: {
         canManageUsers: false,
-        canManageEquipment: false,
-        canManageMaintenance: false,
+        canManageEquipment: true,
+        canManageMaintenance: true,
         canViewReports: false
       }
     },
@@ -28,8 +28,8 @@ export default function Messages() {
       role: "user",
       permissions: {
         canManageUsers: false,
-        canManageEquipment: false,
-        canManageMaintenance: false,
+        canManageEquipment: true,
+        canManageMaintenance: true,
         canViewReports: false
       }
     },
@@ -39,10 +39,11 @@ export default function Messages() {
   const handleSendMessage = (values: any) => {
     const newMessage: Message = {
       id: messages.length + 1,
-      senderId: 1, // À remplacer par l'ID de l'utilisateur connecté
+      senderId: 1,
       receiverId: values.receiverId,
       subject: values.subject,
       content: values.content,
+      attachments: values.attachments,
       read: false,
       createdAt: new Date().toISOString(),
     };
