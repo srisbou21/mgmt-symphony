@@ -4,6 +4,6 @@ export interface Message {
   receiverId: number;
   subject: string;
   content: string;
-  createdAt: string;
   read: boolean;
+  createdAt: string;
 }

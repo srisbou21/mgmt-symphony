@@ -1,31 +1,33 @@
 import { useState } from "react";
-import { Layout } from "@/components/layout/Layout";
-import { MessageList } from "@/components/messages/MessageList";
 import { ComposeMessage } from "@/components/messages/ComposeMessage";
+import { MessageList } from "@/components/messages/MessageList";
 import { Button } from "@/components/ui/button";
-import { Mail, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+import { Message } from "@/types/message";
 import { useToast } from "@/components/ui/use-toast";
-import type { Message } from "@/types/message";
-import { useAuth } from "@/contexts/AuthContext";
+import { User } from "@/types/user";
 
-const MessagesPage = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const [messages, setMessages] = useState<Message[]>([]);
+export default function Messages() {
   const [isComposeOpen, setIsComposeOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [users] = useState<User[]>([
+    { id: 1, username: "user1" },
+    { id: 2, username: "user2" },
+  ]);
+  const { toast } = useToast();
 
   const handleSendMessage = (values: any) => {
     const newMessage: Message = {
-      id: Math.random(),
-      senderId: user?.id || 0,
+      id: messages.length + 1,
+      senderId: 1, // À remplacer par l'ID de l'utilisateur connecté
       receiverId: values.receiverId,
       subject: values.subject,
       content: values.content,
-      createdAt: new Date().toISOString(),
       read: false,
+      createdAt: new Date().toISOString(),
     };
 
-    setMessages([newMessage, ...messages]);
+    setMessages([...messages, newMessage]);
     setIsComposeOpen(false);
     toast({
       title: "Message envoyé",
@@ -34,37 +36,30 @@ const MessagesPage = () => {
   };
 
   const handleMessageSelect = (message: Message) => {
-    const updatedMessages = messages.map((m) =>
-      m.id === message.id ? { ...m, read: true } : m
+    const updatedMessages = messages.map((msg) =>
+      msg.id === message.id ? { ...msg, read: true } : msg
     );
     setMessages(updatedMessages);
   };
 
   return (
-    <Layout>
-      <div className="container mx-auto py-8">
-        <div className="flex justify-between items-center mb-6">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-blue-100 text-blue-600 text-sm font-medium">
-            <Mail className="w-4 h-4 mr-2" />
-            Messages
-          </div>
-          <Button onClick={() => setIsComposeOpen(true)} className="gap-2">
-            <Plus className="w-4 h-4" />
-            Nouveau message
-          </Button>
-        </div>
-
-        <MessageList messages={messages} onMessageSelect={handleMessageSelect} />
-
-        <ComposeMessage
-          isOpen={isComposeOpen}
-          onClose={() => setIsComposeOpen(false)}
-          onSubmit={handleSendMessage}
-          users={[]} // À remplacer par la liste réelle des utilisateurs
-        />
+    <div className="container mx-auto py-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Messages</h1>
+        <Button onClick={() => setIsComposeOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Nouveau message
+        </Button>
       </div>
-    </Layout>
-  );
-};
 
-export default MessagesPage;
+      <MessageList messages={messages} onMessageSelect={handleMessageSelect} />
+
+      <ComposeMessage
+        isOpen={isComposeOpen}
+        onClose={() => setIsComposeOpen(false)}
+        onSubmit={handleSendMessage}
+        users={users}
+      />
+    </div>
+  );
+}
