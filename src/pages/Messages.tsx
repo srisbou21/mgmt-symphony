@@ -11,8 +11,28 @@ export default function Messages() {
   const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [users] = useState<User[]>([
-    { id: 1, username: "user1" },
-    { id: 2, username: "user2" },
+    { 
+      id: 1, 
+      username: "user1",
+      role: "user",
+      permissions: {
+        canManageUsers: false,
+        canManageEquipment: false,
+        canManageMaintenance: false,
+        canViewReports: false
+      }
+    },
+    { 
+      id: 2, 
+      username: "user2",
+      role: "user",
+      permissions: {
+        canManageUsers: false,
+        canManageEquipment: false,
+        canManageMaintenance: false,
+        canViewReports: false
+      }
+    },
   ]);
   const { toast } = useToast();
 
