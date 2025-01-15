@@ -1,7 +1,7 @@
 import { MainStats } from "@/components/dashboard/MainStats";
 import { ActivityCard } from "@/components/dashboard/ActivityCard";
 import { SupplierStats } from "@/components/dashboard/SupplierStats";
-import { DocumentManager } from "@/components/documents/DocumentManager";
+import { RecentDocuments } from "@/components/dashboard/RecentDocuments";
 import { Layout } from "@/components/layout/Layout";
 
 const recentTickets = [
@@ -61,13 +61,9 @@ const Index = () => {
             />
           </div>
 
-          <div className="mt-8">
-            <h2 className="text-2xl font-semibold mb-6">Aperçu des fournisseurs</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <RecentDocuments />
             <SupplierStats />
-          </div>
-
-          <div className="mt-8">
-            <DocumentManager />
           </div>
         </div>
       </div>

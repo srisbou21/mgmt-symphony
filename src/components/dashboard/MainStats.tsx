@@ -11,7 +11,9 @@ import {
   Bell,
   BarChart3,
   BellDot,
-  Mail
+  Mail,
+  FileSignature,
+  Files
 } from "lucide-react";
 import { Equipment } from "@/types/equipment";
 
@@ -64,13 +66,13 @@ const stats = [
     link: "/maintenance"
   },
   {
-    title: "Espaces",
-    value: "89",
-    icon: Building2,
-    color: "bg-orange-100 text-orange-600",
-    details: "Gestion des espaces",
-    description: "Suivi et réservation des espaces, gestion de l'occupation",
-    link: "/spaces"
+    title: "Documents",
+    value: "145",
+    icon: Files,
+    color: "bg-purple-100 text-purple-600",
+    details: "Gestion documentaire",
+    description: "Stockage, partage et signature de documents",
+    link: "/documents"
   },
   {
     title: "Personnel",
@@ -82,13 +84,13 @@ const stats = [
     link: "/staff"
   },
   {
-    title: "Contrats",
-    value: "23",
-    icon: FileText,
-    color: "bg-purple-100 text-purple-600",
-    details: "Gestion des contrats",
-    description: "Suivi des contrats et des fournisseurs, alertes de renouvellement",
-    link: "/contracts"
+    title: "Signatures",
+    value: "89",
+    icon: FileSignature,
+    color: "bg-orange-100 text-orange-600",
+    details: "Signatures électroniques",
+    description: "Signature et validation de documents",
+    link: "/signatures"
   },
   {
     title: "Planning",
@@ -100,21 +102,12 @@ const stats = [
     link: "/planning"
   },
   {
-    title: "Tickets",
-    value: "34",
-    icon: Bell,
-    color: "bg-yellow-100 text-yellow-600",
-    details: "Gestion des tickets",
-    description: "Suivi des demandes internes et des interventions",
-    link: "/tickets"
-  },
-  {
     title: "Messages",
-    value: "0",
+    value: "34",
     icon: Mail,
-    color: "bg-blue-100 text-blue-600",
+    color: "bg-yellow-100 text-yellow-600",
     details: "Messagerie interne",
-    description: "Envoi et réception de messages entre utilisateurs",
+    description: "Communication entre les équipes",
     link: "/messages"
   },
   {
