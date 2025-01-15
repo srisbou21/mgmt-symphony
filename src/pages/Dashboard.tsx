@@ -4,6 +4,19 @@ import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Equipment, EquipmentTypeValue } from "@/types/equipment";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { DigitalSignature } from "@/components/shared/DigitalSignature";
+import { useToast } from "@/components/ui/use-toast";
+import { Message } from "@/types/message";
+import { MessageList } from "@/components/messages/MessageList";
+import { Button } from "@/components/ui/button";
+import { Mail, FileSignature } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface EquipmentTypeStats {
   type: EquipmentTypeValue;
@@ -23,6 +36,9 @@ const COLORS = [
 
 const Dashboard = () => {
   const [typeStats, setTypeStats] = useState<EquipmentTypeStats[]>([]);
+  const [recentMessages, setRecentMessages] = useState<Message[]>([]);
+  const [isSignatureDialogOpen, setIsSignatureDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   const mockEquipments: Equipment[] = [
     {
@@ -92,6 +108,15 @@ const Dashboard = () => {
     setTypeStats(stats);
   }, []);
 
+  const handleSignatureSave = (signatureData: string) => {
+    // Save signature data (you can implement the actual save logic)
+    toast({
+      title: "Signature enregistrée",
+      description: "La signature numérique a été sauvegardée avec succès.",
+    });
+    setIsSignatureDialogOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 p-8">
       <motion.div
@@ -102,6 +127,32 @@ const Dashboard = () => {
       >
         <h1 className="text-3xl font-bold mb-8">Tableau de bord</h1>
         
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <Card className="p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Messages récents</h2>
+              <Button variant="outline" size="sm" onClick={() => window.location.href = '/messages'}>
+                <Mail className="w-4 h-4 mr-2" />
+                Voir tous
+              </Button>
+            </div>
+            <MessageList messages={recentMessages.slice(0, 3)} onMessageSelect={() => {}} />
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Signature numérique</h2>
+              <Button variant="outline" size="sm" onClick={() => setIsSignatureDialogOpen(true)}>
+                <FileSignature className="w-4 h-4 mr-2" />
+                Signer
+              </Button>
+            </div>
+            <p className="text-sm text-gray-600">
+              Utilisez la signature numérique pour valider vos documents et décharges.
+            </p>
+          </Card>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4">Répartition par type</h2>
@@ -152,6 +203,15 @@ const Dashboard = () => {
             </Table>
           </Card>
         </div>
+
+        <Dialog open={isSignatureDialogOpen} onOpenChange={setIsSignatureDialogOpen}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>Signature numérique</DialogTitle>
+            </DialogHeader>
+            <DigitalSignature onSave={handleSignatureSave} />
+          </DialogContent>
+        </Dialog>
       </motion.div>
     </div>
   );
