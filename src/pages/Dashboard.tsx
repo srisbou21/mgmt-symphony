@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Message } from "@/types/message";
 import { MessageList } from "@/components/messages/MessageList";
 import { Button } from "@/components/ui/button";
-import { Mail, FileSignature } from "lucide-react";
+import { Mail, FileSignature, Download } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { DocumentManager } from "@/components/documents/DocumentManager";
 
 interface EquipmentTypeStats {
   type: EquipmentTypeValue;
@@ -106,10 +107,33 @@ const Dashboard = () => {
     }, []);
 
     setTypeStats(stats);
+
+    // Simuler le chargement des messages récents
+    const mockMessages: Message[] = [
+      {
+        id: 1,
+        senderId: 1,
+        receiverId: 2,
+        subject: "Maintenance planifiée",
+        content: "La maintenance des équipements est prévue pour demain.",
+        read: false,
+        createdAt: new Date().toISOString(),
+      },
+      {
+        id: 2,
+        senderId: 3,
+        receiverId: 2,
+        subject: "Nouveau document",
+        content: "Un nouveau document a été ajouté à la GED.",
+        read: true,
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+      }
+    ];
+
+    setRecentMessages(mockMessages);
   }, []);
 
   const handleSignatureSave = (signatureData: string) => {
-    // Save signature data (you can implement the actual save logic)
     toast({
       title: "Signature enregistrée",
       description: "La signature numérique a été sauvegardée avec succès.",
@@ -136,7 +160,7 @@ const Dashboard = () => {
                 Voir tous
               </Button>
             </div>
-            <MessageList messages={recentMessages.slice(0, 3)} onMessageSelect={() => {}} />
+            <MessageList messages={recentMessages} onMessageSelect={() => {}} />
           </Card>
 
           <Card className="p-6">
@@ -203,6 +227,11 @@ const Dashboard = () => {
             </Table>
           </Card>
         </div>
+
+        <Card className="p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4">Documents récents</h2>
+          <DocumentManager />
+        </Card>
 
         <Dialog open={isSignatureDialogOpen} onOpenChange={setIsSignatureDialogOpen}>
           <DialogContent className="sm:max-w-[600px]">
