@@ -77,7 +77,8 @@ const Dashboard = () => {
     const stats = mockEquipments.reduce((acc, equipment) => {
       const existingStat = acc.find(stat => stat.type === equipment.type);
       if (existingStat) {
-        existingStat.count = String(parseInt(existingStat.count) + equipment.availableQuantity);
+        const currentCount = parseInt(existingStat.count);
+        existingStat.count = String(currentCount + equipment.availableQuantity);
       } else {
         acc.push({ 
           type: equipment.type as EquipmentTypeValue, 
