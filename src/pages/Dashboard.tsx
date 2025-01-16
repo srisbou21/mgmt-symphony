@@ -21,7 +21,7 @@ import { DocumentManager } from "@/components/documents/DocumentManager";
 
 interface EquipmentTypeStats {
   type: EquipmentTypeValue;
-  count: string;
+  count: string;  // Changed to string to match the expected type
 }
 
 const COLORS = [
@@ -99,8 +99,10 @@ const Dashboard = () => {
     const stats = mockEquipments.reduce((acc: EquipmentTypeStats[], equipment) => {
       const existingStat = acc.find(stat => stat.type === equipment.type);
       if (existingStat) {
+        // Convert to string when updating existing stat
         existingStat.count = String(parseInt(existingStat.count) + equipment.availableQuantity);
       } else {
+        // Convert to string when adding new stat
         acc.push({ type: equipment.type, count: String(equipment.availableQuantity) });
       }
       return acc;
