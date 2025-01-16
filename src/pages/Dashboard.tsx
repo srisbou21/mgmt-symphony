@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
-import { Equipment } from "@/types/equipment";
+import { Equipment, EquipmentTypeValue } from "@/types/equipment";
 import { Message } from "@/types/message";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import { StatsTable } from "@/components/dashboard/StatsTable";
 import { RecentMessageCard } from "@/components/dashboard/RecentMessageCard";
 
 const Dashboard = () => {
-  const [typeStats, setTypeStats] = useState<{ type: string; count: string }[]>([]);
+  const [typeStats, setTypeStats] = useState<{ type: EquipmentTypeValue; count: string }[]>([]);
   const [recentMessages, setRecentMessages] = useState<Message[]>([]);
   const [isSignatureDialogOpen, setIsSignatureDialogOpen] = useState(false);
   const { toast } = useToast();
@@ -79,10 +79,10 @@ const Dashboard = () => {
       if (existingStat) {
         existingStat.count = String(parseInt(existingStat.count) + equipment.availableQuantity);
       } else {
-        acc.push({ type: equipment.type, count: String(equipment.availableQuantity) });
+        acc.push({ type: equipment.type as EquipmentTypeValue, count: String(equipment.availableQuantity) });
       }
       return acc;
-    }, [] as { type: string; count: string }[]);
+    }, [] as { type: EquipmentTypeValue; count: string }[]);
 
     setTypeStats(stats);
 
