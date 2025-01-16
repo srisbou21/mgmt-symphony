@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Document } from "@/types/document";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
 
 export const DocumentManager = () => {
   const { toast } = useToast();
@@ -15,39 +16,67 @@ export const DocumentManager = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
 
+  // Charger les documents au montage du composant
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
+
+  const fetchDocuments = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('documents')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      if (data) {
+        setDocuments(data);
+      }
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les documents.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
       for (const file of Array.from(files)) {
         try {
-          // Simuler un téléchargement de fichier
-          const newDoc: Document = {
-            id: documents.length + 1,
-            title: file.name,
-            description: "",
-            fileUrl: URL.createObjectURL(file),
-            fileType: file.type,
-            fileSize: file.size,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            createdBy: 1, // ID de l'utilisateur connecté
-            version: 1,
-            tags: [],
-            category: "Non classé",
-            status: "draft",
-            metadata: {
-              author: "Utilisateur actuel",
-              department: "Non spécifié",
-            }
-          };
+          // Upload file to Supabase Storage (à implémenter plus tard)
+          const fileUrl = URL.createObjectURL(file);
 
-          setDocuments(prev => [...prev, newDoc]);
-          
-          toast({
-            title: "Document ajouté",
-            description: `${file.name} a été ajouté avec succès.`,
-          });
+          const { data, error } = await supabase
+            .from('documents')
+            .insert({
+              title: file.name,
+              description: "",
+              file_url: fileUrl,
+              file_type: file.type,
+              file_size: file.size,
+              tags: [],
+              category: "Non classé",
+              status: "draft",
+            })
+            .select()
+            .single();
+
+          if (error) throw error;
+
+          if (data) {
+            setDocuments(prev => [data, ...prev]);
+            toast({
+              title: "Document ajouté",
+              description: `${file.name} a été ajouté avec succès.`,
+            });
+          }
         } catch (error) {
+          console.error('Error uploading document:', error);
           toast({
             title: "Erreur",
             description: `Erreur lors de l'ajout de ${file.name}.`,

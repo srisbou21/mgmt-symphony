@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ComposeMessage } from "@/components/messages/ComposeMessage";
 import { MessageList } from "@/components/messages/MessageList";
 import { Button } from "@/components/ui/button";
@@ -6,61 +6,93 @@ import { Plus } from "lucide-react";
 import { Message } from "@/types/message";
 import { useToast } from "@/components/ui/use-toast";
 import { User } from "@/types/user";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Messages() {
   const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [users] = useState<User[]>([
-    { 
-      id: 1, 
-      username: "user1",
-      role: "user",
-      permissions: {
-        canManageUsers: false,
-        canManageEquipment: true,
-        canManageMaintenance: true,
-        canViewReports: false
-      }
-    },
-    { 
-      id: 2, 
-      username: "user2",
-      role: "user",
-      permissions: {
-        canManageUsers: false,
-        canManageEquipment: true,
-        canManageMaintenance: true,
-        canViewReports: false
-      }
-    },
-  ]);
+  const [users, setUsers] = useState<User[]>([]);
   const { toast } = useToast();
 
-  const handleSendMessage = (values: any) => {
-    const newMessage: Message = {
-      id: messages.length + 1,
-      senderId: 1,
-      receiverId: values.receiverId,
-      subject: values.subject,
-      content: values.content,
-      attachments: values.attachments,
-      read: false,
-      createdAt: new Date().toISOString(),
-    };
+  useEffect(() => {
+    fetchMessages();
+  }, []);
 
-    setMessages([...messages, newMessage]);
-    setIsComposeOpen(false);
-    toast({
-      title: "Message envoyé",
-      description: "Votre message a été envoyé avec succès.",
-    });
+  const fetchMessages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (data) {
+        setMessages(data);
+      }
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les messages.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleMessageSelect = (message: Message) => {
-    const updatedMessages = messages.map((msg) =>
-      msg.id === message.id ? { ...msg, read: true } : msg
-    );
-    setMessages(updatedMessages);
+  const handleSendMessage = async (values: any) => {
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .insert({
+          sender_id: (await supabase.auth.getUser()).data.user?.id,
+          receiver_id: values.receiverId,
+          subject: values.subject,
+          content: values.content,
+          attachments: values.attachments,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setMessages(prev => [data, ...prev]);
+        setIsComposeOpen(false);
+        toast({
+          title: "Message envoyé",
+          description: "Votre message a été envoyé avec succès.",
+        });
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'envoyer le message.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleMessageSelect = async (message: Message) => {
+    if (!message.read) {
+      try {
+        const { error } = await supabase
+          .from('messages')
+          .update({ read: true })
+          .eq('id', message.id);
+
+        if (error) throw error;
+
+        setMessages(prev =>
+          prev.map(msg =>
+            msg.id === message.id ? { ...msg, read: true } : msg
+          )
+        );
+      } catch (error) {
+        console.error('Error updating message status:', error);
+      }
+    }
   };
 
   return (
