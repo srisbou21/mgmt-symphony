@@ -28,7 +28,7 @@ export default function Messages() {
       if (error) throw error;
 
       if (data) {
-        setMessages(data);
+        setMessages(data as Message[]);
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -42,10 +42,13 @@ export default function Messages() {
 
   const handleSendMessage = async (values: any) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
       const { data, error } = await supabase
         .from('messages')
         .insert({
-          sender_id: (await supabase.auth.getUser()).data.user?.id,
+          sender_id: user.id,
           receiver_id: values.receiverId,
           subject: values.subject,
           content: values.content,
@@ -57,7 +60,7 @@ export default function Messages() {
       if (error) throw error;
 
       if (data) {
-        setMessages(prev => [data, ...prev]);
+        setMessages(prev => [data as Message, ...prev]);
         setIsComposeOpen(false);
         toast({
           title: "Message envoyé",

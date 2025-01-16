@@ -1,10 +1,10 @@
 export interface Message {
-  id: number;
-  senderId: number;
-  receiverId: number;
+  id: string;
+  sender_id: string;
+  receiver_id: string;
   subject: string;
   content: string;
-  attachments?: File[];
-  read: boolean;
-  createdAt: string;
+  attachments?: string[] | null;
+  read: boolean | null;
+  created_at: string;
 }

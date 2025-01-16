@@ -16,7 +16,6 @@ export const DocumentManager = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
 
-  // Charger les documents au montage du composant
   useEffect(() => {
     fetchDocuments();
   }, []);
@@ -31,7 +30,7 @@ export const DocumentManager = () => {
       if (error) throw error;
       
       if (data) {
-        setDocuments(data);
+        setDocuments(data as Document[]);
       }
     } catch (error) {
       console.error('Error fetching documents:', error);
@@ -48,7 +47,9 @@ export const DocumentManager = () => {
     if (files && files.length > 0) {
       for (const file of Array.from(files)) {
         try {
-          // Upload file to Supabase Storage (à implémenter plus tard)
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) throw new Error('User not authenticated');
+
           const fileUrl = URL.createObjectURL(file);
 
           const { data, error } = await supabase
@@ -62,6 +63,7 @@ export const DocumentManager = () => {
               tags: [],
               category: "Non classé",
               status: "draft",
+              created_by: user.id
             })
             .select()
             .single();
@@ -69,7 +71,7 @@ export const DocumentManager = () => {
           if (error) throw error;
 
           if (data) {
-            setDocuments(prev => [data, ...prev]);
+            setDocuments(prev => [data as Document, ...prev]);
             toast({
               title: "Document ajouté",
               description: `${file.name} a été ajouté avec succès.`,

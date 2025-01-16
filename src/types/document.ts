@@ -1,21 +1,15 @@
 export interface Document {
-  id: number;
+  id: string;
   title: string;
   description?: string;
-  fileUrl: string;
-  fileType: string;
-  fileSize: number;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: number;
-  version: number;
-  tags: string[];
-  category: string;
-  status: 'draft' | 'published' | 'archived';
-  metadata: {
-    author?: string;
-    department?: string;
-    expirationDate?: string;
-    [key: string]: any;
-  };
+  file_url: string | null;
+  file_type: string | null;
+  file_size: number | null;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  version: number | null;
+  tags: string[] | null;
+  category: string | null;
+  status: string | null;
 }
