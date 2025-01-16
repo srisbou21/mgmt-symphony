@@ -57,6 +57,113 @@ export type Database = {
         }
         Relationships: []
       }
+      equipment: {
+        Row: {
+          available_quantity: number
+          category: string
+          created_at: string
+          created_by: string | null
+          id: string
+          inventory_number: string | null
+          last_maintenance: string | null
+          location: string
+          min_quantity: number
+          name: string
+          observation: string | null
+          serial_number: string | null
+          service: string
+          status: string
+          supplier: string | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          available_quantity?: number
+          category: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          inventory_number?: string | null
+          last_maintenance?: string | null
+          location: string
+          min_quantity?: number
+          name: string
+          observation?: string | null
+          serial_number?: string | null
+          service: string
+          status: string
+          supplier?: string | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          available_quantity?: number
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          inventory_number?: string | null
+          last_maintenance?: string | null
+          location?: string
+          min_quantity?: number
+          name?: string
+          observation?: string | null
+          serial_number?: string | null
+          service?: string
+          status?: string
+          supplier?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      maintenance: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          end_date: string | null
+          equipment_id: string | null
+          id: string
+          notes: string | null
+          reason: string
+          start_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          end_date?: string | null
+          equipment_id?: string | null
+          id?: string
+          notes?: string | null
+          reason: string
+          start_date: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          end_date?: string | null
+          equipment_id?: string | null
+          id?: string
+          notes?: string | null
+          reason?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           attachments: string[] | null

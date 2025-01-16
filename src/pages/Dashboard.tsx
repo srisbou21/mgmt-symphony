@@ -14,7 +14,7 @@ import { StatsTable } from "@/components/dashboard/StatsTable";
 import { RecentMessageCard } from "@/components/dashboard/RecentMessageCard";
 
 const Dashboard = () => {
-  const [typeStats, setTypeStats] = useState([]);
+  const [typeStats, setTypeStats] = useState<{ type: string; count: string }[]>([]);
   const [recentMessages, setRecentMessages] = useState<Message[]>([]);
   const [isSignatureDialogOpen, setIsSignatureDialogOpen] = useState(false);
   const { toast } = useToast();
@@ -82,7 +82,7 @@ const Dashboard = () => {
         acc.push({ type: equipment.type, count: String(equipment.availableQuantity) });
       }
       return acc;
-    }, []);
+    }, [] as { type: string; count: string }[]);
 
     setTypeStats(stats);
 
