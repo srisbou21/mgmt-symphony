@@ -108,7 +108,6 @@ const Dashboard = () => {
 
     setTypeStats(stats);
 
-    // Simuler le chargement des messages récents
     const mockMessages: Message[] = [
       {
         id: 1,
