@@ -79,7 +79,10 @@ const Dashboard = () => {
       if (existingStat) {
         existingStat.count = String(parseInt(existingStat.count) + equipment.availableQuantity);
       } else {
-        acc.push({ type: equipment.type as EquipmentTypeValue, count: String(equipment.availableQuantity) });
+        acc.push({ 
+          type: equipment.type as EquipmentTypeValue, 
+          count: String(equipment.availableQuantity) 
+        });
       }
       return acc;
     }, [] as { type: EquipmentTypeValue; count: string }[]);
