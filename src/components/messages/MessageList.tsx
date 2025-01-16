@@ -34,7 +34,7 @@ export const MessageList = ({ messages, onMessageSelect }: MessageListProps) => 
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-medium">{message.subject}</h3>
                 <span className="text-sm text-gray-500">
-                  {format(new Date(message.createdAt), "d MMM yyyy HH:mm", {
+                  {format(new Date(message.created_at), "d MMM yyyy HH:mm", {
                     locale: fr,
                   })}
                 </span>

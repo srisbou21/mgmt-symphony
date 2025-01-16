@@ -90,24 +90,25 @@ export const DocumentManager = () => {
   };
 
   const handleDownload = (doc: Document) => {
-    // Simuler un téléchargement
-    const link = document.createElement('a');
-    link.href = doc.fileUrl;
-    link.download = doc.title;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (doc.file_url) {
+      const link = document.createElement('a');
+      link.href = doc.file_url;
+      link.download = doc.title;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-    toast({
-      title: "Téléchargement démarré",
-      description: `${doc.title} est en cours de téléchargement.`,
-    });
+      toast({
+        title: "Téléchargement démarré",
+        description: `${doc.title} est en cours de téléchargement.`,
+      });
+    }
   };
 
   const filteredDocuments = documents.filter(doc =>
     doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     doc.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    doc.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+    doc.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
@@ -160,7 +161,7 @@ export const DocumentManager = () => {
                     </div>
                     <p className="text-sm text-gray-500 line-clamp-2">{doc.description}</p>
                     <div className="flex flex-wrap gap-2">
-                      {doc.tags.map((tag, index) => (
+                      {doc.tags?.map((tag, index) => (
                         <Badge key={index} variant="secondary">
                           <Tag className="w-3 h-3 mr-1" />
                           {tag}
@@ -170,7 +171,7 @@ export const DocumentManager = () => {
                     <div className="flex justify-between items-center text-sm text-gray-400">
                       <span className="flex items-center">
                         <Calendar className="w-4 h-4 mr-1" />
-                        {new Date(doc.updatedAt).toLocaleDateString()}
+                        {new Date(doc.updated_at).toLocaleDateString()}
                       </span>
                       <span>v{doc.version}</span>
                     </div>
@@ -188,7 +189,7 @@ export const DocumentManager = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="text-sm text-gray-500">
-                      Taille: {(doc.fileSize / 1024 / 1024).toFixed(2)} MB
+                      Taille: {doc.file_size ? (doc.file_size / 1024 / 1024).toFixed(2) : 0} MB
                     </div>
                     <Button onClick={() => handleDownload(doc)}>
                       <Download className="w-4 h-4 mr-2" />

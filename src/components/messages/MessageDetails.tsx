@@ -14,15 +14,8 @@ interface MessageDetailsProps {
 export const MessageDetails = ({ message, isOpen, onClose }: MessageDetailsProps) => {
   if (!message) return null;
 
-  const handleDownload = (file: File) => {
-    const url = URL.createObjectURL(file);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = file.name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handleDownload = (attachmentUrl: string) => {
+    window.open(attachmentUrl, '_blank');
   };
 
   return (
@@ -33,7 +26,7 @@ export const MessageDetails = ({ message, isOpen, onClose }: MessageDetailsProps
         </DialogHeader>
         <div className="mt-4">
           <div className="text-sm text-gray-500 mb-4">
-            {format(new Date(message.createdAt), "d MMMM yyyy 'à' HH:mm", {
+            {format(new Date(message.created_at), "d MMMM yyyy 'à' HH:mm", {
               locale: fr,
             })}
           </div>
@@ -44,13 +37,13 @@ export const MessageDetails = ({ message, isOpen, onClose }: MessageDetailsProps
             <div className="border-t pt-4">
               <h4 className="text-sm font-semibold mb-2">Pièces jointes</h4>
               <div className="space-y-2">
-                {message.attachments.map((file, index) => (
+                {message.attachments.map((attachmentUrl, index) => (
                   <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                    <span className="text-sm">{file.name}</span>
+                    <span className="text-sm">Pièce jointe {index + 1}</span>
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDownload(file)}
+                      onClick={() => handleDownload(attachmentUrl)}
                     >
                       <Download className="h-4 w-4 mr-2" />
                       Télécharger
