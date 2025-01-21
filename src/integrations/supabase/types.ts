@@ -9,6 +9,148 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      calendar_events: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          end_date: string
+          id: string
+          location_id: string | null
+          start_date: string
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date: string
+          id?: string
+          location_id?: string | null
+          start_date: string
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string
+          id?: string
+          location_id?: string | null
+          start_date?: string
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_events_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discharge_items: {
+        Row: {
+          created_at: string
+          discharge_id: string | null
+          equipment_id: string | null
+          id: string
+          inventory_number: string | null
+          quantity: number
+          serial_number: string | null
+        }
+        Insert: {
+          created_at?: string
+          discharge_id?: string | null
+          equipment_id?: string | null
+          id?: string
+          inventory_number?: string | null
+          quantity?: number
+          serial_number?: string | null
+        }
+        Update: {
+          created_at?: string
+          discharge_id?: string | null
+          equipment_id?: string | null
+          id?: string
+          inventory_number?: string | null
+          quantity?: number
+          serial_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discharge_items_discharge_id_fkey"
+            columns: ["discharge_id"]
+            isOneToOne: false
+            referencedRelation: "discharges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discharge_items_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discharges: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          discharge_date: string
+          discharge_number: string
+          employee_id: string | null
+          id: string
+          notes: string | null
+          return_date: string | null
+          status: string | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          discharge_date: string
+          discharge_number: string
+          employee_id?: string | null
+          id?: string
+          notes?: string | null
+          return_date?: string | null
+          status?: string | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          discharge_date?: string
+          discharge_number?: string
+          employee_id?: string | null
+          id?: string
+          notes?: string | null
+          return_date?: string | null
+          status?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discharges_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           category: string | null
@@ -56,6 +198,53 @@ export type Database = {
           version?: number | null
         }
         Relationships: []
+      }
+      employees: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          phone: string | null
+          position: string | null
+          service_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          phone?: string | null
+          position?: string | null
+          service_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          phone?: string | null
+          position?: string | null
+          service_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employees_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       equipment: {
         Row: {
