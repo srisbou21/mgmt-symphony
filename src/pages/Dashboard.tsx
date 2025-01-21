@@ -13,8 +13,14 @@ import { EquipmentTypeChart } from "@/components/dashboard/EquipmentTypeChart";
 import { StatsTable } from "@/components/dashboard/StatsTable";
 import { RecentMessageCard } from "@/components/dashboard/RecentMessageCard";
 
+interface TypeStat {
+  type: EquipmentTypeValue;
+  count: string;
+  equipments: Equipment[];
+}
+
 const Dashboard = () => {
-  const [typeStats, setTypeStats] = useState<{ type: EquipmentTypeValue; count: string }[]>([]);
+  const [typeStats, setTypeStats] = useState<TypeStat[]>([]);
   const [recentMessages, setRecentMessages] = useState<Message[]>([]);
   const [isSignatureDialogOpen, setIsSignatureDialogOpen] = useState(false);
   const { toast } = useToast();
@@ -74,19 +80,21 @@ const Dashboard = () => {
   ];
 
   useEffect(() => {
-    const stats = mockEquipments.reduce((acc, equipment) => {
+    const stats = mockEquipments.reduce<TypeStat[]>((acc, equipment) => {
       const existingStat = acc.find(stat => stat.type === equipment.type);
       if (existingStat) {
         const currentCount = parseInt(existingStat.count);
         existingStat.count = String(currentCount + equipment.availableQuantity);
+        existingStat.equipments.push(equipment);
       } else {
         acc.push({ 
-          type: equipment.type as EquipmentTypeValue, 
-          count: String(equipment.availableQuantity) 
+          type: equipment.type as EquipmentTypeValue,
+          count: String(equipment.availableQuantity),
+          equipments: [equipment]
         });
       }
       return acc;
-    }, [] as { type: EquipmentTypeValue; count: string }[]);
+    }, []);
 
     setTypeStats(stats);
 
