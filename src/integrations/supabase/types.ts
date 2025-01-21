@@ -161,6 +161,8 @@ export type Database = {
           file_type: string | null
           file_url: string | null
           id: string
+          signature_required: boolean | null
+          signed: boolean | null
           status: string | null
           tags: string[] | null
           title: string
@@ -176,6 +178,8 @@ export type Database = {
           file_type?: string | null
           file_url?: string | null
           id?: string
+          signature_required?: boolean | null
+          signed?: boolean | null
           status?: string | null
           tags?: string[] | null
           title: string
@@ -191,6 +195,8 @@ export type Database = {
           file_type?: string | null
           file_url?: string | null
           id?: string
+          signature_required?: boolean | null
+          signed?: boolean | null
           status?: string | null
           tags?: string[] | null
           title?: string
@@ -499,6 +505,44 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      signatures: {
+        Row: {
+          created_at: string
+          document_id: string | null
+          id: string
+          signature_data: string
+          signed_at: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_id?: string | null
+          id?: string
+          signature_data: string
+          signed_at?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_id?: string | null
+          id?: string
+          signature_data?: string
+          signed_at?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "signatures_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       suppliers: {
         Row: {

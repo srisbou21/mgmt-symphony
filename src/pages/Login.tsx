@@ -1,23 +1,77 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { toast } = useToast();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (login(username, password, rememberMe)) {
-      navigate("/");
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: username,
+        password: password,
+      });
+
+      if (error) {
+        console.error("Erreur de connexion:", error.message);
+        toast({
+          title: "Erreur de connexion",
+          description: "Identifiants incorrects. Veuillez réessayer.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data.user) {
+        // Récupérer le profil de l'utilisateur
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profileError) {
+          console.error("Erreur lors de la récupération du profil:", profileError);
+          toast({
+            title: "Erreur",
+            description: "Impossible de récupérer les informations du profil",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        console.log("Profil récupéré:", profileData);
+        
+        toast({
+          title: "Connexion réussie",
+          description: "Bienvenue sur votre espace de travail",
+        });
+        
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Erreur inattendue:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur inattendue s'est produite",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -30,14 +84,15 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-              Nom d'utilisateur
+              Email
             </label>
             <Input
               id="username"
-              type="text"
+              type="email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              disabled={isLoading}
             />
           </div>
           <div>
@@ -51,6 +106,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isLoading}
               />
               <Button
                 type="button"
@@ -58,6 +114,7 @@ export default function Login() {
                 size="icon"
                 className="absolute right-2 top-1/2 -translate-y-1/2"
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -72,6 +129,7 @@ export default function Login() {
               id="rememberMe"
               checked={rememberMe}
               onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+              disabled={isLoading}
             />
             <label
               htmlFor="rememberMe"
@@ -80,8 +138,8 @@ export default function Login() {
               Se souvenir de moi
             </label>
           </div>
-          <Button type="submit" className="w-full">
-            Se connecter
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Connexion en cours..." : "Se connecter"}
           </Button>
         </form>
       </div>

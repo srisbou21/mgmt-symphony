@@ -1,13 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, AuthUser } from '@/types/user';
+import { User } from '@/types/user';
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AuthContextType {
   user: User | null;
-  login: (username: string, password: string, rememberMe?: boolean) => boolean;
-  logout: () => void;
-  changePassword: (oldPassword: string, newPassword: string) => boolean;
-  createUser: (username: string, password: string) => boolean;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -24,145 +22,88 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const { toast } = useToast();
 
-  // Charger l'utilisateur depuis le localStorage au démarrage
   useEffect(() => {
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-  }, []);
+    // Vérifier la session actuelle
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        // Récupérer le profil de l'utilisateur
+        supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single()
+          .then(({ data: profile, error }) => {
+            if (error) {
+              console.error('Erreur lors de la récupération du profil:', error);
+              return;
+            }
+            if (profile) {
+              setUser({
+                id: session.user.id,
+                username: profile.username,
+                role: profile.role,
+                permissions: profile.permissions,
+              });
+            }
+          });
+      }
+    });
 
-  useEffect(() => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    if (users.length === 0) {
-      const defaultAdmin: AuthUser = {
-        id: 1,
-        username: 'admin',
-        password: 'admin123',
-        role: 'admin',
-        permissions: {
-          canManageUsers: true,
-          canManageEquipment: true,
-          canManageMaintenance: true,
-          canViewReports: true
+    // Écouter les changements d'authentification
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event);
+      if (event === 'SIGNED_IN' && session?.user) {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (error) {
+          console.error('Erreur lors de la récupération du profil:', error);
+          return;
         }
-      };
-      localStorage.setItem('users', JSON.stringify([defaultAdmin]));
-    }
+
+        if (profile) {
+          setUser({
+            id: session.user.id,
+            username: profile.username,
+            role: profile.role,
+            permissions: profile.permissions,
+          });
+        }
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const login = (username: string, password: string, rememberMe: boolean = false): boolean => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]') as AuthUser[];
-    const foundUser = users.find((u) => 
-      u.username === username && u.password === password
-    );
-
-    if (foundUser) {
-      const { password: _, ...userWithoutPassword } = foundUser;
-      setUser(userWithoutPassword);
+  const logout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
       
-      // Sauvegarder l'utilisateur si rememberMe est true
-      if (rememberMe) {
-        localStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
-      } else {
-        localStorage.removeItem('currentUser');
-      }
-      
+      setUser(null);
       toast({
-        title: "Connexion réussie",
-        description: `Bienvenue, ${username}!`,
+        title: "Déconnexion réussie",
+        description: "Vous avez été déconnecté avec succès",
       });
-      return true;
-    }
-    
-    toast({
-      title: "Erreur de connexion",
-      description: "Nom d'utilisateur ou mot de passe incorrect",
-      variant: "destructive",
-    });
-    return false;
-  };
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('currentUser');
-    toast({
-      title: "Déconnexion",
-      description: "Vous avez été déconnecté avec succès",
-    });
-  };
-
-  const changePassword = (oldPassword: string, newPassword: string): boolean => {
-    if (!user) return false;
-
-    const users = JSON.parse(localStorage.getItem('users') || '[]') as AuthUser[];
-    const userIndex = users.findIndex((u) => u.id === user.id);
-    const currentUser = users[userIndex];
-
-    if (userIndex === -1 || currentUser.password !== oldPassword) {
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
       toast({
         title: "Erreur",
-        description: "Ancien mot de passe incorrect",
+        description: "Une erreur est survenue lors de la déconnexion",
         variant: "destructive",
       });
-      return false;
     }
-
-    users[userIndex].password = newPassword;
-    localStorage.setItem('users', JSON.stringify(users));
-    
-    toast({
-      title: "Succès",
-      description: "Mot de passe modifié avec succès",
-    });
-    return true;
-  };
-
-  const createUser = (username: string, password: string): boolean => {
-    if (!user || user.role !== 'admin') {
-      toast({
-        title: "Erreur",
-        description: "Seul un administrateur peut créer de nouveaux utilisateurs",
-        variant: "destructive",
-      });
-      return false;
-    }
-
-    const users = JSON.parse(localStorage.getItem('users') || '[]') as AuthUser[];
-    if (users.some((u) => u.username === username)) {
-      toast({
-        title: "Erreur",
-        description: "Ce nom d'utilisateur existe déjà",
-        variant: "destructive",
-      });
-      return false;
-    }
-
-    const newUser: AuthUser = {
-      id: users.length + 1,
-      username,
-      password,
-      role: 'user',
-      permissions: {
-        canManageUsers: false,
-        canManageEquipment: false,
-        canManageMaintenance: false,
-        canViewReports: false
-      }
-    };
-
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-    
-    toast({
-      title: "Succès",
-      description: "Nouvel utilisateur créé avec succès",
-    });
-    return true;
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, changePassword, createUser }}>
+    <AuthContext.Provider value={{ user, logout }}>
       {children}
     </AuthContext.Provider>
   );
