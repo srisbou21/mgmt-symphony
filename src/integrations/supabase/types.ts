@@ -117,6 +117,66 @@ export type Database = {
         }
         Relationships: []
       }
+      equipment_types: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      locations: {
+        Row: {
+          building: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          floor: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          building?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          floor?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          building?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          floor?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       maintenance: {
         Row: {
           created_at: string
@@ -194,6 +254,72 @@ export type Database = {
           receiver_id?: string
           sender_id?: string
           subject?: string
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      suppliers: {
+        Row: {
+          address: string | null
+          commercial_register: string | null
+          contact: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          commercial_register?: string | null
+          contact?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          commercial_register?: string | null
+          contact?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          updated_at?: string
         }
         Relationships: []
       }

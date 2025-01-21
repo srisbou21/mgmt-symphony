@@ -5,13 +5,15 @@ import { Equipment, EquipmentTypeValue } from "@/types/equipment";
 import { Message } from "@/types/message";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { FileSignature } from "lucide-react";
+import { FileSignature, FileSpreadsheet } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DocumentManager } from "@/components/documents/DocumentManager";
 import { DigitalSignature } from "@/components/shared/DigitalSignature";
 import { EquipmentTypeChart } from "@/components/dashboard/EquipmentTypeChart";
 import { StatsTable } from "@/components/dashboard/StatsTable";
 import { RecentMessageCard } from "@/components/dashboard/RecentMessageCard";
+import * as XLSX from 'xlsx';
+import { supabase } from "@/integrations/supabase/client";
 
 interface TypeStat {
   type: EquipmentTypeValue;
@@ -25,102 +27,102 @@ const Dashboard = () => {
   const [isSignatureDialogOpen, setIsSignatureDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  const mockEquipments: Equipment[] = [
-    {
-      id: 1,
-      name: "Ordinateur portable Dell XPS",
-      type: "Informatique",
-      category: "Matériel",
-      status: "En service",
-      location: "Bureau 201",
-      service: "Service Informatique",
-      supplier: "Dell",
-      serialNumbers: [
-        { id: 1, number: "XPS-2024-001", inventoryNumber: "INV-2024-001", isAvailable: true, equipmentId: 1 }
-      ],
-      observation: "RAS",
-      availableQuantity: 5,
-      minQuantity: 2,
-      lastMaintenance: "2024-01-15",
-    },
-    {
-      id: 2,
-      name: "Imprimante HP LaserJet",
-      type: "Informatique",
-      category: "Matériel",
-      status: "En maintenance",
-      location: "Salle de reprographie",
-      service: "Service Reprographie",
-      supplier: "HP",
-      serialNumbers: [
-        { id: 2, number: "HP-2024-001", inventoryNumber: "INV-2024-002", isAvailable: true, equipmentId: 2 }
-      ],
-      observation: "",
-      availableQuantity: 3,
-      minQuantity: 1,
-      lastMaintenance: "2024-01-14",
-    },
-    {
-      id: 3,
-      name: "Bureau ergonomique",
-      type: "Mobilier",
-      category: "Matériel",
-      status: "En service",
-      location: "Bureau 305",
-      service: "Service Administratif",
-      supplier: "Office Pro",
-      serialNumbers: [
-        { id: 3, number: "DESK-2024-001", inventoryNumber: "INV-2024-003", isAvailable: true, equipmentId: 3 }
-      ],
-      observation: "",
-      availableQuantity: 2,
-      minQuantity: 1,
-      lastMaintenance: "2024-01-12",
-    },
-  ];
+  const handleExcelImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-  useEffect(() => {
-    const stats = mockEquipments.reduce<TypeStat[]>((acc, equipment) => {
-      const existingStat = acc.find(stat => stat.type === equipment.type);
-      if (existingStat) {
-        const currentCount = parseInt(existingStat.count);
-        existingStat.count = String(currentCount + equipment.availableQuantity);
-        existingStat.equipments.push(equipment);
-      } else {
-        acc.push({ 
-          type: equipment.type as EquipmentTypeValue,
-          count: String(equipment.availableQuantity),
-          equipments: [equipment]
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+        const { error } = await supabase
+          .from('equipment')
+          .insert(jsonData);
+
+        if (error) {
+          toast({
+            title: "Erreur d'importation",
+            description: "Une erreur est survenue lors de l'importation des données.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Import réussi",
+            description: "Les données ont été importées avec succès.",
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Erreur de fichier",
+          description: "Le fichier n'a pas pu être lu correctement.",
+          variant: "destructive",
         });
       }
-      return acc;
-    }, []);
+    };
+    reader.readAsArrayBuffer(file);
+  };
 
-    setTypeStats(stats);
+  useEffect(() => {
+    const fetchEquipments = async () => {
+      const { data: equipments, error } = await supabase
+        .from('equipment')
+        .select('*');
 
-    const mockMessages: Message[] = [
-      {
-        id: 1,
-        senderId: 1,
-        receiverId: 2,
-        subject: "Maintenance planifiée",
-        content: "La maintenance des équipements est prévue pour demain.",
-        read: false,
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: 2,
-        senderId: 3,
-        receiverId: 2,
-        subject: "Nouveau document",
-        content: "Un nouveau document a été ajouté à la GED.",
-        read: true,
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
+      if (error) {
+        toast({
+          title: "Erreur de chargement",
+          description: "Impossible de charger les équipements.",
+          variant: "destructive",
+        });
+        return;
       }
-    ];
 
-    setRecentMessages(mockMessages);
-  }, []);
+      const stats = equipments.reduce<TypeStat[]>((acc, equipment) => {
+        const existingStat = acc.find(stat => stat.type === equipment.type);
+        if (existingStat) {
+          const currentCount = parseInt(existingStat.count);
+          existingStat.count = String(currentCount + equipment.available_quantity);
+          existingStat.equipments.push(equipment as Equipment);
+        } else {
+          acc.push({
+            type: equipment.type as EquipmentTypeValue,
+            count: String(equipment.available_quantity),
+            equipments: [equipment as Equipment]
+          });
+        }
+        return acc;
+      }, []);
+
+      setTypeStats(stats);
+    };
+
+    const fetchMessages = async () => {
+      const { data: messages, error } = await supabase
+        .from('messages')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (error) {
+        toast({
+          title: "Erreur de chargement",
+          description: "Impossible de charger les messages récents.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setRecentMessages(messages as Message[]);
+    };
+
+    fetchEquipments();
+    fetchMessages();
+  }, [toast]);
 
   const handleSignatureSave = (signatureData: string) => {
     toast({
@@ -138,7 +140,26 @@ const Dashboard = () => {
         transition={{ duration: 0.5 }}
         className="max-w-7xl mx-auto"
       >
-        <h1 className="text-3xl font-bold mb-8">Tableau de bord</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Tableau de bord</h1>
+          <div className="flex gap-4">
+            <input
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={handleExcelImport}
+              className="hidden"
+              id="excel-import"
+            />
+            <label htmlFor="excel-import">
+              <Button variant="outline" size="sm" asChild>
+                <span>
+                  <FileSpreadsheet className="w-4 h-4 mr-2" />
+                  Importer Excel
+                </span>
+              </Button>
+            </label>
+          </div>
+        </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <RecentMessageCard messages={recentMessages} />
