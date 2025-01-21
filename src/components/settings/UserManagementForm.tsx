@@ -26,7 +26,7 @@ export function UserManagementForm() {
   const { toast } = useToast();
   const [users, setUsers] = useState<User[]>([
     { 
-      id: 1, 
+      id: "1", 
       username: "admin", 
       role: "admin", 
       permissions: { 
@@ -55,7 +55,7 @@ export function UserManagementForm() {
 
   const onSubmit = (values: UserFormValues) => {
     const newUser: User = {
-      id: users.length + 1,
+      id: String(users.length + 1),
       username: values.username,
       role: values.role,
       permissions: values.permissions
