@@ -21,6 +21,46 @@ interface TypeStat {
   equipments: Equipment[];
 }
 
+// Helper function to map Supabase data to Equipment type
+const mapSupabaseToEquipment = (data: any): Equipment => ({
+  id: data.id,
+  name: data.name,
+  type: data.type as EquipmentTypeValue,
+  category: data.category,
+  status: data.status,
+  location: data.location,
+  service: data.service,
+  supplier: data.supplier || "",
+  serialNumbers: data.serial_number ? [{ 
+    id: 1, 
+    number: data.serial_number,
+    inventoryNumber: data.inventory_number || undefined,
+    isAvailable: true,
+    equipmentId: data.id
+  }] : [],
+  observation: data.observation,
+  availableQuantity: data.available_quantity,
+  minQuantity: data.min_quantity,
+  lastMaintenance: data.last_maintenance,
+});
+
+// Helper function to map Excel data to Supabase equipment structure
+const mapExcelToSupabaseEquipment = (data: any) => ({
+  name: data.name || "",
+  type: data.type || "Informatique",
+  category: data.category || "Matériel",
+  status: data.status || "En service",
+  location: data.location || "",
+  service: data.service || "",
+  supplier: data.supplier,
+  serial_number: data.serial_number,
+  inventory_number: data.inventory_number,
+  observation: data.observation,
+  available_quantity: Number(data.available_quantity) || 0,
+  min_quantity: Number(data.min_quantity) || 0,
+  last_maintenance: data.last_maintenance,
+});
+
 const Dashboard = () => {
   const [typeStats, setTypeStats] = useState<TypeStat[]>([]);
   const [recentMessages, setRecentMessages] = useState<Message[]>([]);
@@ -39,10 +79,13 @@ const Dashboard = () => {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        
+        // Map Excel data to match Supabase structure
+        const mappedData = jsonData.map(mapExcelToSupabaseEquipment);
 
         const { error } = await supabase
           .from('equipment')
-          .insert(jsonData);
+          .insert(mappedData);
 
         if (error) {
           toast({
@@ -50,6 +93,7 @@ const Dashboard = () => {
             description: "Une erreur est survenue lors de l'importation des données.",
             variant: "destructive",
           });
+          console.error("Import error:", error);
         } else {
           toast({
             title: "Import réussi",
@@ -62,6 +106,7 @@ const Dashboard = () => {
           description: "Le fichier n'a pas pu être lu correctement.",
           variant: "destructive",
         });
+        console.error("File reading error:", error);
       }
     };
     reader.readAsArrayBuffer(file);
@@ -83,16 +128,17 @@ const Dashboard = () => {
       }
 
       const stats = equipments.reduce<TypeStat[]>((acc, equipment) => {
-        const existingStat = acc.find(stat => stat.type === equipment.type);
+        const mappedEquipment = mapSupabaseToEquipment(equipment);
+        const existingStat = acc.find(stat => stat.type === mappedEquipment.type);
+        
         if (existingStat) {
-          const currentCount = parseInt(existingStat.count);
-          existingStat.count = String(currentCount + equipment.available_quantity);
-          existingStat.equipments.push(equipment as Equipment);
+          existingStat.count = String(parseInt(existingStat.count) + mappedEquipment.availableQuantity);
+          existingStat.equipments.push(mappedEquipment);
         } else {
           acc.push({
-            type: equipment.type as EquipmentTypeValue,
-            count: String(equipment.available_quantity),
-            equipments: [equipment as Equipment]
+            type: mappedEquipment.type,
+            count: String(mappedEquipment.availableQuantity),
+            equipments: [mappedEquipment]
           });
         }
         return acc;
