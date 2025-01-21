@@ -6,7 +6,7 @@ export interface UserPermissions {
 }
 
 export interface User {
-  id: number;
+  id: string;
   username: string;
   role: "admin" | "user";
   permissions: UserPermissions;

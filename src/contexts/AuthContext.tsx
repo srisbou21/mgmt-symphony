@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface AuthContextType {
   user: User | null;
   logout: () => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -23,10 +24,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Vérifier la session actuelle
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        // Récupérer le profil de l'utilisateur
         supabase
           .from('profiles')
           .select('*')
@@ -40,16 +39,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             if (profile) {
               setUser({
                 id: session.user.id,
-                username: profile.username,
-                role: profile.role,
-                permissions: profile.permissions,
+                username: profile.username || '',
+                role: profile.role as "admin" | "user",
+                permissions: profile.permissions as unknown as UserPermissions,
               });
             }
           });
       }
     });
 
-    // Écouter les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event);
       if (event === 'SIGNED_IN' && session?.user) {
@@ -67,9 +65,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (profile) {
           setUser({
             id: session.user.id,
-            username: profile.username,
-            role: profile.role,
-            permissions: profile.permissions,
+            username: profile.username || '',
+            role: profile.role as "admin" | "user",
+            permissions: profile.permissions as unknown as UserPermissions,
           });
         }
       } else if (event === 'SIGNED_OUT') {
@@ -102,8 +100,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const changePassword = async (currentPassword: string, newPassword: string): Promise<boolean> => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors du changement de mot de passe",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      toast({
+        title: "Succès",
+        description: "Votre mot de passe a été changé avec succès",
+      });
+      return true;
+    } catch (error) {
+      console.error('Erreur lors du changement de mot de passe:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors du changement de mot de passe",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, logout }}>
+    <AuthContext.Provider value={{ user, logout, changePassword }}>
       {children}
     </AuthContext.Provider>
   );
